@@ -31,7 +31,9 @@ body{
     min-height:100vh;
 }
 
-/* SIDEBAR */
+/* =========================
+SIDEBAR
+========================= */
 
 .sidebar{
     width:280px;
@@ -100,7 +102,9 @@ body{
     );
 }
 
-/* MAIN */
+/* =========================
+MAIN
+========================= */
 
 .main{
     margin-left:280px;
@@ -108,7 +112,9 @@ body{
     padding:32px;
 }
 
-/* TOPBAR */
+/* =========================
+TOPBAR
+========================= */
 
 .topbar{
     display:flex;
@@ -161,7 +167,9 @@ select{
     box-shadow:0 0 14px #10b981;
 }
 
-/* KPI */
+/* =========================
+KPI
+========================= */
 
 .kpi-grid{
     display:grid;
@@ -193,7 +201,9 @@ select{
     color:#10b981;
 }
 
-/* CHART */
+/* =========================
+CHART
+========================= */
 
 .chart-grid{
     display:grid;
@@ -213,7 +223,9 @@ select{
     margin-bottom:20px;
 }
 
-/* TABLE */
+/* =========================
+TABLE
+========================= */
 
 .table-box{
     background:#0b1220;
@@ -242,7 +254,9 @@ td{
     color:#10b981;
 }
 
-/* RESPONSIVE */
+/* =========================
+RESPONSIVE
+========================= */
 
 @media(max-width:1000px){
 
@@ -268,207 +282,213 @@ td{
 
 <div class="container">
 
-<div class="sidebar">
+    <!-- SIDEBAR -->
 
-    <div class="logo-box">
+    <div class="sidebar">
 
-        <div class="logo">
-            SC
-        </div>
+        <div class="logo-box">
 
-        <div class="logo-text">
-            <h2>Scarlett SCM</h2>
-            <p>Supply Chain Dashboard</p>
-        </div>
-
-    </div>
-
-    <div class="menu">
-
-        <div class="menu-item active">
-            Dashboard
-        </div>
-
-        <div class="menu-item">
-            Channel KPI
-        </div>
-
-        <div class="menu-item">
-            Region KPI
-        </div>
-
-        <div class="menu-item">
-            Product KPI
-        </div>
-
-        <div class="menu-item">
-            Top Loss
-        </div>
-
-    </div>
-
-</div>
-
-<div class="main">
-
-    <div class="topbar">
-
-        <div class="top-left">
-
-            <h1>Executive Dashboard</h1>
-
-            <p>
-                Realtime SCM Performance Monitoring
-            </p>
-
-        </div>
-
-        <div class="top-right">
-
-            <div class="filter-box">
-
-                <select id="weekFilter"></select>
-
+            <div class="logo">
+                SC
             </div>
 
-            <div class="status">
+            <div class="logo-text">
+                <h2>Scarlett SCM</h2>
+                <p>Supply Chain Dashboard</p>
+            </div>
 
-                <div class="dot"></div>
+        </div>
 
-                <span>Connected</span>
+        <div class="menu">
 
+            <div class="menu-item active">
+                Dashboard
+            </div>
+
+            <div class="menu-item">
+                Channel KPI
+            </div>
+
+            <div class="menu-item">
+                Region KPI
+            </div>
+
+            <div class="menu-item">
+                Product KPI
+            </div>
+
+            <div class="menu-item">
+                Top Loss
             </div>
 
         </div>
 
     </div>
 
-    <!-- KPI -->
+    <!-- MAIN -->
 
-    <div class="kpi-grid">
+    <div class="main">
 
-        <div class="card">
+        <div class="topbar">
 
-            <div class="card-title">
-                Total Order Qty
+            <div class="top-left">
+
+                <h1>Executive Dashboard</h1>
+
+                <p>
+                    Realtime SCM Performance Monitoring
+                </p>
+
             </div>
 
-            <div class="card-value" id="totalOrder">
-                0
-            </div>
+            <div class="top-right">
 
-            <div class="card-sub">
-                MT + GT
-            </div>
+                <div class="filter-box">
 
-        </div>
+                    <select id="weekFilter"></select>
 
-        <div class="card">
+                </div>
 
-            <div class="card-title">
-                Delivery Qty
-            </div>
+                <div class="status">
 
-            <div class="card-value" id="totalDelivery">
-                0
-            </div>
+                    <div class="dot"></div>
 
-            <div class="card-sub" id="caseFill">
-                0%
-            </div>
+                    <span>Connected</span>
 
-        </div>
+                </div>
 
-        <div class="card">
-
-            <div class="card-title">
-                MT Qty
-            </div>
-
-            <div class="card-value" id="mtQty">
-                0
-            </div>
-
-            <div class="card-sub">
-                Modern Trade
             </div>
 
         </div>
 
-        <div class="card">
+        <!-- KPI -->
 
-            <div class="card-title">
-                GT Qty
+        <div class="kpi-grid">
+
+            <div class="card">
+
+                <div class="card-title">
+                    Total Order Qty
+                </div>
+
+                <div class="card-value" id="totalOrder">
+                    0
+                </div>
+
+                <div class="card-sub">
+                    MT + GT
+                </div>
+
             </div>
 
-            <div class="card-value" id="gtQty">
-                0
+            <div class="card">
+
+                <div class="card-title">
+                    Delivery Qty
+                </div>
+
+                <div class="card-value" id="totalDelivery">
+                    0
+                </div>
+
+                <div class="card-sub" id="caseFill">
+                    0%
+                </div>
+
             </div>
 
-            <div class="card-sub">
-                General Trade
+            <div class="card">
+
+                <div class="card-title">
+                    MT Qty
+                </div>
+
+                <div class="card-value" id="mtQty">
+                    0
+                </div>
+
+                <div class="card-sub">
+                    Modern Trade
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-title">
+                    GT Qty
+                </div>
+
+                <div class="card-value" id="gtQty">
+                    0
+                </div>
+
+                <div class="card-sub">
+                    General Trade
+                </div>
+
             </div>
 
         </div>
 
-    </div>
+        <!-- CHART -->
 
-    <!-- CHART -->
+        <div class="chart-grid">
 
-    <div class="chart-grid">
+            <div class="chart-box">
 
-        <div class="chart-box">
+                <div class="chart-title">
+                    Channel Performance
+                </div>
+
+                <canvas id="barChart"></canvas>
+
+            </div>
+
+            <div class="chart-box">
+
+                <div class="chart-title">
+                    Case Fill
+                </div>
+
+                <canvas id="donutChart"></canvas>
+
+            </div>
+
+        </div>
+
+        <!-- TABLE -->
+
+        <div class="table-box">
 
             <div class="chart-title">
-                Channel Performance
+                Channel KPI
             </div>
 
-            <canvas id="barChart"></canvas>
+            <table>
 
-        </div>
+                <thead>
 
-        <div class="chart-box">
+                    <tr>
 
-            <div class="chart-title">
-                Case Fill
-            </div>
+                        <th>Channel</th>
+                        <th>Order Qty</th>
+                        <th>Delivery Qty</th>
+                        <th>Case Fill</th>
 
-            <canvas id="donutChart"></canvas>
+                    </tr>
+
+                </thead>
+
+                <tbody id="tableData">
+
+                </tbody>
+
+            </table>
 
         </div>
 
     </div>
-
-    <!-- TABLE -->
-
-    <div class="table-box">
-
-        <div class="chart-title">
-            Channel KPI
-        </div>
-
-        <table>
-
-            <thead>
-
-                <tr>
-                    <th>Channel</th>
-                    <th>Order Qty</th>
-                    <th>Delivery Qty</th>
-                    <th>Case Fill</th>
-                </tr>
-
-            </thead>
-
-            <tbody id="tableData">
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
 
 </div>
 
@@ -479,7 +499,7 @@ GOOGLE SHEET CSV URL
 ========================================== */
 
 const csvUrl =
-"https://docs.google.com/spreadsheets/d/1xTEZKFhTzaxupONEBxX0iQniYhsaMZlfEiCGEja_qTQ/export?format=csv&gid=0";
+"https://docs.google.com/spreadsheets/d/1xTEZKFhTzaxupONEBxX0iQniYhsaMZlfEiCGEja_qTQ/export?format=csv&gid=1343041753";
 
 /* ==========================================
 GLOBAL CHART
@@ -494,71 +514,57 @@ LOAD DATA
 
 async function loadData(){
 
-    try{
+    const response =
+    await fetch(csvUrl);
 
-        const response =
-        await fetch(csvUrl);
+    const csv =
+    await response.text();
 
-        const csv =
-        await response.text();
+    const rows =
+    csv.split("\n")
+    .slice(1);
 
-        const rows =
-        csv.split("\n")
-        .slice(1);
+    let data = [];
 
-        let data = [];
+    rows.forEach(row=>{
 
-        rows.forEach(row=>{
+        const cols =
+        row.split(",");
 
-            const cols =
-            row.split(",");
+        if(cols.length >= 6){
 
-            if(cols.length >= 6){
+            data.push({
 
-                data.push({
+                week:
+                cols[0].replace(/"/g,''),
 
-                    week:
-                    cols[0]
-                    .replace(/"/g,''),
+                channel:
+                cols[1].replace(/"/g,''),
 
-                    channel:
-                    cols[1]
-                    .replace(/"/g,''),
+                orderQty:
+                parseFloat(cols[2]) || 0,
 
-                    orderQty:
-                    Number(cols[2]),
+                deliveryQty:
+                parseFloat(cols[3]) || 0,
 
-                    deliveryQty:
-                    Number(cols[3]),
+                gap:
+                parseFloat(cols[4]) || 0,
 
-                    gap:
-                    Number(cols[4]),
+                caseFill:
+                parseFloat(cols[5]) || 0
 
-                    caseFill:
-                    parseFloat(cols[5])
+            });
 
-                });
+        }
 
-            }
+    });
 
-        });
-
-        setupFilter(data);
-
-    }catch(error){
-
-        console.log(error);
-
-        alert(
-            "Failed load Google Sheet"
-        );
-
-    }
+    setupFilter(data);
 
 }
 
 /* ==========================================
-FILTER
+SETUP FILTER
 ========================================== */
 
 function setupFilter(data){
@@ -657,10 +663,9 @@ function renderDashboard(
     });
 
     const finalCF =
-    (
-        totalDelivery /
-        totalOrder
-    ) * 100;
+    totalOrder > 0
+    ? (totalDelivery / totalOrder) * 100
+    : 0;
 
     document.getElementById(
         "totalOrder"
@@ -702,7 +707,7 @@ function renderDashboard(
 }
 
 /* ==========================================
-CHART
+CHARTS
 ========================================== */
 
 function createCharts(
