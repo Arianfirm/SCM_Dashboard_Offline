@@ -1,375 +1,945 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SCM Dashboard — KPI Cards</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<title>SCM WHBC Dashboard</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { 
-  font-family: 'Inter', system-ui, sans-serif;
-  background: #f8f9fa;
-  color: #1a1a1a;
-}
-.container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
-header {
-  text-align: center;
-  margin-bottom: 50px;
-  padding-bottom: 30px;
-  border-bottom: 2px solid #e0e0e0;
-}
-header h1 {
-  font-size: 32px;
-  font-weight: 800;
-  margin-bottom: 8px;
-  letter-spacing: -1px;
-}
-header .subtitle {
-  font-size: 14px;
-  color: #666;
-  font-weight: 500;
-}
-header .week {
-  font-size: 12px;
-  color: #999;
-  margin-top: 8px;
-  font-family: 'Courier New', monospace;
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  margin-bottom: 50px;
+body{
+    font-family:'Inter',sans-serif;
+    background:#070b17;
+    color:white;
 }
 
-.card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.12);
-  border-color: #d0d0d0;
-}
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
-}
-.card.mt::before { background: linear-gradient(90deg, #3b82f6, #0ea5e9); }
-.card.gt::before { background: linear-gradient(90deg, #a855f7, #d946ef); }
-
-.card-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: #666;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 12px;
-}
-.card-value {
-  font-size: 48px;
-  font-weight: 800;
-  color: #1a1a1a;
-  line-height: 1;
-  margin-bottom: 8px;
-  font-variant-numeric: tabular-nums;
-}
-.card-value.percent { font-size: 56px; color: #2563eb; }
-
-.card-sub {
-  font-size: 13px;
-  color: #999;
-  font-weight: 500;
+.container{
+    display:flex;
+    min-height:100vh;
 }
 
-.section {
-  margin-bottom: 40px;
-}
-.section-title {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #e0e0e0;
-  color: #1a1a1a;
+/* =========================
+SIDEBAR
+========================= */
+
+.sidebar{
+    width:280px;
+    background:#0f172a;
+    padding:30px 20px;
+    border-right:1px solid rgba(255,255,255,0.05);
+    position:fixed;
+    height:100vh;
 }
 
-.breakdown-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
+.logo{
+    margin-bottom:40px;
 }
-.breakdown-card {
-  background: white;
-  border-radius: 10px;
-  padding: 16px;
-  border: 1px solid #e0e0e0;
-  font-size: 13px;
-}
-.breakdown-card .label { color: #666; font-weight: 600; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; }
-.breakdown-card .value { font-size: 24px; font-weight: 700; color: #2563eb; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
-.breakdown-card .sub { color: #999; font-size: 12px; }
 
-.table-wrap {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid #e0e0e0;
-  margin-bottom: 40px;
+.logo h1{
+    font-size:28px;
+    font-weight:800;
 }
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-thead th {
-  background: #f3f4f6;
-  padding: 12px 16px;
-  text-align: left;
-  font-weight: 600;
-  color: #666;
-  border-bottom: 1px solid #e0e0e0;
-  text-transform: uppercase;
-  font-size: 11px;
-}
-tbody td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #f3f4f6;
-}
-tbody tr:hover { background: #fafafa; }
-tbody tr:last-child td { border-bottom: none; }
-td.num { text-align: right; font-family: 'Courier New', monospace; font-weight: 500; }
-td.bad { color: #dc2626; font-weight: 600; }
 
-@media (max-width: 768px) {
-  .kpi-grid { grid-template-columns: 1fr; }
-  .card-value { font-size: 36px; }
-  header h1 { font-size: 24px; }
+.logo p{
+    color:#94a3b8;
+    margin-top:6px;
+    font-size:13px;
 }
+
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.menu-item{
+    padding:16px;
+    border-radius:14px;
+    cursor:pointer;
+    transition:0.3s;
+    color:#cbd5e1;
+}
+
+.menu-item:hover{
+    background:#1e293b;
+}
+
+.menu-item.active{
+    background:linear-gradient(
+        135deg,
+        #7c3aed,
+        #ec4899
+    );
+    color:white;
+}
+
+/* =========================
+MAIN
+========================= */
+
+.main{
+    margin-left:280px;
+    flex:1;
+    padding:30px;
+}
+
+/* =========================
+TOPBAR
+========================= */
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.topbar h2{
+    font-size:40px;
+    font-weight:800;
+}
+
+.topbar p{
+    color:#94a3b8;
+    margin-top:8px;
+}
+
+.filter-box{
+    background:#111827;
+    padding:14px 18px;
+    border-radius:14px;
+}
+
+select{
+    background:none;
+    border:none;
+    color:white;
+    font-size:14px;
+    outline:none;
+}
+
+/* =========================
+KPI
+========================= */
+
+.kpi-grid{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:22px;
+    margin-bottom:30px;
+}
+
+.card{
+    background:#111827;
+    border-radius:24px;
+    padding:24px;
+    border:1px solid rgba(255,255,255,0.05);
+}
+
+.card-title{
+    color:#94a3b8;
+    margin-bottom:14px;
+    font-size:13px;
+}
+
+.card-value{
+    font-size:46px;
+    font-weight:800;
+}
+
+.card-sub{
+    margin-top:10px;
+    color:#10b981;
+}
+
+/* =========================
+CHART
+========================= */
+
+.chart-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:24px;
+    margin-bottom:30px;
+}
+
+.chart-box{
+    background:#111827;
+    border-radius:24px;
+    padding:24px;
+}
+
+.chart-title{
+    font-size:20px;
+    margin-bottom:20px;
+}
+
+/* =========================
+TABLE
+========================= */
+
+.table-box{
+    background:#111827;
+    border-radius:24px;
+    padding:24px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    text-align:left;
+    color:#94a3b8;
+    padding:14px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+td{
+    padding:14px;
+    border-bottom:1px solid rgba(255,255,255,0.03);
+}
+
+.good{
+    color:#10b981;
+}
+
+/* =========================
+SECTION
+========================= */
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
+}
+
+/* =========================
+RESPONSIVE
+========================= */
+
+@media(max-width:1000px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .chart-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
 </style>
+
 </head>
+
 <body>
 
 <div class="container">
 
-<header>
-  <h1>📊 SCM Dashboard</h1>
-  <div class="subtitle">Case Fill Rate — Modern Trade & General Trade</div>
-  <div class="week" id="weekInfo">Loading...</div>
-</header>
+    <!-- SIDEBAR -->
 
-<div class="kpi-grid">
-  <div class="card">
-    <div class="card-title">Total Order Qty</div>
-    <div class="card-value" id="totalOrder">—</div>
-    <div class="card-sub">Total SCM Order</div>
-  </div>
+    <div class="sidebar">
 
-  <div class="card">
-    <div class="card-title">Total Delivery Qty</div>
-    <div class="card-value" id="totalDelivery">—</div>
-    <div class="card-sub" id="overallCFR">—%</div>
-  </div>
+        <div class="logo">
 
-  <div class="card mt">
-    <div class="card-title">MT Case Fill</div>
-    <div class="card-value percent" id="mtCFR">—%</div>
-    <div class="card-sub" id="mtQty">—</div>
-  </div>
+            <h1>SCM Dashboard</h1>
 
-  <div class="card gt">
-    <div class="card-title">GT Case Fill</div>
-    <div class="card-value percent" id="gtCFR">—%</div>
-    <div class="card-sub" id="gtQty">—</div>
-  </div>
-</div>
+            <p>
+                Scarlett Executive Monitoring
+            </p>
 
-<div class="section">
-  <div class="section-title">MT Channel Breakdown</div>
-  <div class="breakdown-grid" id="mtChannels"></div>
-</div>
+        </div>
 
-<div class="section">
-  <div class="section-title">GT Channel Breakdown</div>
-  <div class="breakdown-grid" id="gtChannels"></div>
-</div>
+        <div class="menu">
 
-<div class="section">
-  <div class="section-title">Region Performance</div>
-  <div class="breakdown-grid" id="regions"></div>
-</div>
+            <div class="menu-item active"
+                 onclick="showSection('dashboard',this)">
+                 Dashboard
+            </div>
 
-<div class="section">
-  <div class="section-title">Loss Products (Gap > 0)</div>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Product</th>
-          <th>Order Qty</th>
-          <th>Delivered</th>
-          <th>Gap</th>
-          <th>CFR %</th>
-        </tr>
-      </thead>
-      <tbody id="lossTable"></tbody>
-    </table>
-  </div>
-</div>
+            <div class="menu-item"
+                 onclick="showSection('channel',this)">
+                 Channel KPI
+            </div>
+
+            <div class="menu-item"
+                 onclick="showSection('region',this)">
+                 Region KPI
+            </div>
+
+            <div class="menu-item"
+                 onclick="showSection('loss',this)">
+                 Top Loss
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+        <div class="topbar">
+
+            <div>
+
+                <h2>Executive Dashboard</h2>
+
+                <p>
+                    SCM Performance Monitoring
+                </p>
+
+            </div>
+
+            <div class="filter-box">
+
+                <select id="weekFilter">
+                </select>
+
+            </div>
+
+        </div>
+
+        <!-- DASHBOARD -->
+
+        <div class="section active"
+             id="dashboard">
+
+            <div class="kpi-grid">
+
+                <div class="card">
+
+                    <div class="card-title">
+                        Total Order Qty
+                    </div>
+
+                    <div class="card-value"
+                         id="totalOrder">
+                         0
+                    </div>
+
+                    <div class="card-sub">
+                        Total SCM Order
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="card-title">
+                        Total Delivery Qty
+                    </div>
+
+                    <div class="card-value"
+                         id="totalDelivery">
+                         0
+                    </div>
+
+                    <div class="card-sub"
+                         id="totalCF">
+                         0%
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="card-title">
+                        MT Case Fill
+                    </div>
+
+                    <div class="card-value"
+                         id="mtCF">
+                         0%
+                    </div>
+
+                    <div class="card-sub"
+                         id="mtQty">
+                         MT Qty : 0
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="card-title">
+                        GT Case Fill
+                    </div>
+
+                    <div class="card-value"
+                         id="gtCF">
+                         0%
+                    </div>
+
+                    <div class="card-sub"
+                         id="gtQty">
+                         GT Qty : 0
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CHART -->
+
+            <div class="chart-grid">
+
+                <div class="chart-box">
+
+                    <div class="chart-title">
+                        Channel Performance
+                    </div>
+
+                    <canvas id="barChart"></canvas>
+
+                </div>
+
+                <div class="chart-box">
+
+                    <div class="chart-title">
+                        Case Fill
+                    </div>
+
+                    <canvas id="donutChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CHANNEL -->
+
+        <div class="section"
+             id="channel">
+
+            <div class="table-box">
+
+                <div class="chart-title">
+                    Channel KPI
+                </div>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Channel</th>
+                            <th>Order Qty</th>
+                            <th>Delivery Qty</th>
+                            <th>Case Fill</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="channelTable">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- REGION -->
+
+        <div class="section"
+             id="region">
+
+            <div class="table-box">
+
+                <div class="chart-title">
+                    Region KPI
+                </div>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Region</th>
+                            <th>Order Qty</th>
+                            <th>Delivery Qty</th>
+                            <th>Case Fill</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="regionTable">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- LOSS -->
+
+        <div class="section"
+             id="loss">
+
+            <div class="table-box">
+
+                <div class="chart-title">
+                    Top Loss Product
+                </div>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Product</th>
+                            <th>Gap Qty</th>
+                            <th>Case Fill</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="lossTable">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
 <script>
-const F = new Intl.NumberFormat('id-ID');
 
-// Data placeholder - update kalau load dari data.json
-const DATA = {
-  kpi_card: [],
-  channel_breakdown: [],
-  region_overall: [],
-  loss_product: []
-};
+/* =========================
+GOOGLE SHEET CONFIG
+========================= */
 
-function num(v) {
-  const n = parseFloat(String(v || '0').replace(/,/g, '.'));
-  return isNaN(n) ? 0 : n;
+const SPREADSHEET_ID =
+"1xTEZKFhTzaxupONEBxX0iQniYhsaMZlfEiCGEja_qTQ";
+
+const GID_BREAKDOWN =
+"1343041753";
+
+/* =========================
+CSV URL
+========================= */
+
+const csvUrl =
+`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID_BREAKDOWN}`;
+
+/* =========================
+GLOBAL
+========================= */
+
+let dashboardData = [];
+
+let barChart;
+let donutChart;
+
+/* =========================
+SHOW SECTION
+========================= */
+
+function showSection(id,el){
+
+    document
+    .querySelectorAll(".section")
+    .forEach(sec=>{
+
+        sec.classList.remove("active");
+
+    });
+
+    document
+    .querySelectorAll(".menu-item")
+    .forEach(item=>{
+
+        item.classList.remove("active");
+
+    });
+
+    document
+    .getElementById(id)
+    .classList.add("active");
+
+    el.classList.add("active");
+
 }
 
-async function loadData() {
-  try {
-    // Fetch data.json dari GitHub (ganti URL sesuai repo kamu)
-    const res = await fetch('https://raw.githubusercontent.com/arianfirm/SCM_Dashboard_Offline/main/data.json');
-    if (!res.ok) throw new Error('Failed to load data.json');
-    
-    const json = await res.json();
-    Object.assign(DATA, json);
-    render();
-  } catch (err) {
-    console.error('Error:', err);
-    // Fallback - tampilkan pesan
-    document.querySelector('header .week').textContent = 'Error: ' + err.message;
-  }
+/* =========================
+NUMBER FORMAT
+========================= */
+
+function num(v){
+
+    return parseFloat(
+        String(v)
+        .replace(/,/g,"")
+        .replace("%","")
+    ) || 0;
+
 }
 
-function render() {
-  const kpiRow = DATA.kpi_card?.[0] || {};
-  const week = kpiRow['Week'] || 'Week 19';
-  
-  document.getElementById('weekInfo').textContent = week + ' • ' + new Date().toLocaleDateString('id-ID');
+/* =========================
+LOAD DATA
+========================= */
 
-  // OVERALL
-  const totalQty = num(kpiRow['Order Qty']);
-  const totalDlv = num(kpiRow['Delivered Qty']);
-  const overallCFR = totalQty ? Math.round(totalDlv / totalQty * 10000) / 100 : 0;
+async function loadData(){
 
-  document.getElementById('totalOrder').textContent = F.format(totalQty);
-  document.getElementById('totalDelivery').textContent = F.format(totalDlv);
-  document.getElementById('overallCFR').textContent = overallCFR.toFixed(2) + '%';
+    const res =
+    await fetch(csvUrl);
 
-  // MT vs GT
-  const chByType = {};
-  (DATA.channel_breakdown || []).forEach(r => {
-    const type = (r['Channel'] || '').trim();
-    const qty = num(r['Order Qty']);
-    const dlv = num(r['Delivered Qty']);
-    if (!type || !qty) return;
-    if (!chByType[type]) chByType[type] = { qty: 0, dlv: 0 };
-    chByType[type].qty += qty;
-    chByType[type].dlv += dlv;
-  });
+    const csv =
+    await res.text();
 
-  const mtData = chByType['MT'] || { qty: 0, dlv: 0 };
-  const gtData = chByType['GT'] || { qty: 0, dlv: 0 };
-  const mtCFR = mtData.qty ? Math.round(mtData.dlv / mtData.qty * 10000) / 100 : 0;
-  const gtCFR = gtData.qty ? Math.round(gtData.dlv / gtData.qty * 10000) / 100 : 0;
+    const rows =
+    csv.split("\n")
+    .slice(1);
 
-  document.getElementById('mtCFR').textContent = mtCFR.toFixed(2) + '%';
-  document.getElementById('mtQty').textContent = 'MT Qty: ' + F.format(mtData.qty);
-  document.getElementById('gtCFR').textContent = gtCFR.toFixed(2) + '%';
-  document.getElementById('gtQty').textContent = 'GT Qty: ' + F.format(gtData.qty);
+    dashboardData = [];
 
-  // CHANNELS
-  let mtHTML = '', gtHTML = '';
-  (DATA.channel_breakdown || []).forEach(r => {
-    const ch = (r['Order Lines/Analytic Level 2'] || '').trim();
-    const qty = num(r['Order Qty']);
-    const dlv = num(r['Delivered Qty']);
-    if (!ch || !qty) return;
-    const cfr = Math.round(dlv / qty * 10000) / 100;
-    const html = `<div class="breakdown-card">
-      <div class="label">${ch.substring(0, 30)}</div>
-      <div class="value">${cfr.toFixed(1)}%</div>
-      <div class="sub">Qty: ${F.format(qty)}</div>
-    </div>`;
-    if (ch.includes('MT')) mtHTML += html;
-    else if (ch.includes('GT')) gtHTML += html;
-  });
-  
-  document.getElementById('mtChannels').innerHTML = mtHTML || '<p style="padding:20px;color:#999">No MT data</p>';
-  document.getElementById('gtChannels').innerHTML = gtHTML || '<p style="padding:20px;color:#999">No GT data</p>';
+    rows.forEach(r=>{
 
-  // REGIONS
-  const regMap = {};
-  (DATA.region_overall || []).forEach(r => {
-    const reg = (r['Region'] || '').trim();
-    const qty = num(r['Order Qty']);
-    const dlv = num(r['Delivered Qty']);
-    if (!reg || !qty) return;
-    regMap[reg] = { qty, dlv };
-  });
-  
-  const regHTML = Object.entries(regMap).map(([reg, d]) => {
-    const cfr = d.qty ? Math.round(d.dlv / d.qty * 10000) / 100 : 0;
-    return `<div class="breakdown-card">
-      <div class="label">${reg}</div>
-      <div class="value">${cfr.toFixed(1)}%</div>
-      <div class="sub">Qty: ${F.format(d.qty)}</div>
-    </div>`;
-  }).join('');
-  
-  document.getElementById('regions').innerHTML = regHTML || '<p style="padding:20px;color:#999">No region data</p>';
+        const c =
+        r.split(",");
 
-  // LOSS PRODUCTS
-  const lossHTML = (DATA.loss_product || [])
-    .sort((a, b) => num(b['Gap Qty']) - num(a['Gap Qty']))
-    .slice(0, 30)
-    .map((r, i) => {
-      const qty = num(r['Order Qty']);
-      const dlv = num(r['Delivered Qty']);
-      const gap = num(r['Gap Qty']);
-      const cfr = qty ? Math.round(dlv / qty * 10000) / 100 : 0;
-      const prod = (r['Product'] || r['SKU'] || '—').substring(0, 60);
-      return `<tr>
-        <td>${i + 1}</td>
-        <td>${prod}</td>
-        <td class="num">${F.format(qty)}</td>
-        <td class="num">${F.format(dlv)}</td>
-        <td class="num bad">−${F.format(gap)}</td>
-        <td class="num">${cfr.toFixed(2)}%</td>
-      </tr>`;
-    }).join('');
-  
-  document.getElementById('lossTable').innerHTML = lossHTML || '<tr><td colspan="6" style="padding:20px;text-align:center;color:#999">No loss products</td></tr>';
+        if(c.length >= 6){
+
+            dashboardData.push({
+
+                week:
+                c[0]
+                .replace(/"/g,''),
+
+                channel:
+                c[1]
+                .replace(/"/g,''),
+
+                orderQty:
+                num(c[4]),
+
+                deliveryQty:
+                num(c[5]),
+
+                gapQty:
+                num(c[6]),
+
+                caseFill:
+                num(c[7])
+
+            });
+
+        }
+
+    });
+
+    setupWeekFilter();
+
 }
 
-// Load on ready
-document.addEventListener('DOMContentLoaded', loadData);
+/* =========================
+WEEK FILTER
+========================= */
+
+function setupWeekFilter(){
+
+    const weeks =
+    [...new Set(
+        dashboardData.map(d=>d.week)
+    )];
+
+    const filter =
+    document.getElementById(
+        "weekFilter"
+    );
+
+    filter.innerHTML = "";
+
+    weeks.forEach(w=>{
+
+        filter.innerHTML +=
+        `<option value="${w}">
+            ${w}
+        </option>`;
+
+    });
+
+    renderDashboard(
+        weeks[0]
+    );
+
+    filter.addEventListener(
+        "change",
+        ()=>{
+
+            renderDashboard(
+                filter.value
+            );
+
+        }
+    );
+
+}
+
+/* =========================
+RENDER DASHBOARD
+========================= */
+
+function renderDashboard(week){
+
+    const data =
+    dashboardData.filter(
+        d=>d.week === week
+    );
+
+    let totalOrder = 0;
+    let totalDelivery = 0;
+
+    let mtOrder = 0;
+    let mtDelivery = 0;
+
+    let gtOrder = 0;
+    let gtDelivery = 0;
+
+    let labels = [];
+    let values = [];
+
+    let tableHTML = "";
+
+    data.forEach(d=>{
+
+        totalOrder += d.orderQty;
+        totalDelivery += d.deliveryQty;
+
+        labels.push(d.channel);
+        values.push(d.caseFill);
+
+        if(d.channel === "MT"){
+
+            mtOrder += d.orderQty;
+            mtDelivery += d.deliveryQty;
+
+        }
+
+        if(d.channel === "GT"){
+
+            gtOrder += d.orderQty;
+            gtDelivery += d.deliveryQty;
+
+        }
+
+        tableHTML += `
+        <tr>
+
+            <td>${d.channel}</td>
+
+            <td>
+                ${d.orderQty.toLocaleString()}
+            </td>
+
+            <td>
+                ${d.deliveryQty.toLocaleString()}
+            </td>
+
+            <td class="good">
+                ${d.caseFill.toFixed(2)}%
+            </td>
+
+        </tr>
+        `;
+
+    });
+
+    const totalCF =
+    totalOrder
+    ? (totalDelivery / totalOrder) * 100
+    : 0;
+
+    const mtCF =
+    mtOrder
+    ? (mtDelivery / mtOrder) * 100
+    : 0;
+
+    const gtCF =
+    gtOrder
+    ? (gtDelivery / gtOrder) * 100
+    : 0;
+
+    /* KPI */
+
+    document.getElementById(
+        "totalOrder"
+    ).innerHTML =
+    totalOrder.toLocaleString();
+
+    document.getElementById(
+        "totalDelivery"
+    ).innerHTML =
+    totalDelivery.toLocaleString();
+
+    document.getElementById(
+        "totalCF"
+    ).innerHTML =
+    totalCF.toFixed(2) +
+    "% Case Fill";
+
+    document.getElementById(
+        "mtCF"
+    ).innerHTML =
+    mtCF.toFixed(2) + "%";
+
+    document.getElementById(
+        "gtCF"
+    ).innerHTML =
+    gtCF.toFixed(2) + "%";
+
+    document.getElementById(
+        "mtQty"
+    ).innerHTML =
+    "MT Qty : " +
+    mtOrder.toLocaleString();
+
+    document.getElementById(
+        "gtQty"
+    ).innerHTML =
+    "GT Qty : " +
+    gtOrder.toLocaleString();
+
+    /* TABLE */
+
+    document.getElementById(
+        "channelTable"
+    ).innerHTML =
+    tableHTML;
+
+    /* CHART */
+
+    createCharts(
+        labels,
+        values,
+        totalCF
+    );
+
+}
+
+/* =========================
+CHART
+========================= */
+
+function createCharts(
+    labels,
+    values,
+    totalCF
+){
+
+    if(barChart){
+
+        barChart.destroy();
+
+    }
+
+    if(donutChart){
+
+        donutChart.destroy();
+
+    }
+
+    barChart = new Chart(
+
+        document.getElementById(
+            "barChart"
+        ),
+
+        {
+
+            type:"bar",
+
+            data:{
+
+                labels:labels,
+
+                datasets:[{
+
+                    label:"Case Fill",
+
+                    data:values
+
+                }]
+
+            }
+
+        }
+
+    );
+
+    donutChart = new Chart(
+
+        document.getElementById(
+            "donutChart"
+        ),
+
+        {
+
+            type:"doughnut",
+
+            data:{
+
+                labels:[
+                    "Delivered",
+                    "Gap"
+                ],
+
+                datasets:[{
+
+                    data:[
+                        totalCF,
+                        100-totalCF
+                    ]
+
+                }]
+
+            }
+
+        }
+
+    );
+
+}
+
+loadData();
+
 </script>
 
 </body>
