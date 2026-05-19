@@ -768,10 +768,6 @@ tbody tr:hover{
 
 Chart.register(ChartDataLabels);
 
-/* =========================
-GOOGLE SHEET
-========================= */
-
 const SPREADSHEET_ID =
 "1xTEZKFhTzaxupONEBxX0iQniYhsaMZlfEiCGEja_qTQ";
 
@@ -785,10 +781,6 @@ let DATA = [];
 
 let barChart;
 let donutChart;
-
-/* =========================
-HELPER
-========================= */
 
 function num(v){
 
@@ -825,10 +817,6 @@ function badgeClass(v){
     return "badge bad";
 
 }
-
-/* =========================
-LOAD DATA
-========================= */
 
 async function loadData(){
 
@@ -894,10 +882,6 @@ async function loadData(){
 
 }
 
-/* =========================
-FILTER
-========================= */
-
 function setupFilter(){
 
     const weeks =
@@ -925,10 +909,6 @@ function setupFilter(){
     );
 
 }
-
-/* =========================
-RENDER
-========================= */
 
 function render(week){
 
@@ -982,8 +962,6 @@ function render(week){
     ? (totalDel/totalOrd)*100
     : 0;
 
-    /* KPI */
-
     setKPI(
         "mt",
         mtCF,
@@ -1022,11 +1000,7 @@ function render(week){
     ).innerHTML =
     totalCF.toFixed(1)+"%";
 
-    /* TABLE */
-
     buildTable(rows);
-
-    /* BREAKDOWN */
 
     buildBreakdown(
         "mtBreakdown",
@@ -1037,8 +1011,6 @@ function render(week){
         "gtBreakdown",
         gt
     );
-
-    /* CHART */
 
     buildCharts(
         rows,
@@ -1088,10 +1060,6 @@ function setKPI(
     count;
 
 }
-
-/* =========================
-TABLE
-========================= */
 
 function buildTable(rows){
 
@@ -1144,10 +1112,6 @@ function buildTable(rows){
 
 }
 
-/* =========================
-BREAKDOWN
-========================= */
-
 function buildBreakdown(id,rows){
 
     let html = "";
@@ -1181,10 +1145,6 @@ function buildBreakdown(id,rows){
 
 }
 
-/* =========================
-CHART
-========================= */
-
 function buildCharts(rows,totalCF){
 
     if(barChart){
@@ -1211,6 +1171,8 @@ function buildCharts(rows,totalCF){
         ? "#7C3AED"
         : "#E53935"
     );
+
+    /* BAR CHART */
 
     barChart =
     new Chart(
@@ -1257,15 +1219,33 @@ function buildCharts(rows,totalCF){
 
                         align:'top',
 
+                        offset:6,
+
                         color:'#1E1033',
 
                         font:{
                             weight:'bold',
-                            size:11
+                            size:10
                         },
 
-                        formatter:(v)=>
-                        v.toFixed(1)+"%"
+                        formatter:(value,context)=>{
+
+                            const row =
+                            rows[
+                                context.dataIndex
+                            ];
+
+                            return [
+
+                                value.toFixed(1)+"%",
+
+                                "Qty: " +
+                                row.order
+                                .toLocaleString()
+
+                            ];
+
+                        }
 
                     }
 
@@ -1292,6 +1272,8 @@ function buildCharts(rows,totalCF){
         }
 
     );
+
+    /* DONUT CHART */
 
     donutChart =
     new Chart(
@@ -1321,7 +1303,9 @@ function buildCharts(rows,totalCF){
                     backgroundColor:[
                         "#7C3AED",
                         "#FDE2E2"
-                    ]
+                    ],
+
+                    borderWidth:0
 
                 }]
 
@@ -1334,6 +1318,10 @@ function buildCharts(rows,totalCF){
                 plugins:{
 
                     legend:{
+                        display:false
+                    },
+
+                    datalabels:{
                         display:false
                     }
 
