@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>SCM WHBC Dashboard</title>
+<title>Scarlett SCM Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -21,7 +22,7 @@
 
 body{
     font-family:'Inter',sans-serif;
-    background:#070b17;
+    background:#050816;
     color:white;
 }
 
@@ -30,74 +31,84 @@ body{
     min-height:100vh;
 }
 
-/* =========================
-SIDEBAR
-========================= */
+/* SIDEBAR */
 
 .sidebar{
     width:280px;
-    background:#0f172a;
-    padding:30px 20px;
+    background:#0b1220;
     border-right:1px solid rgba(255,255,255,0.05);
+    padding:24px;
     position:fixed;
     height:100vh;
 }
 
-.logo{
+.logo-box{
+    display:flex;
+    align-items:center;
+    gap:16px;
     margin-bottom:40px;
 }
 
-.logo h1{
-    font-size:28px;
+.logo{
+    width:56px;
+    height:56px;
+    border-radius:18px;
+    background:linear-gradient(
+        135deg,
+        #8b5cf6,
+        #ec4899
+    );
+    display:flex;
+    align-items:center;
+    justify-content:center;
     font-weight:800;
+    font-size:24px;
 }
 
-.logo p{
-    color:#94a3b8;
+.logo-text h2{
+    font-size:30px;
+}
+
+.logo-text p{
+    color:#9ca3af;
     margin-top:6px;
-    font-size:13px;
 }
 
 .menu{
     display:flex;
     flex-direction:column;
-    gap:12px;
+    gap:14px;
 }
 
 .menu-item{
-    padding:16px;
-    border-radius:14px;
+    padding:16px 18px;
+    border-radius:16px;
     cursor:pointer;
     transition:0.3s;
-    color:#cbd5e1;
+    color:#d1d5db;
 }
 
 .menu-item:hover{
-    background:#1e293b;
+    background:#111827;
 }
 
 .menu-item.active{
     background:linear-gradient(
         135deg,
-        #7c3aed,
+        #8b5cf6,
         #ec4899
     );
-    color:white;
 }
 
-/* =========================
-MAIN
-========================= */
+/* MAIN */
 
 .main{
     margin-left:280px;
     flex:1;
-    padding:30px;
+    padding:32px;
 }
 
-/* =========================
-TOPBAR
-========================= */
+/* TOPBAR */
 
 .topbar{
     display:flex;
@@ -106,14 +117,20 @@ TOPBAR
     margin-bottom:30px;
 }
 
-.topbar h2{
-    font-size:40px;
+.top-left h1{
+    font-size:58px;
     font-weight:800;
 }
 
-.topbar p{
-    color:#94a3b8;
-    margin-top:8px;
+.top-left p{
+    color:#9ca3af;
+    margin-top:10px;
+}
+
+.top-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
 }
 
 .filter-box{
@@ -123,41 +140,51 @@ TOPBAR
 }
 
 select{
-    background:none;
+    background:transparent;
     border:none;
     color:white;
-    font-size:14px;
     outline:none;
+    font-size:14px;
 }
 
-/* =========================
-KPI
-========================= */
+.status{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.dot{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:#10b981;
+    box-shadow:0 0 14px #10b981;
+}
+
+/* KPI */
 
 .kpi-grid{
     display:grid;
     grid-template-columns:
-    repeat(auto-fit,minmax(250px,1fr));
-
+        repeat(auto-fit,minmax(250px,1fr));
     gap:22px;
     margin-bottom:30px;
 }
 
 .card{
-    background:#111827;
-    border-radius:24px;
-    padding:24px;
+    background:#0b1220;
     border:1px solid rgba(255,255,255,0.05);
+    border-radius:24px;
+    padding:26px;
 }
 
 .card-title{
-    color:#94a3b8;
+    color:#9ca3af;
     margin-bottom:14px;
-    font-size:13px;
 }
 
 .card-value{
-    font-size:46px;
+    font-size:52px;
     font-weight:800;
 }
 
@@ -166,9 +193,7 @@ KPI
     color:#10b981;
 }
 
-/* =========================
-CHART
-========================= */
+/* CHART */
 
 .chart-grid{
     display:grid;
@@ -178,24 +203,22 @@ CHART
 }
 
 .chart-box{
-    background:#111827;
+    background:#0b1220;
     border-radius:24px;
-    padding:24px;
+    padding:26px;
 }
 
 .chart-title{
-    font-size:20px;
+    font-size:24px;
     margin-bottom:20px;
 }
 
-/* =========================
-TABLE
-========================= */
+/* TABLE */
 
 .table-box{
-    background:#111827;
+    background:#0b1220;
     border-radius:24px;
-    padding:24px;
+    padding:26px;
 }
 
 table{
@@ -204,14 +227,14 @@ table{
 }
 
 th{
+    color:#9ca3af;
     text-align:left;
-    color:#94a3b8;
-    padding:14px;
+    padding:16px;
     border-bottom:1px solid rgba(255,255,255,0.05);
 }
 
 td{
-    padding:14px;
+    padding:16px;
     border-bottom:1px solid rgba(255,255,255,0.03);
 }
 
@@ -219,21 +242,7 @@ td{
     color:#10b981;
 }
 
-/* =========================
-SECTION
-========================= */
-
-.section{
-    display:none;
-}
-
-.section.active{
-    display:block;
-}
-
-/* =========================
-RESPONSIVE
-========================= */
+/* RESPONSIVE */
 
 @media(max-width:1000px){
 
@@ -259,545 +268,399 @@ RESPONSIVE
 
 <div class="container">
 
-    <!-- SIDEBAR -->
+<div class="sidebar">
 
-    <div class="sidebar">
+    <div class="logo-box">
 
         <div class="logo">
-
-            <h1>SCM Dashboard</h1>
-
-            <p>
-                Scarlett Executive Monitoring
-            </p>
-
+            SC
         </div>
 
-        <div class="menu">
-
-            <div class="menu-item active"
-                 onclick="showSection('dashboard',this)">
-                 Dashboard
-            </div>
-
-            <div class="menu-item"
-                 onclick="showSection('channel',this)">
-                 Channel KPI
-            </div>
-
-            <div class="menu-item"
-                 onclick="showSection('region',this)">
-                 Region KPI
-            </div>
-
-            <div class="menu-item"
-                 onclick="showSection('loss',this)">
-                 Top Loss
-            </div>
-
+        <div class="logo-text">
+            <h2>Scarlett SCM</h2>
+            <p>Supply Chain Dashboard</p>
         </div>
 
     </div>
 
-    <!-- MAIN -->
+    <div class="menu">
 
-    <div class="main">
-
-        <div class="topbar">
-
-            <div>
-
-                <h2>Executive Dashboard</h2>
-
-                <p>
-                    SCM Performance Monitoring
-                </p>
-
-            </div>
-
-            <div class="filter-box">
-
-                <select id="weekFilter">
-                </select>
-
-            </div>
-
+        <div class="menu-item active">
+            Dashboard
         </div>
 
-        <!-- DASHBOARD -->
-
-        <div class="section active"
-             id="dashboard">
-
-            <div class="kpi-grid">
-
-                <div class="card">
-
-                    <div class="card-title">
-                        Total Order Qty
-                    </div>
-
-                    <div class="card-value"
-                         id="totalOrder">
-                         0
-                    </div>
-
-                    <div class="card-sub">
-                        Total SCM Order
-                    </div>
-
-                </div>
-
-                <div class="card">
-
-                    <div class="card-title">
-                        Total Delivery Qty
-                    </div>
-
-                    <div class="card-value"
-                         id="totalDelivery">
-                         0
-                    </div>
-
-                    <div class="card-sub"
-                         id="totalCF">
-                         0%
-                    </div>
-
-                </div>
-
-                <div class="card">
-
-                    <div class="card-title">
-                        MT Case Fill
-                    </div>
-
-                    <div class="card-value"
-                         id="mtCF">
-                         0%
-                    </div>
-
-                    <div class="card-sub"
-                         id="mtQty">
-                         MT Qty : 0
-                    </div>
-
-                </div>
-
-                <div class="card">
-
-                    <div class="card-title">
-                        GT Case Fill
-                    </div>
-
-                    <div class="card-value"
-                         id="gtCF">
-                         0%
-                    </div>
-
-                    <div class="card-sub"
-                         id="gtQty">
-                         GT Qty : 0
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- CHART -->
-
-            <div class="chart-grid">
-
-                <div class="chart-box">
-
-                    <div class="chart-title">
-                        Channel Performance
-                    </div>
-
-                    <canvas id="barChart"></canvas>
-
-                </div>
-
-                <div class="chart-box">
-
-                    <div class="chart-title">
-                        Case Fill
-                    </div>
-
-                    <canvas id="donutChart"></canvas>
-
-                </div>
-
-            </div>
-
+        <div class="menu-item">
+            Channel KPI
         </div>
 
-        <!-- CHANNEL -->
-
-        <div class="section"
-             id="channel">
-
-            <div class="table-box">
-
-                <div class="chart-title">
-                    Channel KPI
-                </div>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Channel</th>
-                            <th>Order Qty</th>
-                            <th>Delivery Qty</th>
-                            <th>Case Fill</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="channelTable">
-                    </tbody>
-
-                </table>
-
-            </div>
-
+        <div class="menu-item">
+            Region KPI
         </div>
 
-        <!-- REGION -->
-
-        <div class="section"
-             id="region">
-
-            <div class="table-box">
-
-                <div class="chart-title">
-                    Region KPI
-                </div>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Region</th>
-                            <th>Order Qty</th>
-                            <th>Delivery Qty</th>
-                            <th>Case Fill</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="regionTable">
-                    </tbody>
-
-                </table>
-
-            </div>
-
+        <div class="menu-item">
+            Product KPI
         </div>
 
-        <!-- LOSS -->
-
-        <div class="section"
-             id="loss">
-
-            <div class="table-box">
-
-                <div class="chart-title">
-                    Top Loss Product
-                </div>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Product</th>
-                            <th>Gap Qty</th>
-                            <th>Case Fill</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="lossTable">
-                    </tbody>
-
-                </table>
-
-            </div>
-
+        <div class="menu-item">
+            Top Loss
         </div>
 
     </div>
 
 </div>
 
+<div class="main">
+
+    <div class="topbar">
+
+        <div class="top-left">
+
+            <h1>Executive Dashboard</h1>
+
+            <p>
+                Realtime SCM Performance Monitoring
+            </p>
+
+        </div>
+
+        <div class="top-right">
+
+            <div class="filter-box">
+
+                <select id="weekFilter"></select>
+
+            </div>
+
+            <div class="status">
+
+                <div class="dot"></div>
+
+                <span>Connected</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- KPI -->
+
+    <div class="kpi-grid">
+
+        <div class="card">
+
+            <div class="card-title">
+                Total Order Qty
+            </div>
+
+            <div class="card-value" id="totalOrder">
+                0
+            </div>
+
+            <div class="card-sub">
+                MT + GT
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-title">
+                Delivery Qty
+            </div>
+
+            <div class="card-value" id="totalDelivery">
+                0
+            </div>
+
+            <div class="card-sub" id="caseFill">
+                0%
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-title">
+                MT Qty
+            </div>
+
+            <div class="card-value" id="mtQty">
+                0
+            </div>
+
+            <div class="card-sub">
+                Modern Trade
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-title">
+                GT Qty
+            </div>
+
+            <div class="card-value" id="gtQty">
+                0
+            </div>
+
+            <div class="card-sub">
+                General Trade
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CHART -->
+
+    <div class="chart-grid">
+
+        <div class="chart-box">
+
+            <div class="chart-title">
+                Channel Performance
+            </div>
+
+            <canvas id="barChart"></canvas>
+
+        </div>
+
+        <div class="chart-box">
+
+            <div class="chart-title">
+                Case Fill
+            </div>
+
+            <canvas id="donutChart"></canvas>
+
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
+
+    <div class="table-box">
+
+        <div class="chart-title">
+            Channel KPI
+        </div>
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Channel</th>
+                    <th>Order Qty</th>
+                    <th>Delivery Qty</th>
+                    <th>Case Fill</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="tableData">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</div>
+
 <script>
 
-/* =========================
-GOOGLE SHEET CONFIG
-========================= */
-
-const SPREADSHEET_ID =
-"1xTEZKFhTzaxupONEBxX0iQniYhsaMZlfEiCGEja_qTQ";
-
-const GID_BREAKDOWN =
-"1343041753";
-
-/* =========================
-CSV URL
-========================= */
+/* ==========================================
+GOOGLE SHEET CSV URL
+========================================== */
 
 const csvUrl =
-`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID_BREAKDOWN}`;
+"https://docs.google.com/spreadsheets/d/1xTEZKFhTzaxupONEBxX0iQniYhsaMZlfEiCGEja_qTQ/export?format=csv&gid=0";
 
-/* =========================
-GLOBAL
-========================= */
-
-let dashboardData = [];
+/* ==========================================
+GLOBAL CHART
+========================================== */
 
 let barChart;
 let donutChart;
 
-/* =========================
-SHOW SECTION
-========================= */
-
-function showSection(id,el){
-
-    document
-    .querySelectorAll(".section")
-    .forEach(sec=>{
-
-        sec.classList.remove("active");
-
-    });
-
-    document
-    .querySelectorAll(".menu-item")
-    .forEach(item=>{
-
-        item.classList.remove("active");
-
-    });
-
-    document
-    .getElementById(id)
-    .classList.add("active");
-
-    el.classList.add("active");
-
-}
-
-/* =========================
-NUMBER FORMAT
-========================= */
-
-function num(v){
-
-    return parseFloat(
-        String(v)
-        .replace(/,/g,"")
-        .replace("%","")
-    ) || 0;
-
-}
-
-/* =========================
+/* ==========================================
 LOAD DATA
-========================= */
+========================================== */
 
 async function loadData(){
 
-    const res =
-    await fetch(csvUrl);
+    try{
 
-    const csv =
-    await res.text();
+        const response =
+        await fetch(csvUrl);
 
-    const rows =
-    csv.split("\n")
-    .slice(1);
+        const csv =
+        await response.text();
 
-    dashboardData = [];
+        const rows =
+        csv.split("\n")
+        .slice(1);
 
-    rows.forEach(r=>{
+        let data = [];
 
-        const c =
-        r.split(",");
+        rows.forEach(row=>{
 
-        if(c.length >= 6){
+            const cols =
+            row.split(",");
 
-            dashboardData.push({
+            if(cols.length >= 6){
 
-                week:
-                c[0]
-                .replace(/"/g,''),
+                data.push({
 
-                channel:
-                c[1]
-                .replace(/"/g,''),
+                    week:
+                    cols[0]
+                    .replace(/"/g,''),
 
-                orderQty:
-                num(c[4]),
+                    channel:
+                    cols[1]
+                    .replace(/"/g,''),
 
-                deliveryQty:
-                num(c[5]),
+                    orderQty:
+                    Number(cols[2]),
 
-                gapQty:
-                num(c[6]),
+                    deliveryQty:
+                    Number(cols[3]),
 
-                caseFill:
-                num(c[7])
+                    gap:
+                    Number(cols[4]),
 
-            });
+                    caseFill:
+                    parseFloat(cols[5])
 
-        }
+                });
 
-    });
+            }
 
-    setupWeekFilter();
+        });
+
+        setupFilter(data);
+
+    }catch(error){
+
+        console.log(error);
+
+        alert(
+            "Failed load Google Sheet"
+        );
+
+    }
 
 }
 
-/* =========================
-WEEK FILTER
-========================= */
+/* ==========================================
+FILTER
+========================================== */
 
-function setupWeekFilter(){
+function setupFilter(data){
 
-    const weeks =
-    [...new Set(
-        dashboardData.map(d=>d.week)
-    )];
-
-    const filter =
+    const weekFilter =
     document.getElementById(
         "weekFilter"
     );
 
-    filter.innerHTML = "";
+    const weeks =
+    [...new Set(
+        data.map(d=>d.week)
+    )];
 
-    weeks.forEach(w=>{
+    weekFilter.innerHTML = "";
 
-        filter.innerHTML +=
-        `<option value="${w}">
-            ${w}
+    weeks.forEach(week=>{
+
+        weekFilter.innerHTML +=
+        `<option value="${week}">
+            ${week}
         </option>`;
 
     });
 
     renderDashboard(
+        data,
         weeks[0]
     );
 
-    filter.addEventListener(
+    weekFilter.addEventListener(
         "change",
         ()=>{
-
             renderDashboard(
-                filter.value
+                data,
+                weekFilter.value
             );
-
         }
     );
 
 }
 
-/* =========================
+/* ==========================================
 RENDER DASHBOARD
-========================= */
+========================================== */
 
-function renderDashboard(week){
+function renderDashboard(
+    data,
+    selectedWeek
+){
 
-    const data =
-    dashboardData.filter(
-        d=>d.week === week
+    const filtered =
+    data.filter(
+        d=>d.week === selectedWeek
     );
 
     let totalOrder = 0;
     let totalDelivery = 0;
 
-    let mtOrder = 0;
-    let mtDelivery = 0;
-
-    let gtOrder = 0;
-    let gtDelivery = 0;
+    let mtQty = 0;
+    let gtQty = 0;
 
     let labels = [];
     let values = [];
 
     let tableHTML = "";
 
-    data.forEach(d=>{
+    filtered.forEach(item=>{
 
-        totalOrder += d.orderQty;
-        totalDelivery += d.deliveryQty;
+        totalOrder += item.orderQty;
+        totalDelivery += item.deliveryQty;
 
-        labels.push(d.channel);
-        values.push(d.caseFill);
+        labels.push(item.channel);
 
-        if(d.channel === "MT"){
+        values.push(item.caseFill);
 
-            mtOrder += d.orderQty;
-            mtDelivery += d.deliveryQty;
-
+        if(item.channel === "MT"){
+            mtQty = item.orderQty;
         }
 
-        if(d.channel === "GT"){
-
-            gtOrder += d.orderQty;
-            gtDelivery += d.deliveryQty;
-
+        if(item.channel === "GT"){
+            gtQty = item.orderQty;
         }
 
         tableHTML += `
         <tr>
-
-            <td>${d.channel}</td>
-
-            <td>
-                ${d.orderQty.toLocaleString()}
-            </td>
-
-            <td>
-                ${d.deliveryQty.toLocaleString()}
-            </td>
-
+            <td>${item.channel}</td>
+            <td>${item.orderQty.toLocaleString()}</td>
+            <td>${item.deliveryQty.toLocaleString()}</td>
             <td class="good">
-                ${d.caseFill.toFixed(2)}%
+                ${item.caseFill}%
             </td>
-
         </tr>
         `;
 
     });
 
-    const totalCF =
-    totalOrder
-    ? (totalDelivery / totalOrder) * 100
-    : 0;
-
-    const mtCF =
-    mtOrder
-    ? (mtDelivery / mtOrder) * 100
-    : 0;
-
-    const gtCF =
-    gtOrder
-    ? (gtDelivery / gtOrder) * 100
-    : 0;
-
-    /* KPI */
+    const finalCF =
+    (
+        totalDelivery /
+        totalOrder
+    ) * 100;
 
     document.getElementById(
         "totalOrder"
@@ -810,78 +673,56 @@ function renderDashboard(week){
     totalDelivery.toLocaleString();
 
     document.getElementById(
-        "totalCF"
-    ).innerHTML =
-    totalCF.toFixed(2) +
-    "% Case Fill";
-
-    document.getElementById(
-        "mtCF"
-    ).innerHTML =
-    mtCF.toFixed(2) + "%";
-
-    document.getElementById(
-        "gtCF"
-    ).innerHTML =
-    gtCF.toFixed(2) + "%";
-
-    document.getElementById(
         "mtQty"
     ).innerHTML =
-    "MT Qty : " +
-    mtOrder.toLocaleString();
+    mtQty.toLocaleString();
 
     document.getElementById(
         "gtQty"
     ).innerHTML =
-    "GT Qty : " +
-    gtOrder.toLocaleString();
-
-    /* TABLE */
+    gtQty.toLocaleString();
 
     document.getElementById(
-        "channelTable"
+        "caseFill"
+    ).innerHTML =
+    finalCF.toFixed(2) +
+    "% Case Fill";
+
+    document.getElementById(
+        "tableData"
     ).innerHTML =
     tableHTML;
-
-    /* CHART */
 
     createCharts(
         labels,
         values,
-        totalCF
+        finalCF
     );
 
 }
 
-/* =========================
+/* ==========================================
 CHART
-========================= */
+========================================== */
 
 function createCharts(
     labels,
     values,
-    totalCF
+    finalCF
 ){
 
     if(barChart){
-
         barChart.destroy();
-
     }
 
     if(donutChart){
-
         donutChart.destroy();
-
     }
 
     barChart = new Chart(
-
         document.getElementById(
             "barChart"
         ),
-
         {
 
             type:"bar",
@@ -897,19 +738,15 @@ function createCharts(
                     data:values
 
                 }]
-
             }
 
         }
-
     );
 
     donutChart = new Chart(
-
         document.getElementById(
             "donutChart"
         ),
-
         {
 
             type:"doughnut",
@@ -924,16 +761,14 @@ function createCharts(
                 datasets:[{
 
                     data:[
-                        totalCF,
-                        100-totalCF
+                        finalCF,
+                        100-finalCF
                     ]
 
                 }]
-
             }
 
         }
-
     );
 
 }
