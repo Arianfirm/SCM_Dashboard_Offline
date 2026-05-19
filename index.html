@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Scarlett SCM Dashboard</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -20,7 +21,7 @@
 
 body{
     font-family:'Inter',sans-serif;
-    background:#0b1020;
+    background:#050816;
     color:white;
     overflow-x:hidden;
 }
@@ -36,9 +37,12 @@ SIDEBAR
 
 .sidebar{
     width:280px;
-    background:#111827;
-    padding:30px 20px;
+    background:#0b1220;
     border-right:1px solid rgba(255,255,255,0.05);
+    padding:24px;
+    position:fixed;
+    height:100vh;
+    overflow-y:auto;
 }
 
 .logo-box{
@@ -49,62 +53,72 @@ SIDEBAR
 }
 
 .logo{
-    width:54px;
-    height:54px;
-    border-radius:16px;
-    background:linear-gradient(135deg,#ff77ff,#8b5cf6);
+    width:56px;
+    height:56px;
+    border-radius:18px;
+    background:linear-gradient(
+        135deg,
+        #8b5cf6,
+        #ec4899
+    );
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:22px;
-    font-weight:700;
+    font-weight:800;
+    font-size:24px;
 }
 
 .logo-text h2{
-    font-size:24px;
+    font-size:30px;
 }
 
 .logo-text p{
     color:#9ca3af;
-    margin-top:4px;
+    margin-top:6px;
+    line-height:1.4;
 }
 
 .menu{
     display:flex;
     flex-direction:column;
-    gap:12px;
+    gap:14px;
 }
 
 .menu-item{
-    padding:14px 18px;
-    border-radius:14px;
+    padding:16px 18px;
+    border-radius:16px;
     cursor:pointer;
     transition:0.3s;
     color:#d1d5db;
+    font-weight:500;
 }
 
 .menu-item:hover{
-    background:#1f2937;
+    background:#111827;
 }
 
 .menu-item.active{
     background:linear-gradient(
         135deg,
-        #7c3aed,
+        #8b5cf6,
         #ec4899
     );
-
     color:white;
 }
 
 /* =========================
-MAIN CONTENT
+MAIN
 ========================= */
 
 .main{
+    margin-left:280px;
     flex:1;
-    padding:30px;
+    padding:32px;
 }
+
+/* =========================
+TOPBAR
+========================= */
 
 .topbar{
     display:flex;
@@ -113,13 +127,34 @@ MAIN CONTENT
     margin-bottom:30px;
 }
 
-.topbar h1{
-    font-size:32px;
+.top-left h1{
+    font-size:52px;
+    font-weight:800;
 }
 
-.topbar p{
+.top-left p{
     color:#9ca3af;
-    margin-top:6px;
+    margin-top:10px;
+}
+
+.top-right{
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+
+.filter-box{
+    background:#111827;
+    border-radius:14px;
+    padding:12px 18px;
+}
+
+select{
+    background:transparent;
+    border:none;
+    color:white;
+    font-size:14px;
+    outline:none;
 }
 
 .status{
@@ -133,26 +168,26 @@ MAIN CONTENT
     height:12px;
     border-radius:50%;
     background:#10b981;
-    box-shadow:0 0 15px #10b981;
+    box-shadow:0 0 14px #10b981;
 }
 
 /* =========================
-KPI CARD
+KPI
 ========================= */
 
 .kpi-grid{
     display:grid;
     grid-template-columns:
-        repeat(auto-fit,minmax(220px,1fr));
+        repeat(auto-fit,minmax(250px,1fr));
     gap:22px;
     margin-bottom:30px;
 }
 
 .card{
-    background:#111827;
-    padding:24px;
-    border-radius:24px;
+    background:#0b1220;
     border:1px solid rgba(255,255,255,0.05);
+    border-radius:26px;
+    padding:26px;
     transition:0.3s;
 }
 
@@ -162,12 +197,12 @@ KPI CARD
 
 .card-title{
     color:#9ca3af;
-    margin-bottom:12px;
+    margin-bottom:16px;
 }
 
 .card-value{
-    font-size:36px;
-    font-weight:700;
+    font-size:48px;
+    font-weight:800;
 }
 
 .card-sub{
@@ -176,7 +211,7 @@ KPI CARD
 }
 
 /* =========================
-CHART SECTION
+CHARTS
 ========================= */
 
 .chart-grid{
@@ -187,14 +222,14 @@ CHART SECTION
 }
 
 .chart-box{
-    background:#111827;
-    border-radius:24px;
-    padding:24px;
+    background:#0b1220;
+    border-radius:26px;
+    padding:26px;
 }
 
 .chart-title{
+    font-size:24px;
     margin-bottom:20px;
-    font-size:20px;
 }
 
 /* =========================
@@ -202,9 +237,9 @@ TABLE
 ========================= */
 
 .table-box{
-    background:#111827;
-    border-radius:24px;
-    padding:24px;
+    background:#0b1220;
+    border-radius:26px;
+    padding:26px;
 }
 
 table{
@@ -212,26 +247,36 @@ table{
     border-collapse:collapse;
 }
 
-th,td{
-    padding:16px;
-    text-align:left;
-}
-
 th{
+    text-align:left;
     color:#9ca3af;
+    padding:16px;
     border-bottom:1px solid rgba(255,255,255,0.05);
 }
 
-tr{
+td{
+    padding:16px;
     border-bottom:1px solid rgba(255,255,255,0.03);
+}
+
+.good{
+    color:#10b981;
 }
 
 .bad{
     color:#ef4444;
 }
 
-.good{
-    color:#10b981;
+/* =========================
+SECTION
+========================= */
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
 }
 
 /* =========================
@@ -240,17 +285,22 @@ RESPONSIVE
 
 @media(max-width:1000px){
 
-    .chart-grid{
-        grid-template-columns:1fr;
-    }
-
     .sidebar{
         display:none;
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .chart-grid{
+        grid-template-columns:1fr;
     }
 
 }
 
 </style>
+
 </head>
 
 <body>
@@ -258,6 +308,7 @@ RESPONSIVE
 <div class="container">
 
     <!-- SIDEBAR -->
+
     <div class="sidebar">
 
         <div class="logo-box">
@@ -275,24 +326,29 @@ RESPONSIVE
 
         <div class="menu">
 
-            <div class="menu-item active">
-                Dashboard
+            <div class="menu-item active"
+                 onclick="showSection('dashboard',this)">
+                 Dashboard
             </div>
 
-            <div class="menu-item">
-                Channel KPI
+            <div class="menu-item"
+                 onclick="showSection('channel',this)">
+                 Channel KPI
             </div>
 
-            <div class="menu-item">
-                Region KPI
+            <div class="menu-item"
+                 onclick="showSection('region',this)">
+                 Region KPI
             </div>
 
-            <div class="menu-item">
-                Product KPI
+            <div class="menu-item"
+                 onclick="showSection('product',this)">
+                 Product KPI
             </div>
 
-            <div class="menu-item">
-                Top Loss
+            <div class="menu-item"
+                 onclick="showSection('loss',this)">
+                 Top Loss
             </div>
 
         </div>
@@ -300,162 +356,315 @@ RESPONSIVE
     </div>
 
     <!-- MAIN -->
+
     <div class="main">
+
+        <!-- TOPBAR -->
 
         <div class="topbar">
 
-            <div>
+            <div class="top-left">
                 <h1>Executive Dashboard</h1>
                 <p>Realtime SCM Performance Monitoring</p>
             </div>
 
-            <div class="status">
-                <div class="dot"></div>
-                <span>Connected</span>
-            </div>
+            <div class="top-right">
 
-        </div>
+                <div class="filter-box">
 
-        <!-- KPI -->
-        <div class="kpi-grid">
+                    <select id="weekFilter">
 
-            <div class="card">
+                        <option>2026-W19</option>
+                        <option>2026-W20</option>
+                        <option>2026-W21</option>
 
-                <div class="card-title">
-                    Total Order Qty
+                    </select>
+
                 </div>
 
-                <div class="card-value">
-                    1.24M
-                </div>
-
-                <div class="card-sub">
-                    +12%
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-title">
-                    Delivery Qty
-                </div>
-
-                <div class="card-value">
-                    1.18M
-                </div>
-
-                <div class="card-sub">
-                    95.2% Case Fill
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-title">
-                    Top Region
-                </div>
-
-                <div class="card-value">
-                    JABO
-                </div>
-
-                <div class="card-sub">
-                    98.1%
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-title">
-                    Loss Product
-                </div>
-
-                <div class="card-value">
-                    127
-                </div>
-
-                <div class="card-sub bad">
-                    Critical
+                <div class="status">
+                    <div class="dot"></div>
+                    <span>Connected</span>
                 </div>
 
             </div>
 
         </div>
 
-        <!-- CHART -->
-        <div class="chart-grid">
+        <!-- DASHBOARD -->
 
-            <div class="chart-box">
+        <div class="section active" id="dashboard">
+
+            <div class="kpi-grid">
+
+                <div class="card">
+                    <div class="card-title">
+                        Total Order Qty
+                    </div>
+
+                    <div class="card-value">
+                        1.24M
+                    </div>
+
+                    <div class="card-sub">
+                        +12%
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        Delivery Qty
+                    </div>
+
+                    <div class="card-value">
+                        1.18M
+                    </div>
+
+                    <div class="card-sub">
+                        95.2% Case Fill
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        Top Region
+                    </div>
+
+                    <div class="card-value">
+                        JABO
+                    </div>
+
+                    <div class="card-sub">
+                        98.1%
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        Top Loss Product
+                    </div>
+
+                    <div class="card-value">
+                        127
+                    </div>
+
+                    <div class="card-sub bad">
+                        Critical
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CHARTS -->
+
+            <div class="chart-grid">
+
+                <div class="chart-box">
+
+                    <div class="chart-title">
+                        Channel Performance
+                    </div>
+
+                    <canvas id="barChart"></canvas>
+
+                </div>
+
+                <div class="chart-box">
+
+                    <div class="chart-title">
+                        Case Fill
+                    </div>
+
+                    <canvas id="donutChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CHANNEL -->
+
+        <div class="section" id="channel">
+
+            <div class="table-box">
 
                 <div class="chart-title">
-                    Channel Performance
+                    Channel KPI
                 </div>
 
-                <canvas id="barChart"></canvas>
+                <table>
 
-            </div>
+                    <thead>
 
-            <div class="chart-box">
+                        <tr>
+                            <th>Channel</th>
+                            <th>Order Qty</th>
+                            <th>Delivery Qty</th>
+                            <th>Case Fill</th>
+                        </tr>
 
-                <div class="chart-title">
-                    Case Fill
-                </div>
+                    </thead>
 
-                <canvas id="donutChart"></canvas>
+                    <tbody>
+
+                        <tr>
+                            <td>MT</td>
+                            <td>920,000</td>
+                            <td>890,000</td>
+                            <td class="good">96.7%</td>
+                        </tr>
+
+                        <tr>
+                            <td>GT</td>
+                            <td>340,000</td>
+                            <td>310,000</td>
+                            <td class="good">91.2%</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
 
             </div>
 
         </div>
 
-        <!-- TABLE -->
-        <div class="table-box">
+        <!-- REGION -->
 
-            <div class="chart-title">
-                Top Loss Product
+        <div class="section" id="region">
+
+            <div class="table-box">
+
+                <div class="chart-title">
+                    Region KPI
+                </div>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Region</th>
+                            <th>Order Qty</th>
+                            <th>Delivery Qty</th>
+                            <th>Case Fill</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>JABO</td>
+                            <td>480,000</td>
+                            <td>470,000</td>
+                            <td class="good">97.9%</td>
+                        </tr>
+
+                        <tr>
+                            <td>SUMBAGUT</td>
+                            <td>210,000</td>
+                            <td>199,000</td>
+                            <td class="good">94.7%</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
             </div>
 
-            <table>
+        </div>
 
-                <thead>
+        <!-- PRODUCT -->
 
-                    <tr>
-                        <th>Product</th>
-                        <th>Region</th>
-                        <th>Gap</th>
-                        <th>Case Fill</th>
-                    </tr>
+        <div class="section" id="product">
 
-                </thead>
+            <div class="table-box">
 
-                <tbody>
+                <div class="chart-title">
+                    Product KPI
+                </div>
 
-                    <tr>
-                        <td>Scarlett Brightly Serum</td>
-                        <td>JABO</td>
-                        <td class="bad">12,400</td>
-                        <td class="good">94.1%</td>
-                    </tr>
+                <table>
 
-                    <tr>
-                        <td>Body Lotion</td>
-                        <td>SUMBAGUT</td>
-                        <td class="bad">8,120</td>
-                        <td class="good">95.8%</td>
-                    </tr>
+                    <thead>
 
-                    <tr>
-                        <td>Acne Serum</td>
-                        <td>JATIM</td>
-                        <td class="bad">6,921</td>
-                        <td class="good">96.2%</td>
-                    </tr>
+                        <tr>
+                            <th>Product</th>
+                            <th>Gap</th>
+                            <th>Case Fill</th>
+                        </tr>
 
-                </tbody>
+                    </thead>
 
-            </table>
+                    <tbody>
+
+                        <tr>
+                            <td>Body Lotion</td>
+                            <td class="bad">12,400</td>
+                            <td class="good">95.1%</td>
+                        </tr>
+
+                        <tr>
+                            <td>Acne Serum</td>
+                            <td class="bad">8,100</td>
+                            <td class="good">94.2%</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- LOSS -->
+
+        <div class="section" id="loss">
+
+            <div class="table-box">
+
+                <div class="chart-title">
+                    Top Loss Product
+                </div>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Product</th>
+                            <th>Region</th>
+                            <th>Gap</th>
+                            <th>Case Fill</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Brightly Serum</td>
+                            <td>JABO</td>
+                            <td class="bad">18,000</td>
+                            <td class="good">93.2%</td>
+                        </tr>
+
+                        <tr>
+                            <td>Acne Gel</td>
+                            <td>JATIM</td>
+                            <td class="bad">11,000</td>
+                            <td class="good">94.7%</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 
@@ -465,39 +674,94 @@ RESPONSIVE
 
 <script>
 
-// BAR CHART
+/* =========================
+SIDEBAR NAVIGATION
+========================= */
+
+function showSection(id,el){
+
+    document.querySelectorAll(
+        ".section"
+    ).forEach(section=>{
+
+        section.classList.remove(
+            "active"
+        );
+
+    });
+
+    document.querySelectorAll(
+        ".menu-item"
+    ).forEach(item=>{
+
+        item.classList.remove(
+            "active"
+        );
+
+    });
+
+    document.getElementById(id)
+    .classList.add("active");
+
+    el.classList.add("active");
+
+}
+
+/* =========================
+BAR CHART
+========================= */
 
 new Chart(
     document.getElementById("barChart"),
     {
         type:"bar",
+
         data:{
+
             labels:[
                 "MT",
                 "GT",
                 "E-Commerce"
             ],
+
             datasets:[{
+
                 label:"Case Fill",
-                data:[98,95,97]
+
+                data:[
+                    97,
+                    94,
+                    96
+                ]
+
             }]
         }
     }
 );
 
-// DONUT CHART
+/* =========================
+DONUT CHART
+========================= */
 
 new Chart(
     document.getElementById("donutChart"),
     {
         type:"doughnut",
+
         data:{
+
             labels:[
                 "Delivered",
                 "Gap"
             ],
+
             datasets:[{
-                data:[95,5]
+
+                data:[
+                    95,
+                    5
+                ]
+
             }]
         }
     }
