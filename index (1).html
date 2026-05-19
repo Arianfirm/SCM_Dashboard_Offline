@@ -1,345 +1,150 @@
+# Fixed SCM Dashboard (GitHub Pages Safe)
+
+Copy FULL code below into `index.html`
+
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-<title>SCM Offline Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCM Dashboard</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 
-:root{
-  --bg:#070b11;
-  --card:#121824;
-  --card2:#1a2233;
-  --border:#253047;
-  --text:#f3f6ff;
-  --muted:#8b97b3;
-
-  --good:#22c55e;
-  --warn:#f59e0b;
-  --bad:#ef4444;
-
-  --blue:#3b82f6;
-  --purple:#8b5cf6;
-
-  --radius:18px;
-}
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
 body{
-  background:var(--bg);
-  color:var(--text);
+  margin:0;
+  background:#0b1020;
+  color:white;
   font-family:'Outfit',sans-serif;
-  min-height:100vh;
 }
 
-.wrap{
+.container{
   max-width:1400px;
   margin:auto;
   padding:30px;
 }
 
-header{
+.header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:28px;
-  flex-wrap:wrap;
-  gap:20px;
+  margin-bottom:30px;
 }
 
-.logo{
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-
-.logo-icon{
-  width:48px;
-  height:48px;
-  border-radius:14px;
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:800;
-  font-size:20px;
-}
-
-.logo h1{
-  font-size:24px;
-}
-
-.logo p{
-  color:var(--muted);
-  font-size:13px;
+.title{
+  font-size:32px;
+  font-weight:700;
 }
 
 .status{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.dot{
-  width:10px;
-  height:10px;
-  border-radius:50%;
-}
-
-.loading{
-  background:var(--warn);
-  animation:pulse 1s infinite;
-}
-
-.ready{
-  background:var(--good);
-}
-
-.error{
-  background:var(--bad);
-}
-
-@keyframes pulse{
-  0%{opacity:1}
-  50%{opacity:.4}
-  100%{opacity:1}
-}
-
-.tabs{
-  display:flex;
-  gap:10px;
-  margin-bottom:30px;
-  flex-wrap:wrap;
-}
-
-.tab{
-  border:none;
-  padding:12px 18px;
-  border-radius:12px;
-  background:var(--card);
-  color:var(--muted);
-  cursor:pointer;
-  font-weight:600;
-  transition:.2s;
-}
-
-.tab.active{
-  background:var(--card2);
-  color:white;
-  border:1px solid var(--border);
-}
-
-.panel{
-  display:none;
-}
-
-.panel.active{
-  display:block;
-}
-
-.hero-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  gap:18px;
-  margin-bottom:30px;
-}
-
-.hero{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:24px;
-}
-
-.hero h2{
-  font-size:15px;
-  color:var(--muted);
-  margin-bottom:14px;
-}
-
-.big{
-  font-size:56px;
-  font-weight:800;
-}
-
-.good-text{
-  color:var(--good);
-}
-
-.warn-text{
-  color:var(--warn);
-}
-
-.bad-text{
-  color:var(--bad);
-}
-
-.progress{
-  height:10px;
-  background:#222d42;
-  border-radius:999px;
-  overflow:hidden;
-  margin:20px 0;
-}
-
-.progress-fill{
-  height:100%;
-  border-radius:999px;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-
-.stat{
-  background:var(--card2);
-  border-radius:12px;
-  padding:12px;
-}
-
-.stat small{
-  color:var(--muted);
-  display:block;
-  margin-bottom:4px;
-}
-
-.stat strong{
-  font-size:15px;
+  font-size:14px;
+  color:#94a3b8;
 }
 
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:14px;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:16px;
 }
 
 .card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:18px;
+  background:#131c31;
+  border:1px solid #24304d;
+  border-radius:18px;
+  padding:20px;
 }
 
-.card h3{
+.label{
   font-size:14px;
-  margin-bottom:12px;
-}
-
-.card .value{
-  font-size:34px;
-  font-weight:800;
+  color:#94a3b8;
   margin-bottom:10px;
 }
 
-.bar{
-  height:6px;
-  background:#202a3d;
-  border-radius:999px;
-  overflow:hidden;
-  margin-bottom:14px;
+.big{
+  font-size:42px;
+  font-weight:800;
 }
 
-.bar-fill{
+.good{color:#22c55e;}
+.warn{color:#f59e0b;}
+.bad{color:#ef4444;}
+
+.bar{
+  height:8px;
+  background:#1e293b;
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:14px;
+}
+
+.fill{
   height:100%;
 }
 
-.mini-stats{
+.stats{
   display:flex;
   justify-content:space-between;
-  gap:10px;
-  font-size:12px;
-  color:var(--muted);
+  margin-top:18px;
+  font-size:13px;
+  color:#cbd5e1;
 }
 
 .table-wrap{
+  margin-top:30px;
   overflow:auto;
-  background:var(--card);
   border-radius:18px;
-  border:1px solid var(--border);
+  border:1px solid #24304d;
 }
 
-table{
+.table{
   width:100%;
   border-collapse:collapse;
+  background:#131c31;
 }
 
-th{
-  background:var(--card2);
+.table th{
+  background:#1b2742;
   padding:14px;
   text-align:left;
-  font-size:12px;
 }
 
-td{
+.table td{
   padding:14px;
-  border-top:1px solid var(--border);
-  font-size:13px;
-}
-
-@media(max-width:700px){
-
-  .wrap{
-    padding:18px;
-  }
-
-  .big{
-    font-size:42px;
-  }
-
+  border-top:1px solid #24304d;
 }
 
 </style>
 </head>
-
 <body>
 
-<div class="wrap">
+<div class="container">
 
-<header>
-
-<div class="logo">
-<div class="logo-icon">S</div>
-
-<div>
-<h1>SCM Dashboard</h1>
-<p>Offline KPI Dashboard</p>
-</div>
+<div class="header">
+  <div class="title">SCM Dashboard</div>
+  <div class="status" id="status">Loading...</div>
 </div>
 
-<div class="status">
-<div class="dot loading" id="statusDot"></div>
-<div id="statusText">Loading data...</div>
+<div class="grid" id="cards"></div>
+
+<div class="table-wrap">
+<table class="table">
+<thead>
+<tr>
+<th>Product</th>
+<th>Order Qty</th>
+<th>Delivered Qty</th>
+<th>Gap</th>
+<th>CFR</th>
+</tr>
+</thead>
+<tbody id="lossBody"></tbody>
+</table>
 </div>
-
-</header>
-
-<div class="tabs">
-
-<button class="tab active" data-tab="overview">Overview</button>
-<button class="tab" data-tab="channel">Channel</button>
-<button class="tab" data-tab="region">Region</button>
-<button class="tab" data-tab="loss">Loss Product</button>
-
-</div>
-
-<div class="panel active" id="overview"></div>
-<div class="panel" id="channel"></div>
-<div class="panel" id="region"></div>
-<div class="panel" id="loss"></div>
 
 </div>
 
@@ -347,404 +152,145 @@ td{
 
 const URLS = {
 
-kpi:
-'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0R5bDicm8BTQO2RxYfH35W8ABtobSTa1vxYmJL6TjjYrgMJeV7ArEgY6yQdgONlt-WnVKKhWFC01L/pub?gid=1299195614&single=true&output=csv',
+channel: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0R5bDicm8BTQO2RxYfH35W8ABtobSTa1vxYmJL6TjjYrgMJeV7ArEgY6yQdgONlt-WnVKKhWFC01L/pub?gid=1855238933&single=true&output=csv',
 
-channel:
-'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0R5bDicm8BTQO2RxYfH35W8ABtobSTa1vxYmJL6TjjYrgMJeV7ArEgY6yQdgONlt-WnVKKhWFC01L/pub?gid=1855238933&single=true&output=csv',
-
-region:
-'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0R5bDicm8BTQO2RxYfH35W8ABtobSTa1vxYmJL6TjjYrgMJeV7ArEgY6yQdgONlt-WnVKKhWFC01L/pub?gid=1912905222&single=true&output=csv',
-
-loss:
-'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0R5bDicm8BTQO2RxYfH35W8ABtobSTa1vxYmJL6TjjYrgMJeV7ArEgY6yQdgONlt-WnVKKhWFC01L/pub?gid=1012894464&single=true&output=csv'
+loss: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0R5bDicm8BTQO2RxYfH35W8ABtobSTa1vxYmJL6TjjYrgMJeV7ArEgY6yQdgONlt-WnVKKhWFC01L/pub?gid=1012894464&single=true&output=csv'
 
 };
 
-const F = new Intl.NumberFormat('id-ID');
-
-function num(v){
-
-const n = parseFloat(
-String(v || '0')
-.replace(/,/g,'')
-);
-
-return isNaN(n) ? 0 : n;
-
-}
-
-function colorClass(v){
-
-if(v >= 95) return 'good-text';
-if(v >= 85) return 'warn-text';
-
-return 'bad-text';
-
-}
-
-function color(v){
-
-if(v >= 95) return '#22c55e';
-if(v >= 85) return '#f59e0b';
-
-return '#ef4444';
-
-}
-
 function parseCSV(text){
 
-const rows = [];
-const lines = text.trim().split('\n');
+  const lines = text.trim().split('\n');
 
-if(!lines.length) return [];
+  const headers = lines[0]
+    .split(',')
+    .map(h => h.replace(/\r/g,'').trim());
 
-const headers = lines[0]
-.split(',')
-.map(h => h.replace(/"/g,'').trim());
+  const rows = [];
 
-for(let i=1;i<lines.length;i++){
+  for(let i=1;i<lines.length;i++){
 
-const current = lines[i];
+    const line = lines[i].trim();
 
-if(!current.trim()) continue;
+    if(!line) continue;
 
-const values =
-current.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+    const values = line
+      .split(',')
+      .map(v => v.replace(/\r/g,'').trim());
 
-const row = {};
+    const row = {};
 
-headers.forEach((h,index)=>{
+    headers.forEach((h,index)=>{
+      row[h] = values[index] || '';
+    });
 
-row[h] = (values[index] || '')
-.replace(/^"|"$/g,'')
-.trim();
+    rows.push(row);
+  }
 
-});
-
-rows.push(row);
-
+  return rows;
 }
 
-return rows;
-
+function num(v){
+  const n = parseFloat(String(v).replace(/,/g,''));
+  return isNaN(n) ? 0 : n;
 }
 
-async function fetchCSV(url){
+function getColor(v){
 
-const res = await fetch(
-url + '&t=' + Date.now()
-);
+  if(v >= 95) return '#22c55e';
+  if(v >= 85) return '#f59e0b';
 
-const text = await res.text();
-
-return parseCSV(text);
-
+  return '#ef4444';
 }
 
-function renderHero(name,cfr,qty,delivered){
+function getClass(v){
 
-const gap = qty - delivered;
+  if(v >= 95) return 'good';
+  if(v >= 85) return 'warn';
 
-return `
-<div class="hero">
-
-<h2>${name}</h2>
-
-<div class="big ${colorClass(cfr)}">
-${cfr.toFixed(2)}%
-</div>
-
-<div class="progress">
-<div 
-class="progress-fill"
-style="
-width:${Math.min(cfr,100)}%;
-background:${color(cfr)};
-">
-</div>
-</div>
-
-<div class="stats">
-
-<div class="stat">
-<small>Order</small>
-<strong>${F.format(qty)}</strong>
-</div>
-
-<div class="stat">
-<small>Delivered</small>
-<strong>${F.format(delivered)}</strong>
-</div>
-
-<div class="stat">
-<small>Gap</small>
-<strong>${F.format(gap)}</strong>
-</div>
-
-</div>
-
-</div>
-`;
-
+  return 'bad';
 }
 
-function renderMini(name,cfr,qty,delivered){
+async function getCSV(url){
 
-const gap = qty - delivered;
+  const res = await fetch(url + '&t=' + Date.now());
 
-return `
-<div class="card">
+  if(!res.ok){
+    throw new Error('Failed fetch');
+  }
 
-<h3>${name}</h3>
+  const text = await res.text();
 
-<div class="value ${colorClass(cfr)}">
-${cfr.toFixed(2)}%
-</div>
-
-<div class="bar">
-<div 
-class="bar-fill"
-style="
-width:${Math.min(cfr,100)}%;
-background:${color(cfr)};
-">
-</div>
-</div>
-
-<div class="mini-stats">
-
-<div>
-Order<br>
-<strong>${F.format(qty)}</strong>
-</div>
-
-<div>
-Delivered<br>
-<strong>${F.format(delivered)}</strong>
-</div>
-
-<div>
-Gap<br>
-<strong>${F.format(gap)}</strong>
-</div>
-
-</div>
-
-</div>
-`;
-
+  return parseCSV(text);
 }
 
 async function loadDashboard(){
 
-try{
+  try{
 
-document.getElementById('statusDot').className = 'dot loading';
-document.getElementById('statusText').innerText = 'Loading data...';
+    document.getElementById('status').innerText = 'Loading data...';
 
-const [
-kpi,
-channel,
-region,
-loss
-] = await Promise.all([
+    const channelData = await getCSV(URLS.channel);
+    const lossData = await getCSV(URLS.loss);
 
-fetchCSV(URLS.kpi),
-fetchCSV(URLS.channel),
-fetchCSV(URLS.region),
-fetchCSV(URLS.loss)
+    const cards = document.getElementById('cards');
 
-]);
+    let html = '';
 
-const kpiRow = kpi[0] || {};
+    channelData.forEach(r => {
 
-const mtQty = num(kpiRow['Order Qty']);
-const mtDelivered = num(kpiRow['Delivered Qty']);
+      const qty = num(r['Order Qty']);
+      const delivered = num(r['Delivered Qty']);
 
-const mtCFR =
-mtQty
-? (mtDelivered / mtQty) * 100
-: 0;
+      if(qty === 0) return;
 
-document.getElementById('overview').innerHTML = `
-<div class="hero-grid">
-${renderHero(
-'Modern Trade',
-mtCFR,
-mtQty,
-mtDelivered
-)}
-</div>
-`;
+      const cfr = (delivered / qty) * 100;
+      const gap = qty - delivered;
 
-let channelHTML = `<div class="grid">`;
+      html += `
+      <div class="card">
 
-channel.forEach(r=>{
+        <div class="label">${r['Order Lines/Analytic Level 2'] || 'Channel'}</div>
 
-const qty = num(r['Order Qty']);
-const delivered = num(r['Delivered Qty']);
+        <div class="big ${getClass(cfr)}">
+          ${cfr.toFixed(2)}%
+        </div>
 
-if(!qty) return;
+        <div class="bar">
+          <div class="fill" style="width:${Math.min(cfr,100)}%;background:${getColor(cfr)}"></div>
+        </div>
 
-const cfr = (delivered / qty) * 100;
+        <div class="stats">
+          <div>Order: ${qty}</div>
+          <div>Delivered: ${delivered}</div>
+          <div>Gap: ${gap}</div>
+        </div>
 
-channelHTML += renderMini(
-r['Order Lines/Analytic Level 2'] || 'Channel',
-cfr,
-qty,
-delivered
-);
+      </div>
+      `;
+    });
 
-});
+    cards.innerHTML = html;
 
-channelHTML += `</div>`;
+    let tableHTML = '';
 
-document.getElementById('channel').innerHTML =
-channelHTML;
+    lossData.forEach(r => {
 
-let regionHTML = `<div class="grid">`;
+      const qty = num(r['Order Qty']);
+      const delivered = num(r['Delivered Qty']);
+      const gap = qty - delivered;
 
-region.forEach(r=>{
+      const cfr = qty > 0
+        ? (delivered / qty) * 100
+        : 0;
 
-const qty = num(r['Order Qty']);
-const delivered = num(r['Delivered Qty']);
-
-if(!qty) return;
-
-const cfr = (delivered / qty) * 100;
-
-regionHTML += renderMini(
-r['Region'] || 'Region',
-cfr,
-qty,
-delivered
-);
-
-});
-
-regionHTML += `</div>`;
-
-document.getElementById('region').innerHTML =
-regionHTML;
-
-let table = `
-<div class="table-wrap">
-
-<table>
-
-<thead>
-<tr>
-<th>Product</th>
-<th>Order</th>
-<th>Delivered</th>
-<th>Gap</th>
-<th>CFR</th>
-</tr>
-</thead>
-
-<tbody>
-`;
-
-loss.forEach(r=>{
-
-const qty = num(r['Order Qty']);
-const delivered = num(r['Delivered Qty']);
-
-const gap = qty - delivered;
-
-const cfr =
-qty
-? (delivered / qty) * 100
-: 0;
-
-table += `
-<tr>
-
-<td>${r['Product'] || '-'}</td>
-
-<td>${F.format(qty)}</td>
-
-<td>${F.format(delivered)}</td>
-
-<td>${F.format(gap)}</td>
-
-<td style="color:${color(cfr)}">
-${cfr.toFixed(2)}%
-</td>
-
-</tr>
-`;
-
-});
-
-table += `
-</tbody>
-</table>
-</div>
-`;
-
-document.getElementById('loss').innerHTML =
-table;
-
-document.getElementById('statusDot').className =
-'dot ready';
-
-document.getElementById('statusText').innerText =
-'Dashboard Ready';
-
-}
-catch(err){
-
-console.error(err);
-
-document.getElementById('statusDot').className =
-'dot error';
-
-document.getElementById('statusText').innerText =
-'Error loading dashboard';
-
-}
-
-}
-
-document.querySelectorAll('.tab').forEach(tab=>{
-
-tab.onclick = ()=>{
-
-document.querySelectorAll('.tab')
-.forEach(t=>t.classList.remove('active'));
-
-document.querySelectorAll('.panel')
-.forEach(p=>p.classList.remove('active'));
-
-tab.classList.add('active');
-
-document
-.getElementById(tab.dataset.tab)
-.classList.add('active');
-
-};
-
-});
-
-window.addEventListener('error',e=>{
-
-console.error('Global Error:',e.message);
-
-});
-
-window.addEventListener('unhandledrejection',e=>{
-
-console.error('Promise Error:',e.reason);
-
-});
-
-loadDashboard();
-
-setInterval(loadDashboard,300000);
-
-</script>
-
-</body>
-</html>
+      tableHTML += `
+      <tr>
+        <td>${r['Product'] || '-'}</td>
+        <td>${qty}</td>
+        <td>${delivered}</td>
+        <td>${gap}</td>
+        <td style="color:${getColor(cfr)}">
+          ${cfr.toFixed(2)}%
+        </td>
+```
