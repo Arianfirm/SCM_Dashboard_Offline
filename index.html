@@ -1,555 +1,1355 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Case Fill Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+
+<title>SCM Case Fill Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --pu:#6B21A8;--pu-mid:#7C3AED;--pu-lt:#A78BFA;--pu-pale:#EDE9FE;--pu-xpale:#F5F3FF;
-  --sc:#C0142C;--sc-mid:#E53935;--sc-lt:#FF8A80;--sc-pale:#FFF0F0;
-  --white:#FFFFFF;--off:#F9F7FE;--surf:#F3EEFF;--bdr:#DDD6FE;
-  --t1:#1E1033;--t2:#4B3E6B;--t3:#7C6FA5;
-  --good:#0F6E56;--good-bg:#E1F5EE;
-  --warn:#854F0B;--warn-bg:#FAEEDA;
-  --bad:#991B1B;--bad-bg:#FEE2E2;
-  --fd:'Syne',sans-serif;--fb:'DM Sans',sans-serif;
+
+*,*::before,*::after{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
-html,body{background:var(--off);color:var(--t1);font-family:var(--fb);min-height:100vh}
+
+:root{
+
+    --purple:#6B21A8;
+    --purple2:#7C3AED;
+    --purpleLight:#A78BFA;
+
+    --red:#E53935;
+
+    --bg:#F6F4FB;
+    --white:#FFFFFF;
+
+    --text:#1E1033;
+    --text2:#6B5A8E;
+
+    --border:#DDD6FE;
+
+    --good:#0F6E56;
+    --warn:#854F0B;
+    --bad:#991B1B;
+
+    --fontTitle:'Syne',sans-serif;
+    --fontBody:'DM Sans',sans-serif;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--fontBody);
+}
 
 /* HEADER */
+
 header{
-  background:var(--white);border-bottom:2px solid var(--bdr);
-  padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;
-  height:60px;position:sticky;top:0;z-index:200;
-  box-shadow:0 2px 12px rgba(107,33,168,.08);
+
+    background:white;
+
+    border-bottom:1px solid var(--border);
+
+    padding:14px 24px;
+
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+
+    position:sticky;
+    top:0;
+
+    z-index:100;
 }
-.logo-group{display:flex;align-items:center;gap:10px}
-.logo-icon{
-  width:34px;height:34px;border-radius:9px;
-  background:linear-gradient(135deg,var(--pu) 0%,var(--sc) 100%);
-  display:flex;align-items:center;justify-content:center;
-}
-.logo-icon svg{width:18px;height:18px}
-.logo-text{font-family:var(--fd);font-size:17px;font-weight:800;color:var(--t1);letter-spacing:-.02em}
-.logo-text span{color:var(--pu-mid)}
-.hdr-right{display:flex;align-items:center;gap:12px}
+
 .week-pill{
-  display:flex;align-items:center;gap:7px;background:var(--surf);
-  border:1px solid var(--bdr);border-radius:999px;padding:5px 12px 5px 9px;
+
+    background:#F3EEFF;
+
+    border:1px solid var(--border);
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
-.week-pill label{font-size:11px;font-weight:500;color:var(--t3);white-space:nowrap}
+
+.week-pill label{
+    font-size:12px;
+    color:var(--text2);
+}
+
 .week-pill select{
-  border:none;background:transparent;font-family:var(--fb);
-  font-size:13px;font-weight:500;color:var(--pu-mid);cursor:pointer;outline:none;padding:0
+
+    border:none;
+    background:transparent;
+
+    outline:none;
+
+    font-size:14px;
+    font-weight:700;
+
+    color:var(--purple2);
 }
-.status-dot{width:8px;height:8px;border-radius:50%;background:#ccc;transition:background .3s}
-.status-dot.ok{background:#1D9E75;box-shadow:0 0 0 3px #E1F5EE}
-.status-dot.err{background:var(--sc);box-shadow:0 0 0 3px var(--sc-pale)}
 
 /* HERO */
+
 .hero{
-  background:linear-gradient(130deg,var(--pu) 0%,#4F1C6E 45%,var(--sc) 100%);
-  padding:2rem 1.5rem 1.75rem;position:relative;overflow:hidden;
-}
-.hero::before{
-  content:'';position:absolute;inset:0;
-  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
-}
-.hero::after{
-  content:'';position:absolute;right:-60px;top:-60px;
-  width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.05);
-}
-.hero-inner{position:relative;max-width:1200px;margin:0 auto}
-.hero-eyebrow{font-size:11px;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
-.hero-title{font-family:var(--fd);font-size:26px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:3px}
-.hero-sub{font-size:13px;color:rgba(255,255,255,.6)}
 
-/* LAYOUT */
-.page{max-width:1200px;margin:0 auto;padding:1.5rem;display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start}
+    background:
+    linear-gradient(
+        135deg,
+        var(--purple) 0%,
+        #52217A 50%,
+        #C2185B 100%
+    );
 
-/* LEFT */
-.left{display:flex;flex-direction:column;gap:14px}
+    padding:34px 30px;
 
-/* KPI CHANNEL CARDS */
-.channel-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.ch-card{
-  background:var(--white);border:1.5px solid var(--bdr);border-radius:14px;
-  padding:18px 20px;position:relative;overflow:hidden;
-  transition:transform .15s,box-shadow .15s;
+    color:white;
 }
-.ch-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(107,33,168,.12)}
-.ch-card.gt-card{border-color:#FECACA}
-.ch-card::before{content:'';position:absolute;top:0;left:0;width:5px;height:100%;border-radius:5px 0 0 5px}
-.ch-card.mt-card::before{background:var(--pu-mid)}
-.ch-card.gt-card::before{background:var(--sc-mid)}
-.ch-tag{
-  display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--fd);font-size:13px;font-weight:700;
-  margin-bottom:12px;
+
+.hero-title{
+
+    font-family:var(--fontTitle);
+
+    font-size:40px;
+    font-weight:800;
 }
-.ch-tag .dot{width:10px;height:10px;border-radius:3px}
-.mt-dot{background:var(--pu-mid)}
-.gt-dot{background:var(--sc-mid)}
-.ch-cf{font-family:var(--fd);font-size:32px;font-weight:800;line-height:1;margin-bottom:8px}
-.ch-cf.good{color:var(--good)}
-.ch-cf.warn{color:var(--warn)}
-.ch-cf.bad{color:var(--bad)}
-.ch-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--surf)}
-.ch-meta-item .lbl{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
-.ch-meta-item .val{font-size:14px;font-weight:600;color:var(--t2)}
+
+.hero-sub{
+    margin-top:8px;
+    opacity:.8;
+}
+
+/* PAGE */
+
+.page{
+
+    max-width:1400px;
+
+    margin:auto;
+
+    padding:22px;
+
+    display:grid;
+
+    grid-template-columns:1fr 320px;
+
+    gap:18px;
+}
+
+.left{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+/* CARD */
+
+.card{
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    padding:22px;
+}
+
+/* KPI */
+
+.kpi-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:14px;
+}
+
+.kpi-card{
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    padding:20px;
+}
+
+.kpi-title{
+
+    font-family:var(--fontTitle);
+
+    font-size:15px;
+
+    margin-bottom:16px;
+}
+
+.kpi-value{
+
+    font-size:46px;
+
+    font-weight:800;
+
+    line-height:1;
+}
+
+.kpi-good{
+    color:var(--good);
+}
+
+.kpi-warn{
+    color:var(--warn);
+}
+
+.kpi-bad{
+    color:var(--bad);
+}
+
+.kpi-mini{
+
+    margin-top:16px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+}
+
+.kpi-mini div{
+
+    font-size:12px;
+
+    color:var(--text2);
+}
+
+.kpi-mini strong{
+
+    display:block;
+
+    margin-top:4px;
+
+    color:var(--text);
+
+    font-size:16px;
+}
 
 /* OVERALL KPI */
-.overall-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.kpi-mini{background:var(--white);border:1px solid var(--bdr);border-radius:11px;padding:14px 16px}
-.kpi-mini .lbl{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
-.kpi-mini .val{font-family:var(--fd);font-size:20px;font-weight:700;color:var(--t1)}
-.kpi-mini .val.good{color:var(--good)}
-.kpi-mini .val.warn{color:var(--warn)}
-.kpi-mini .val.bad{color:var(--bad)}
 
-/* CHART CARD */
-.chart-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;padding:1.25rem 1.5rem}
-.card-title{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
-.chart-legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--t3);margin-bottom:10px}
-.leg-item{display:flex;align-items:center;gap:5px}
-.leg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.overall{
 
-/* RIGHT SIDEBAR */
-.sidebar{display:flex;flex-direction:column;gap:12px}
+    display:grid;
 
-/* DONUT CARD */
-.donut-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;padding:1.25rem}
-.donut-wrap{position:relative;width:150px;height:150px;margin:0 auto 12px}
-.donut-center{
-  position:absolute;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;pointer-events:none;
-}
-.donut-pct{font-family:var(--fd);font-size:22px;font-weight:800;color:var(--t1);line-height:1}
-.donut-lbl{font-size:10px;color:var(--t3);margin-top:3px}
-.donut-legs{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--t2);padding:0 4px}
-.donut-leg-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.donut-leg-left{display:flex;align-items:center;gap:6px}
+    grid-template-columns:repeat(3,1fr);
 
-/* BREAKDOWN SIDEBAR */
-.breakdown-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden}
-.bd-section-header{
-  padding:10px 14px;display:flex;align-items:center;gap:8px;
-  font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:.06em;
+    gap:12px;
 }
-.bd-section-header.mt-hd{background:var(--pu-xpale);color:var(--pu);border-bottom:1px solid var(--bdr)}
-.bd-section-header.gt-hd{background:var(--sc-pale);color:var(--sc);border-bottom:1px solid #FEE2E2;border-top:1px solid var(--bdr)}
-.bd-row{
-  display:grid;grid-template-columns:1fr auto auto;gap:8px;
-  align-items:center;padding:8px 14px;border-bottom:1px solid #F5F3FF;
-  font-size:12px;
+
+.overall-card{
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    padding:18px;
 }
-.bd-row:last-of-type{border-bottom:none}
-.bd-row:hover{background:var(--off)}
-.bd-ch-name{color:var(--t2);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
-.bd-cf{
-  font-family:var(--fd);font-weight:700;font-size:13px;
-  white-space:nowrap;
+
+.overall-title{
+
+    font-size:12px;
+
+    color:var(--text2);
+
+    margin-bottom:10px;
 }
-.bd-cf.good{color:var(--good)}
-.bd-cf.warn{color:var(--warn)}
-.bd-cf.bad{color:var(--bad)}
-.bd-bar-wrap{width:60px;height:5px;background:var(--surf);border-radius:99px;overflow:hidden}
-.bd-bar{height:100%;border-radius:99px;transition:width .4s ease}
-.bd-bar.good{background:var(--good)}
-.bd-bar.warn{background:var(--warn)}
-.bd-bar.bad{background:var(--bad)}
+
+.overall-value{
+
+    font-size:30px;
+
+    font-weight:800;
+}
+
+/* CHART */
+
+.chart-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:22px;
+}
+
+.chart-title{
+
+    font-family:var(--fontTitle);
+
+    font-size:15px;
+
+    margin-bottom:20px;
+}
 
 /* TABLE */
-.table-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden}
-.table-head{padding:12px 16px;border-bottom:1px solid var(--bdr);background:var(--white)}
-table{width:100%;border-collapse:collapse;font-size:12px}
-thead tr{background:var(--surf)}
-th{padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--bdr);white-space:nowrap}
-td{padding:9px 12px;color:var(--t1);border-bottom:1px solid #F5F3FF}
-tbody tr:last-child td{border-bottom:none}
-tbody tr:hover td{background:var(--off)}
-.ch-pip{
-  display:inline-flex;align-items:center;justify-content:center;
-  padding:2px 8px;border-radius:6px;font-family:var(--fd);font-size:11px;font-weight:700;
-}
-.pip-GT{background:var(--sc-pale);color:var(--sc)}
-.pip-MT{background:var(--pu-pale);color:var(--pu)}
-.pip-def{background:var(--surf);color:var(--t2)}
-.cf-badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
-.cf-badge.good{background:var(--good-bg);color:var(--good)}
-.cf-badge.warn{background:var(--warn-bg);color:var(--warn)}
-.cf-badge.bad{background:var(--bad-bg);color:var(--bad)}
 
-#statusMsg{font-size:11px;color:var(--t3);text-align:center;padding:1rem;grid-column:1/-1}
-#statusMsg.err{color:var(--sc)}
+.table-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:18px;
+    overflow:hidden;
+}
 
-@media(max-width:800px){
-  .page{grid-template-columns:1fr}
-  .channel-cards{grid-template-columns:1fr 1fr}
+.table-header{
+    padding:18px 20px;
+    border-bottom:1px solid var(--border);
 }
-@media(max-width:500px){
-  .channel-cards,.overall-kpis{grid-template-columns:1fr}
-  .page{padding:1rem}
+
+table{
+    width:100%;
+    border-collapse:collapse;
 }
+
+th{
+
+    background:#F5F3FF;
+
+    padding:12px;
+
+    text-align:left;
+
+    font-size:12px;
+
+    color:var(--text2);
+}
+
+td{
+
+    padding:12px;
+
+    border-bottom:1px solid #F3EEFF;
+
+    font-size:13px;
+}
+
+tbody tr:hover{
+    background:#FAF8FF;
+}
+
+.badge{
+
+    padding:4px 10px;
+
+    border-radius:999px;
+
+    font-size:12px;
+
+    font-weight:700;
+}
+
+.good{
+    background:#DCFCE7;
+    color:#166534;
+}
+
+.warn{
+    background:#FEF3C7;
+    color:#92400E;
+}
+
+.bad{
+    background:#FEE2E2;
+    color:#991B1B;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+/* DONUT */
+
+.donut-center{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    pointer-events:none;
+}
+
+.donut-value{
+
+    font-size:30px;
+
+    font-weight:800;
+}
+
+.donut-sub{
+
+    font-size:12px;
+
+    color:var(--text2);
+}
+
+/* BREAKDOWN */
+
+.breakdown-card{
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    overflow:hidden;
+}
+
+.break-title{
+
+    padding:12px 16px;
+
+    font-weight:700;
+
+    font-size:13px;
+}
+
+.mt-head{
+    background:#F5F3FF;
+    color:var(--purple2);
+}
+
+.gt-head{
+    background:#FFF1F1;
+    color:var(--red);
+}
+
+.break-row{
+
+    padding:10px 16px;
+
+    display:grid;
+
+    grid-template-columns:1fr auto;
+
+    gap:10px;
+
+    border-bottom:1px solid #F4F1FF;
+
+    font-size:13px;
+}
+
+.break-row:last-child{
+    border-bottom:none;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1000px){
+
+    .page{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:700px){
+
+    .kpi-grid{
+        grid-template-columns:1fr;
+    }
+
+    .overall{
+        grid-template-columns:1fr;
+    }
+
+}
+
 </style>
+
 </head>
+
 <body>
 
 <header>
-  <div class="logo-group">
-    <div class="logo-icon">
-      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="10" width="4" height="8" rx="1.5" fill="white" fill-opacity=".9"/>
-        <rect x="8" y="6" width="4" height="12" rx="1.5" fill="white"/>
-        <rect x="14" y="2" width="4" height="16" rx="1.5" fill="white" fill-opacity=".7"/>
-      </svg>
-    </div>
-    <div class="logo-text">Fill<span>Track</span></div>
-  </div>
-  <div class="hdr-right">
+
     <div class="week-pill">
-      <label for="weekFilter">Minggu</label>
-      <select id="weekFilter"></select>
+
+        <label>Minggu</label>
+
+        <select id="weekFilter"></select>
+
     </div>
-    <div class="status-dot" id="statusDot"></div>
-  </div>
+
 </header>
 
 <div class="hero">
-  <div class="hero-inner">
-    <div class="hero-eyebrow">Scm offline Dashboard · Channel Breakdown</div>
-    <div class="hero-title">Case Fill Dashboard</div>
-    <div class="hero-sub">GT & MT performance</div>
-  </div>
+
+    <div class="hero-title">
+        Case Fill Dashboard
+    </div>
+
+    <div class="hero-sub">
+        GT & MT SCM Performance Monitoring
+    </div>
+
 </div>
 
 <div class="page">
 
-  <!-- LEFT -->
-  <div class="left">
+    <!-- LEFT -->
 
-    <!-- CHANNEL SUMMARY CARDS -->
-    <div class="channel-cards">
-      <div class="ch-card mt-card">
-        <div class="ch-tag"><span class="dot mt-dot"></span>Modern Trade (MT)</div>
-        <div class="ch-cf" id="mt-cf">—</div>
-        <div style="font-size:11px;color:var(--t3)">Case Fill Rate</div>
-        <div class="ch-meta">
-          <div class="ch-meta-item"><div class="lbl">Order</div><div class="val" id="mt-ord">—</div></div>
-          <div class="ch-meta-item"><div class="lbl">Delivery</div><div class="val" id="mt-del">—</div></div>
-          <div class="ch-meta-item"><div class="lbl">GAP</div><div class="val" id="mt-gap">—</div></div>
-          <div class="ch-meta-item"><div class="lbl">Sub-channel</div><div class="val" id="mt-count">—</div></div>
+    <div class="left">
+
+        <!-- KPI -->
+
+        <div class="kpi-grid">
+
+            <div class="kpi-card">
+
+                <div class="kpi-title">
+                    Modern Trade (MT)
+                </div>
+
+                <div class="kpi-value"
+                     id="mtCF">
+                     0%
+                </div>
+
+                <div class="kpi-mini">
+
+                    <div>
+                        Order
+                        <strong id="mtOrd">0</strong>
+                    </div>
+
+                    <div>
+                        Delivery
+                        <strong id="mtDel">0</strong>
+                    </div>
+
+                    <div>
+                        GAP
+                        <strong id="mtGap">0</strong>
+                    </div>
+
+                    <div>
+                        Sub Channel
+                        <strong id="mtCount">0</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="kpi-card">
+
+                <div class="kpi-title">
+                    General Trade (GT)
+                </div>
+
+                <div class="kpi-value"
+                     id="gtCF">
+                     0%
+                </div>
+
+                <div class="kpi-mini">
+
+                    <div>
+                        Order
+                        <strong id="gtOrd">0</strong>
+                    </div>
+
+                    <div>
+                        Delivery
+                        <strong id="gtDel">0</strong>
+                    </div>
+
+                    <div>
+                        GAP
+                        <strong id="gtGap">0</strong>
+                    </div>
+
+                    <div>
+                        Sub Channel
+                        <strong id="gtCount">0</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
-      </div>
-      <div class="ch-card gt-card">
-        <div class="ch-tag"><span class="dot gt-dot"></span>General Trade (GT)</div>
-        <div class="ch-cf" id="gt-cf">—</div>
-        <div style="font-size:11px;color:var(--t3)">Case Fill Rate</div>
-        <div class="ch-meta">
-          <div class="ch-meta-item"><div class="lbl">Order</div><div class="val" id="gt-ord">—</div></div>
-          <div class="ch-meta-item"><div class="lbl">Delivery</div><div class="val" id="gt-del">—</div></div>
-          <div class="ch-meta-item"><div class="lbl">GAP</div><div class="val" id="gt-gap">—</div></div>
-          <div class="ch-meta-item"><div class="lbl">Sub-channel</div><div class="val" id="gt-count">—</div></div>
+
+        <!-- OVERALL -->
+
+        <div class="overall">
+
+            <div class="overall-card">
+
+                <div class="overall-title">
+                    Total Order
+                </div>
+
+                <div class="overall-value"
+                     id="totOrd">
+                     0
+                </div>
+
+            </div>
+
+            <div class="overall-card">
+
+                <div class="overall-title">
+                    Total Delivery
+                </div>
+
+                <div class="overall-value"
+                     id="totDel">
+                     0
+                </div>
+
+            </div>
+
+            <div class="overall-card">
+
+                <div class="overall-title">
+                    Overall Case Fill
+                </div>
+
+                <div class="overall-value"
+                     id="totCF">
+                     0%
+                </div>
+
+            </div>
+
         </div>
-      </div>
-    </div>
 
-    <!-- OVERALL KPI ROW -->
-    <div class="overall-kpis">
-      <div class="kpi-mini"><div class="lbl">Total Order</div><div class="val" id="tot-ord">—</div></div>
-      <div class="kpi-mini"><div class="lbl">Total Delivery</div><div class="val" id="tot-del">—</div></div>
-      <div class="kpi-mini"><div class="lbl">Overall Case Fill</div><div class="val" id="tot-cf">—</div></div>
-    </div>
+        <!-- BAR CHART -->
 
-    <!-- BAR CHART -->
-    <div class="chart-card">
-      <div class="card-title">Case Fill % per Sub-Channel</div>
-      <div class="chart-legend" id="barLegend"></div>
-      <div style="position:relative;width:100%;height:240px">
-        <canvas id="barChart" role="img" aria-label="Bar chart case fill per sub-channel">Case fill per sub-channel.</canvas>
-      </div>
-    </div>
+        <div class="chart-card">
 
-    <!-- TABLE -->
-    <div class="table-card">
-      <div class="table-head"><div class="card-title" style="margin:0">Detail Sub-Channel</div></div>
-      <table>
-        <thead><tr>
-          <th>Channel</th><th>Sub-Channel</th><th>Order</th><th>Delivery</th><th>GAP</th><th>Case Fill</th>
-        </tr></thead>
-        <tbody id="tableData">
-          <tr><td colspan="6" style="text-align:center;color:var(--t3);padding:20px">Memuat data...</td></tr>
-        </tbody>
-      </table>
-    </div>
+            <div class="chart-title">
+                Case Fill % per Sub Channel
+            </div>
 
-  </div><!-- /left -->
+            <div style="height:320px">
 
-  <!-- RIGHT SIDEBAR -->
-  <div class="sidebar">
+                <canvas id="barChart"></canvas>
 
-    <!-- DONUT -->
-    <div class="donut-card">
-      <div class="card-title">Overall Delivered vs Gap</div>
-      <div class="donut-wrap">
-        <canvas id="donutChart" role="img" aria-label="Donut chart delivered vs gap">Delivered vs gap.</canvas>
-        <div class="donut-center">
-          <div class="donut-pct" id="donutPct">—</div>
-          <div class="donut-lbl">delivered</div>
+            </div>
+
         </div>
-      </div>
-      <div class="donut-legs" id="donutLegend"></div>
+
+        <!-- TABLE -->
+
+        <div class="table-card">
+
+            <div class="table-header">
+
+                <div class="chart-title">
+                    Detail Sub Channel
+                </div>
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Channel</th>
+                        <th>Sub Channel</th>
+                        <th>Order</th>
+                        <th>Delivery</th>
+                        <th>Gap</th>
+                        <th>Case Fill</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tableData">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
     </div>
 
-    <!-- BREAKDOWN LIST -->
-    <div class="breakdown-card">
-      <div class="bd-section-header mt-hd">
-        <span>MT</span><span style="font-weight:400;font-size:11px;opacity:.7">Modern Trade</span>
-        <span style="margin-left:auto;font-size:13px" id="mt-cf-small">—</span>
-      </div>
-      <div id="mt-breakdown"></div>
+    <!-- RIGHT -->
 
-      <div class="bd-section-header gt-hd">
-        <span>GT</span><span style="font-weight:400;font-size:11px;opacity:.7">General Trade</span>
-        <span style="margin-left:auto;font-size:13px" id="gt-cf-small">—</span>
-      </div>
-      <div id="gt-breakdown"></div>
+    <div class="sidebar">
+
+        <!-- DONUT -->
+
+        <div class="card">
+
+            <div class="chart-title">
+                Overall Delivered vs GAP
+            </div>
+
+            <div style="position:relative;width:220px;height:220px;margin:auto">
+
+                <canvas id="donutChart"></canvas>
+
+                <div class="donut-center">
+
+                    <div class="donut-value"
+                         id="donutCF">
+                         0%
+                    </div>
+
+                    <div class="donut-sub">
+                        Delivered
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BREAKDOWN -->
+
+        <div class="breakdown-card">
+
+            <div class="break-title mt-head">
+                MT Breakdown
+            </div>
+
+            <div id="mtBreakdown"></div>
+
+            <div class="break-title gt-head">
+                GT Breakdown
+            </div>
+
+            <div id="gtBreakdown"></div>
+
+        </div>
+
     </div>
 
-  </div><!-- /sidebar -->
-
-  <div id="statusMsg">Menghubungkan ke Google Sheets...</div>
-
-</div><!-- /page -->
+</div>
 
 <script>
-const SPREADSHEET_ID="1xTEZKFhTzaxupONEBxX0iQniYhsaMZlfEiCGEja_qTQ";
-const BREAKDOWN_GID="1343041753";
-const csvUrl=`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${BREAKDOWN_GID}`;
 
-let data=[];
-let barChart,donutChart;
+Chart.register(ChartDataLabels);
 
-function parseCSVLine(line){
-  const r=[];let cur='',inQ=false;
-  for(let i=0;i<line.length;i++){
-    const c=line[i];
-    if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
-    else if(c===','&&!inQ){r.push(cur.trim());cur='';}
-    else cur+=c;
-  }
-  r.push(cur.trim());return r;
+/* =========================
+GOOGLE SHEET
+========================= */
+
+const SPREADSHEET_ID =
+"1xTEZKFhTzaxupONEBxX0iQniYhsaMZlfEiCGEja_qTQ";
+
+const GID =
+"1343041753";
+
+const CSV_URL =
+`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID}`;
+
+let DATA = [];
+
+let barChart;
+let donutChart;
+
+/* =========================
+HELPER
+========================= */
+
+function num(v){
+
+    return parseFloat(
+        String(v)
+        .replace(/,/g,'')
+        .replace('%','')
+    ) || 0;
+
 }
+
+function fmt(v){
+
+    return v.toLocaleString('id-ID');
+
+}
+
+function cfClass(v){
+
+    if(v >= 95) return "kpi-good";
+
+    if(v >= 85) return "kpi-warn";
+
+    return "kpi-bad";
+
+}
+
+function badgeClass(v){
+
+    if(v >= 95) return "badge good";
+
+    if(v >= 85) return "badge warn";
+
+    return "badge bad";
+
+}
+
+/* =========================
+LOAD DATA
+========================= */
 
 async function loadData(){
-  const dot=document.getElementById('statusDot');
-  try{
-    const res=await fetch(csvUrl);
-    if(!res.ok)throw new Error(`HTTP ${res.status}`);
-    const csv=await res.text();
-    const rows=csv.split(/\r?\n/).slice(1).filter(r=>r.trim());
-    data=[];
+
+    const res =
+    await fetch(CSV_URL);
+
+    const text =
+    await res.text();
+
+    const rows =
+    text
+    .split(/\r?\n/)
+    .slice(1)
+    .filter(r=>r.trim());
+
+    DATA = [];
+
     rows.forEach(r=>{
-      const c=parseCSVLine(r);
-      if(c.length>=6){
-        const cf=parseFloat(c[5].replace('%','').replace(/,/g,'.'));
-        const ch=c[1].replace(/"/g,'').trim();
-        // detect parent channel from bracket prefix [MT-x] or [GT-x]
-        const m=ch.match(/^\[([A-Z]+)-/);
-        const parent=m?m[1]:'OTHER';
-        data.push({
-          week:c[0].replace(/"/g,'').trim(),
-          channel:ch,
-          parent,
-          orderQty:parseFloat(c[2].replace(/[",]/g,''))||0,
-          deliveryQty:parseFloat(c[3].replace(/[",]/g,''))||0,
-          gap:parseFloat(c[4].replace(/[",]/g,''))||0,
-          caseFill:isNaN(cf)?0:cf
-        });
-      }
+
+        const c =
+        r.split(",");
+
+        if(c.length >= 6){
+
+            const channel =
+            c[1]
+            .replace(/"/g,'');
+
+            const parent =
+            channel.includes("MT")
+            ? "MT"
+            : "GT";
+
+            DATA.push({
+
+                week:
+                c[0]
+                .replace(/"/g,''),
+
+                channel,
+
+                parent,
+
+                order:
+                num(c[2]),
+
+                delivery:
+                num(c[3]),
+
+                gap:
+                num(c[4]),
+
+                cf:
+                num(c[5])
+
+            });
+
+        }
+
     });
-    if(!data.length)throw new Error('Tidak ada data');
-    dot.classList.add('ok');
+
     setupFilter();
-    document.getElementById('statusMsg').textContent=`✓ ${data.length} baris berhasil dimuat`;
-  }catch(e){
-    dot.classList.add('err');
-    const m=document.getElementById('statusMsg');
-    m.textContent=`⚠ ${e.message} — Pastikan spreadsheet publik (Anyone with link → Viewer)`;
-    m.classList.add('err');
-    document.getElementById('tableData').innerHTML=
-      `<tr><td colspan="6" style="text-align:center;color:#991B1B;padding:20px">Gagal memuat data.</td></tr>`;
-  }
+
 }
+
+/* =========================
+FILTER
+========================= */
 
 function setupFilter(){
-  const weeks=[...new Set(data.map(d=>d.week))];
-  const sel=document.getElementById('weekFilter');
-  sel.innerHTML=weeks.map(w=>`<option value="${w}">${w}</option>`).join('');
-  render(weeks[0]);
-  sel.addEventListener('change',()=>render(sel.value));
+
+    const weeks =
+    [...new Set(
+        DATA.map(d=>d.week)
+    )];
+
+    const select =
+    document.getElementById(
+        "weekFilter"
+    );
+
+    select.innerHTML =
+    weeks.map(w=>
+        `<option>${w}</option>`
+    ).join("");
+
+    render(
+        weeks[0]
+    );
+
+    select.addEventListener(
+        "change",
+        ()=>render(select.value)
+    );
+
 }
 
-function cfCls(v){return v>=95?'good':v>=85?'warn':'bad'}
-function fmt(n){return n.toLocaleString('id-ID')}
+/* =========================
+RENDER
+========================= */
 
 function render(week){
-  const rows=data.filter(d=>d.week===week);
 
-  // group by parent
-  const groups={};
-  rows.forEach(d=>{
-    if(!groups[d.parent])groups[d.parent]={ord:0,del:0,gap:0,items:[]};
-    groups[d.parent].ord+=d.orderQty;
-    groups[d.parent].del+=d.deliveryQty;
-    groups[d.parent].gap+=d.gap;
-    groups[d.parent].items.push(d);
-  });
+    const rows =
+    DATA.filter(
+        d=>d.week === week
+    );
 
-  const mt=groups['MT']||{ord:0,del:0,gap:0,items:[]};
-  const gt=groups['GT']||{ord:0,del:0,gap:0,items:[]};
-  const totOrd=rows.reduce((s,d)=>s+d.orderQty,0);
-  const totDel=rows.reduce((s,d)=>s+d.deliveryQty,0);
-  const totCF=totOrd?(totDel/totOrd)*100:0;
-  const mtCF=mt.ord?(mt.del/mt.ord)*100:0;
-  const gtCF=gt.ord?(gt.del/gt.ord)*100:0;
+    const mt =
+    rows.filter(r=>r.parent==="MT");
 
-  // channel cards
-  const setCh=(pre,cf,ord,del,gap,cnt)=>{
-    const el=document.getElementById(pre+'-cf');
-    el.textContent=cf.toFixed(2)+'%';
-    el.className='ch-cf '+cfCls(cf);
-    document.getElementById(pre+'-ord').textContent=fmt(ord);
-    document.getElementById(pre+'-del').textContent=fmt(del);
-    document.getElementById(pre+'-gap').textContent=fmt(gap);
-    document.getElementById(pre+'-count').textContent=cnt;
-    document.getElementById(pre+'-cf-small').textContent=cf.toFixed(2)+'%';
-    document.getElementById(pre+'-cf-small').className='';
-    document.getElementById(pre+'-cf-small').style.color=cf>=95?'var(--good)':cf>=85?'var(--warn)':'var(--bad)';
-  };
-  setCh('mt',mtCF,mt.ord,mt.del,mt.gap,mt.items.length);
-  setCh('gt',gtCF,gt.ord,gt.del,gt.gap,gt.items.length);
+    const gt =
+    rows.filter(r=>r.parent==="GT");
 
-  // overall kpis
-  document.getElementById('tot-ord').textContent=fmt(totOrd);
-  document.getElementById('tot-del').textContent=fmt(totDel);
-  const tcEl=document.getElementById('tot-cf');
-  tcEl.textContent=totCF.toFixed(2)+'%';
-  tcEl.className='val '+cfCls(totCF);
+    const mtOrd =
+    mt.reduce((a,b)=>a+b.order,0);
 
-  document.getElementById('donutPct').textContent=totCF.toFixed(1)+'%';
+    const mtDel =
+    mt.reduce((a,b)=>a+b.delivery,0);
 
-  // breakdown sidebar
-  const buildBd=(containerId,items)=>{
-    const el=document.getElementById(containerId);
-    el.innerHTML=items.sort((a,b)=>b.caseFill-a.caseFill).map(d=>{
-      const cls=cfCls(d.caseFill);
-      const shortName=d.channel.replace(/\[.*?\]\s*/,'');
-      return `<div class="bd-row">
-        <div class="bd-ch-name" title="${d.channel}">${shortName}</div>
-        <div class="bd-bar-wrap"><div class="bd-bar ${cls}" style="width:${Math.min(d.caseFill,100)}%"></div></div>
-        <div class="bd-cf ${cls}">${d.caseFill.toFixed(1)}%</div>
-      </div>`;
-    }).join('');
-  };
-  buildBd('mt-breakdown',mt.items);
-  buildBd('gt-breakdown',gt.items);
+    const mtGap =
+    mt.reduce((a,b)=>a+b.gap,0);
 
-  // table
-  let tbl='';
-  rows.forEach(d=>{
-    const cls=cfCls(d.caseFill);
-    const pipCls='pip-'+d.parent;
-    tbl+=`<tr>
-      <td><span class="ch-pip ${pipCls}">${d.parent}</span></td>
-      <td style="font-size:11px;color:var(--t2)">${d.channel.replace(/\[.*?\]\s*/,'')}</td>
-      <td>${fmt(d.orderQty)}</td>
-      <td>${fmt(d.deliveryQty)}</td>
-      <td>${fmt(d.gap)}</td>
-      <td><span class="cf-badge ${cls}">${d.caseFill.toFixed(2)}%</span></td>
-    </tr>`;
-  });
-  document.getElementById('tableData').innerHTML=tbl||
-    `<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:16px">Tidak ada data</td></tr>`;
+    const mtCF =
+    mtOrd
+    ? (mtDel/mtOrd)*100
+    : 0;
 
-  // charts
-  buildCharts(rows,totCF);
+    const gtOrd =
+    gt.reduce((a,b)=>a+b.order,0);
+
+    const gtDel =
+    gt.reduce((a,b)=>a+b.delivery,0);
+
+    const gtGap =
+    gt.reduce((a,b)=>a+b.gap,0);
+
+    const gtCF =
+    gtOrd
+    ? (gtDel/gtOrd)*100
+    : 0;
+
+    const totalOrd =
+    mtOrd + gtOrd;
+
+    const totalDel =
+    mtDel + gtDel;
+
+    const totalCF =
+    totalOrd
+    ? (totalDel/totalOrd)*100
+    : 0;
+
+    /* KPI */
+
+    setKPI(
+        "mt",
+        mtCF,
+        mtOrd,
+        mtDel,
+        mtGap,
+        mt.length
+    );
+
+    setKPI(
+        "gt",
+        gtCF,
+        gtOrd,
+        gtDel,
+        gtGap,
+        gt.length
+    );
+
+    document.getElementById(
+        "totOrd"
+    ).innerHTML =
+    fmt(totalOrd);
+
+    document.getElementById(
+        "totDel"
+    ).innerHTML =
+    fmt(totalDel);
+
+    document.getElementById(
+        "totCF"
+    ).innerHTML =
+    totalCF.toFixed(2)+"%";
+
+    document.getElementById(
+        "donutCF"
+    ).innerHTML =
+    totalCF.toFixed(1)+"%";
+
+    /* TABLE */
+
+    buildTable(rows);
+
+    /* BREAKDOWN */
+
+    buildBreakdown(
+        "mtBreakdown",
+        mt
+    );
+
+    buildBreakdown(
+        "gtBreakdown",
+        gt
+    );
+
+    /* CHART */
+
+    buildCharts(
+        rows,
+        totalCF
+    );
+
 }
 
-function buildCharts(rows,totCF){
-  if(barChart)barChart.destroy();
-  if(donutChart)donutChart.destroy();
+function setKPI(
+    prefix,
+    cf,
+    ord,
+    del,
+    gap,
+    count
+){
 
-  const sorted=[...rows].sort((a,b)=>a.parent.localeCompare(b.parent)||a.channel.localeCompare(b.channel));
-  const labels=sorted.map(d=>d.channel.replace(/\[.*?\]\s*/,''));
-  const vals=sorted.map(d=>parseFloat(d.caseFill.toFixed(2)));
-  const colors=sorted.map(d=>d.parent==='MT'?'#7C3AED':'#E53935');
-  const borderColors=sorted.map(d=>d.parent==='MT'?'#6B21A8':'#C0142C');
+    const el =
+    document.getElementById(
+        prefix+"CF"
+    );
 
-  document.getElementById('barLegend').innerHTML=
-    `<span class="leg-item"><span class="leg-dot" style="background:#7C3AED"></span>MT — Modern Trade</span>
-     <span class="leg-item"><span class="leg-dot" style="background:#E53935"></span>GT — General Trade</span>`;
+    el.innerHTML =
+    cf.toFixed(2)+"%";
 
-  barChart=new Chart(document.getElementById('barChart'),{
-    type:'bar',
-    data:{
-      labels,
-      datasets:[{
-        label:'Case Fill %',data:vals,
-        backgroundColor:colors.map(c=>c+'CC'),
-        borderColor:borderColors,borderWidth:1.5,
-        borderRadius:6,borderSkipped:false,
-      }]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{
-          backgroundColor:'#1E1033',titleColor:'#A78BFA',bodyColor:'#fff',padding:10,
-          callbacks:{label:ctx=>` Case Fill: ${ctx.parsed.y.toFixed(2)}%`}
+    el.className =
+    "kpi-value "+cfClass(cf);
+
+    document.getElementById(
+        prefix+"Ord"
+    ).innerHTML =
+    fmt(ord);
+
+    document.getElementById(
+        prefix+"Del"
+    ).innerHTML =
+    fmt(del);
+
+    document.getElementById(
+        prefix+"Gap"
+    ).innerHTML =
+    fmt(gap);
+
+    document.getElementById(
+        prefix+"Count"
+    ).innerHTML =
+    count;
+
+}
+
+/* =========================
+TABLE
+========================= */
+
+function buildTable(rows){
+
+    let html = "";
+
+    rows.forEach(r=>{
+
+        html += `
+
+        <tr>
+
+            <td>${r.parent}</td>
+
+            <td>
+                ${r.channel}
+            </td>
+
+            <td>
+                ${fmt(r.order)}
+            </td>
+
+            <td>
+                ${fmt(r.delivery)}
+            </td>
+
+            <td>
+                ${fmt(r.gap)}
+            </td>
+
+            <td>
+
+                <span class="${badgeClass(r.cf)}">
+
+                    ${r.cf.toFixed(2)}%
+
+                </span>
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+    document.getElementById(
+        "tableData"
+    ).innerHTML =
+    html;
+
+}
+
+/* =========================
+BREAKDOWN
+========================= */
+
+function buildBreakdown(id,rows){
+
+    let html = "";
+
+    rows
+    .sort((a,b)=>b.cf-a.cf)
+    .forEach(r=>{
+
+        html += `
+
+        <div class="break-row">
+
+            <div>
+                ${r.channel}
+            </div>
+
+            <strong>
+                ${r.cf.toFixed(1)}%
+            </strong>
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById(
+        id
+    ).innerHTML =
+    html;
+
+}
+
+/* =========================
+CHART
+========================= */
+
+function buildCharts(rows,totalCF){
+
+    if(barChart){
+
+        barChart.destroy();
+
+    }
+
+    if(donutChart){
+
+        donutChart.destroy();
+
+    }
+
+    const labels =
+    rows.map(r=>r.channel);
+
+    const values =
+    rows.map(r=>r.cf);
+
+    const colors =
+    rows.map(r=>
+        r.parent==="MT"
+        ? "#7C3AED"
+        : "#E53935"
+    );
+
+    barChart =
+    new Chart(
+
+        document.getElementById(
+            "barChart"
+        ),
+
+        {
+
+            type:"bar",
+
+            data:{
+
+                labels,
+
+                datasets:[{
+
+                    data:values,
+
+                    backgroundColor:colors,
+
+                    borderRadius:8
+
+                }]
+
+            },
+
+            options:{
+
+                responsive:true,
+
+                maintainAspectRatio:false,
+
+                plugins:{
+
+                    legend:{
+                        display:false
+                    },
+
+                    datalabels:{
+
+                        anchor:'end',
+
+                        align:'top',
+
+                        color:'#1E1033',
+
+                        font:{
+                            weight:'bold',
+                            size:11
+                        },
+
+                        formatter:(v)=>
+                        v.toFixed(1)+"%"
+
+                    }
+
+                },
+
+                scales:{
+
+                    y:{
+
+                        min:80,
+
+                        max:102,
+
+                        ticks:{
+                            callback:(v)=>v+"%"
+                        }
+
+                    }
+
+                }
+
+            }
+
         }
-      },
-      scales:{
-        y:{min:80,max:102,ticks:{callback:v=>v+'%',font:{size:10},color:'#7C6FA5'},grid:{color:'#EDE9FE'}},
-        x:{ticks:{font:{size:10,weight:'600'},color:'#4B3E6B',maxRotation:35},grid:{display:false}}
-      }
-    }
-  });
 
-  const del=parseFloat(totCF.toFixed(2));
-  const gap=parseFloat((100-totCF).toFixed(2));
-  document.getElementById('donutLegend').innerHTML=
-    `<div class="donut-leg-row"><div class="donut-leg-left"><span class="leg-dot" style="background:#7C3AED;width:10px;height:10px;border-radius:2px;display:inline-block"></span><span>Delivered</span></div><strong>${del}%</strong></div>
-     <div class="donut-leg-row"><div class="donut-leg-left"><span class="leg-dot" style="background:#FEE2E2;border:1px solid #F87171;width:10px;height:10px;border-radius:2px;display:inline-block"></span><span>Gap</span></div><strong>${gap}%</strong></div>`;
+    );
 
-  donutChart=new Chart(document.getElementById('donutChart'),{
-    type:'doughnut',
-    data:{
-      labels:['Delivered','Gap'],
-      datasets:[{
-        data:[del,gap],
-        backgroundColor:['#7C3AED','#FEE2E2'],
-        borderColor:['#6B21A8','#FECACA'],
-        borderWidth:2,hoverOffset:6
-      }]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:true,cutout:'72%',
-      plugins:{
-        legend:{display:false},
-        tooltip:{backgroundColor:'#1E1033',titleColor:'#A78BFA',bodyColor:'#fff',padding:10,
-          callbacks:{label:ctx=>` ${ctx.parsed.toFixed(2)}%`}}
-      }
-    }
-  });
+    donutChart =
+    new Chart(
+
+        document.getElementById(
+            "donutChart"
+        ),
+
+        {
+
+            type:"doughnut",
+
+            data:{
+
+                labels:[
+                    "Delivered",
+                    "Gap"
+                ],
+
+                datasets:[{
+
+                    data:[
+                        totalCF,
+                        100-totalCF
+                    ],
+
+                    backgroundColor:[
+                        "#7C3AED",
+                        "#FDE2E2"
+                    ]
+
+                }]
+
+            },
+
+            options:{
+
+                cutout:'72%',
+
+                plugins:{
+
+                    legend:{
+                        display:false
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
 }
 
 loadData();
+
 </script>
+
 </body>
 </html>
