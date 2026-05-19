@@ -1,3 +1,1947 @@
+
+
+
+
+a94bffd2-5a6d-4a8f-8f74-cc3c69a57b45.png
+aku udah punya ini juga sebenrnya tinggal html ke githubnya
+
+
+index.html
+File
+
+push_to_gsheet.py
+Python
+week 19 offlineweek19
+
+
+ini data ku , coba cek index dan pushan ya bener gak 
+
+49dc9cfa-0222-4f5e-9272-5fb552a3a70f.png
+nah dia stuck disini ada yang salah kah ya
+
+a5eeac91-f1f6-455c-a5f6-2c25ef521d4e.png
+
+
+ageless-arcanum-447716-e0-57edc1cb2615.json
+File
+Ini sudah jadi nih 
+
+week 19 offlineweek19
+
+
+bikin kPI CARD NYA 
+
+Channel	
+Channel Breakdown	
+Product Category	
+Product Name	
+Order Quantity	Delivery Quantity
+
+28a7819a-d9df-4177-98d6-5d7be3ac4b6d.png
+DI C Nmanya scm-dashboard-offline
+
+84b38972-2425-4844-a705-bf85241189d2.png
+kaya gini gimnaa
+
+e6f27c38-9d61-483a-a4e8-6be35720293e.png
+
+0a0ab751-1d5d-4642-a63c-774debb2f00a.png
+apakah ada yang salah 
+
+9051346d-90a0-4f10-aaee-043915b2155c.png
+ayo cek lagi mana yang saalah 
+
+7891232b-b732-4083-b57d-92893c169209.png
+apa yah salah nya 
+
+115d23ee-82f1-449e-851e-4ffbea2059a8.png
+
+62088660-a1e8-42b0-b52f-74bc125aeb9d.png
+udah bener ini
+
+fd706829-edb0-433e-b24e-90ff8cb48bb0.png
+kaya gini
+
+df3cd4ee-7a12-4835-9ced-0d3d23c3b0a0.png
+ada eror ka 
+
+366f4acc-b92f-471c-9076-fe63fa93d4f5.png
+oke sudahtinggal kita bikin tampilan dashboard yang keren buat ke githubnya gini dan bisa bikin sidebar ya dikanan 
+
+4876b8f0-00a8-423b-8be7-3e173ce5dcc4.png
+ga bisa di klik si debar yang lain dan gak ada filter
+
+2859b811-fb07-412a-bf4c-8afc120ec8d4.png
+kaya hitunhan ya salah deh harusnya cuman 147 gt mt 245 skian
+
+d47c79f0-72b4-4ce3-a9f6-e82efd94500a.png
+
+02bdc5df-21b3-4d19-ac82-034339a3f651.png
+malah nol buatnya 
+
+d20e8697-3688-49bb-a048-c97004fa27b1.png
+masih gak bisa nih 
+
+
+Pasted text.txt
+Document
+malah eror pake ini semua tab ya ga jalan 
+
+
+Pasted text.txt
+Document
+HAURSNY DI TAMPILAN DASHBOARDNYA KPI CHANNEL TERU DI MENU YANG SAMA KPI BREAKDOWN SESUAI ANGKA YANG BENER 
+
+Betul. Problem utamanya sekarang karena dashboard kamu masih baca:
+
+gid=0
+padahal itu bukan sheet KPI_BREAKDOWN.
+
+Dan KPI card sekarang juga masih:
+
+Total Order
+
+Total Delivery
+
+MT Qty
+
+GT Qty
+
+Padahal yang kamu mau:
+
+DASHBOARD FINAL
+KPI CARD:
+✅ MT Case Fill
+✅ GT Case Fill
+✅ Total Case Fill
+✅ Total Gap
+
+MENU:
+✅ Dashboard
+✅ KPI Channel
+✅ KPI Breakdown
+✅ KPI Region
+✅ Top Loss Product
+
+Dashboard utama:
+langsung tampil:
+
+KPI Channel
+
+KPI Breakdown
+
+chart MT vs GT
+
+table KPI
+
+GANTI FULL SCRIPT <script> JADI INI
+<script>
+
+const SPREADSHEET_ID =
+"1xTEZKFhTzaxupONEBxX0iQniYhsaMZlfEiCGEja_qTQ";
+
+const BREAKDOWN_GID =
+"1343041753";
+
+/* =========================
+CSV URL
+========================= */
+
+const csvUrl =
+`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${BREAKDOWN_GID}`;
+
+let dashboardData = [];
+
+let barChart;
+let donutChart;
+
+/* =========================
+LOAD DATA
+========================= */
+
+async function loadData(){
+
+    const res =
+    await fetch(csvUrl);
+
+    const csv =
+    await res.text();
+
+    const rows =
+    csv.split("\n")
+    .slice(1);
+
+    dashboardData = [];
+
+    rows.forEach(r=>{
+
+        const c =
+        r.split(",");
+
+        if(c.length >= 6){
+
+            dashboardData.push({
+
+                week:
+                c[0]
+                .replace(/"/g,''),
+
+                channel:
+                c[1]
+                .replace(/"/g,''),
+
+                orderQty:
+                parseFloat(c[2]) || 0,
+
+                deliveryQty:
+                parseFloat(c[3]) || 0,
+
+                gap:
+                parseFloat(c[4]) || 0,
+
+                caseFill:
+                parseFloat(c[5]) || 0
+
+            });
+
+        }
+
+    });
+
+    setupFilter();
+
+}
+
+/* =========================
+FILTER
+========================= */
+
+function setupFilter(){
+
+    const weeks =
+    [...new Set(
+        dashboardData.map(d=>d.week)
+    )];
+
+    const filter =
+    document.getElementById(
+        "weekFilter"
+    );
+
+    filter.innerHTML = "";
+
+    weeks.forEach(w=>{
+
+        filter.innerHTML +=
+        `<option value="${w}">
+            ${w}
+        </option>`;
+
+    });
+
+    renderDashboard(
+        weeks[0]
+    );
+
+    filter.addEventListener(
+        "change",
+        ()=>{
+
+            renderDashboard(
+                filter.value
+            );
+
+        }
+    );
+
+}
+
+/* =========================
+RENDER DASHBOARD
+========================= */
+
+function renderDashboard(week){
+
+    const data =
+    dashboardData.filter(
+        d=>d.week === week
+    );
+
+    let totalOrder = 0;
+    let totalDelivery = 0;
+    let totalGap = 0;
+
+    let mtOrder = 0;
+    let mtDelivery = 0;
+
+    let gtOrder = 0;
+    let gtDelivery = 0;
+
+    let labels = [];
+    let values = [];
+
+    let tableHTML = "";
+
+    data.forEach(d=>{
+
+        totalOrder += d.orderQty;
+        totalDelivery += d.deliveryQty;
+        totalGap += d.gap;
+
+        labels.push(d.channel);
+        values.push(d.caseFill);
+
+        /* MT */
+
+        if(d.channel === "MT"){
+
+            mtOrder += d.orderQty;
+            mtDelivery += d.deliveryQty;
+
+        }
+
+        /* GT */
+
+        if(d.channel === "GT"){
+
+            gtOrder += d.orderQty;
+            gtDelivery += d.deliveryQty;
+
+        }
+
+        tableHTML += `
+
+        <tr>
+
+            <td>${d.channel}</td>
+
+            <td>
+                ${d.orderQty.toLocaleString()}
+            </td>
+
+            <td>
+                ${d.deliveryQty.toLocaleString()}
+            </td>
+
+            <td class="good">
+                ${d.caseFill.toFixed(2)}%
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+    /* CASE FILL */
+
+    const totalCF =
+    totalOrder
+    ? (totalDelivery / totalOrder) * 100
+    : 0;
+
+    const mtCF =
+    mtOrder
+    ? (mtDelivery / mtOrder) * 100
+    : 0;
+
+    const gtCF =
+    gtOrder
+    ? (gtDelivery / gtOrder) * 100
+    : 0;
+
+    /* KPI */
+
+    document.getElementById(
+        "totalOrder"
+    ).innerHTML =
+    totalOrder.toLocaleString();
+
+    document.getElementById(
+        "totalDelivery"
+    ).innerHTML =
+    totalDelivery.toLocaleString();
+
+    document.getElementById(
+        "caseFill"
+    ).innerHTML =
+    totalCF.toFixed(2) +
+    "% Total CF";
+
+    document.getElementById(
+        "mtQty"
+    ).innerHTML =
+    mtCF.toFixed(2) + "%";
+
+    document.getElementById(
+        "gtQty"
+    ).innerHTML =
+    gtCF.toFixed(2) + "%";
+
+    /* TABLE */
+
+    document.getElementById(
+        "tableData"
+    ).innerHTML =
+    tableHTML;
+
+    createCharts(
+        labels,
+        values,
+        totalCF
+    );
+
+}
+
+/* =========================
+CHART
+========================= */
+
+function createCharts(
+    labels,
+    values,
+    totalCF
+){
+
+    if(barChart){
+
+        barChart.destroy();
+
+    }
+
+    if(donutChart){
+
+        donutChart.destroy();
+
+    }
+
+    barChart = new Chart(
+
+        document.getElementById(
+            "barChart"
+        ),
+
+        {
+
+            type:"bar",
+
+            data:{
+
+                labels:labels,
+
+                datasets:[{
+
+                    label:"Case Fill",
+
+                    data:values
+
+                }]
+
+            }
+
+        }
+
+    );
+
+    donutChart = new Chart(
+
+        document.getElementById(
+            "donutChart"
+        ),
+
+        {
+
+            type:"doughnut",
+
+            data:{
+
+                labels:[
+                    "Delivered",
+                    "Gap"
+                ],
+
+                datasets:[{
+
+                    data:[
+                        totalCF,
+                        100-totalCF
+                    ]
+
+                }]
+
+            }
+
+        }
+
+    );
+
+}
+
+loadData();
+
+</script>
+Lalu save → refresh browser:
+
+CTRL + SHIFT + R
+Sekarang KPI dashboard akan tampil:
+
+MT CF
+
+GT CF
+
+Total CF
+
+Channel KPI
+
+Chart MT vs GT
+
+dan angka akan ikut data Google Sheet kamu.
+
+
+57483e29-6667-4bd0-8023-3b9211dee6f4.png
+
+Pasted text.txt
+Document
+dari skrip ini hilanin fill track yang pojok atas, kemudian yang bar nya kasih angka yang jelas tanpa harus klik bisa ?
+
+Bisa. Yang perlu kamu ubah cuma 2 bagian:
+
+1. HILANGKAN FillTrack POJOK ATAS
+Cari ini:
+
+<div class="logo-group">
+sampai:
+
+</div>
+hapus semua block ini:
+
+<div class="logo-group">
+  <div class="logo-icon">
+    ...
+  </div>
+  <div class="logo-text">Fill<span>Track</span></div>
+</div>
+Jadi header tinggal:
+
+<header>
+
+  <div></div>
+
+  <div class="hdr-right">
+    <div class="week-pill">
+      <label for="weekFilter">Minggu</label>
+      <select id="weekFilter"></select>
+    </div>
+    <div class="status-dot" id="statusDot"></div>
+  </div>
+
+</header>
+2. TAMPILKAN ANGKA DI ATAS BAR CHART
+Sekarang angka muncul cuma pas hover.
+
+Cari bagian ini:
+
+plugins:{
+    legend:{display:false},
+ganti jadi:
+
+plugins:{
+    legend:{display:false},
+
+    datalabels:{
+        anchor:'end',
+        align:'top',
+        color:'#4B3E6B',
+        font:{
+            weight:'bold',
+            size:11
+        },
+        formatter:(v)=>v.toFixed(1)+'%'
+    },
+3. TAMBAHKAN CDN DATALABELS
+Di atas:
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+tambahkan ini:
+
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+Jadi:
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+4. REGISTER PLUGIN
+Cari:
+
+let data=[];
+ubah jadi:
+
+Chart.register(ChartDataLabels);
+
+let data=[];
+HASILNYA:
+✅ tulisan FillTrack hilang
+✅ chart ada angka langsung di atas bar
+✅ gak perlu hover lagi
+✅ dashboard lebih clean & executive look
+
+
+1b537edb-97ef-4820-bdc7-0ea457f6b06a.png
+yang pie jangan dirubah kamu cukup yang bar aja itu di tambah qty per bar jangan rubah lagi 
+
+
+Pasted text.txt
+Document
+aku mau utuh kaya gini dengan kamu balikin pie nya dan grafik bar kamu qty order  bar aja yang di tampilin anhkanya revisi dan kasih aku scriptutuh yang sudah kamu revisi
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>SCM Case Fill Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<style>
+
+*,*::before,*::after{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+
+    --purple:#6B21A8;
+    --purple2:#7C3AED;
+    --purpleLight:#A78BFA;
+
+    --red:#E53935;
+
+    --bg:#F6F4FB;
+    --white:#FFFFFF;
+
+    --text:#1E1033;
+    --text2:#6B5A8E;
+
+    --border:#DDD6FE;
+
+    --good:#0F6E56;
+    --warn:#854F0B;
+    --bad:#991B1B;
+
+    --fontTitle:'Syne',sans-serif;
+    --fontBody:'DM Sans',sans-serif;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--fontBody);
+}
+
+/* HEADER */
+
+header{
+
+    background:white;
+
+    border-bottom:1px solid var(--border);
+
+    padding:14px 24px;
+
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+
+    position:sticky;
+    top:0;
+
+    z-index:100;
+}
+
+.week-pill{
+
+    background:#F3EEFF;
+
+    border:1px solid var(--border);
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.week-pill label{
+    font-size:12px;
+    color:var(--text2);
+}
+
+.week-pill select{
+
+    border:none;
+    background:transparent;
+
+    outline:none;
+
+    font-size:14px;
+    font-weight:700;
+
+    color:var(--purple2);
+}
+
+/* HERO */
+
+.hero{
+
+    background:
+    linear-gradient(
+        135deg,
+        var(--purple) 0%,
+        #52217A 50%,
+        #C2185B 100%
+    );
+
+    padding:34px 30px;
+
+    color:white;
+}
+
+.hero-title{
+
+    font-family:var(--fontTitle);
+
+    font-size:40px;
+    font-weight:800;
+}
+
+.hero-sub{
+    margin-top:8px;
+    opacity:.8;
+}
+
+/* PAGE */
+
+.page{
+
+    max-width:1400px;
+
+    margin:auto;
+
+    padding:22px;
+
+    display:grid;
+
+    grid-template-columns:1fr 320px;
+
+    gap:18px;
+}
+
+.left{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+/* CARD */
+
+.card{
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    padding:22px;
+}
+
+/* KPI */
+
+.kpi-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:14px;
+}
+
+.kpi-card{
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    padding:20px;
+}
+
+.kpi-title{
+
+    font-family:var(--fontTitle);
+
+    font-size:15px;
+
+    margin-bottom:16px;
+}
+
+.kpi-value{
+
+    font-size:46px;
+
+    font-weight:800;
+
+    line-height:1;
+}
+
+.kpi-good{
+    color:var(--good);
+}
+
+.kpi-warn{
+    color:var(--warn);
+}
+
+.kpi-bad{
+    color:var(--bad);
+}
+
+.kpi-mini{
+
+    margin-top:16px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+}
+
+.kpi-mini div{
+
+    font-size:12px;
+
+    color:var(--text2);
+}
+
+.kpi-mini strong{
+
+    display:block;
+
+    margin-top:4px;
+
+    color:var(--text);
+
+    font-size:16px;
+}
+
+/* OVERALL KPI */
+
+.overall{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:12px;
+}
+
+.overall-card{
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    padding:18px;
+}
+
+.overall-title{
+
+    font-size:12px;
+
+    color:var(--text2);
+
+    margin-bottom:10px;
+}
+
+.overall-value{
+
+    font-size:30px;
+
+    font-weight:800;
+}
+
+/* CHART */
+
+.chart-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:22px;
+}
+
+.chart-title{
+
+    font-family:var(--fontTitle);
+
+    font-size:15px;
+
+    margin-bottom:20px;
+}
+
+/* TABLE */
+
+.table-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:18px;
+    overflow:hidden;
+}
+
+.table-header{
+    padding:18px 20px;
+    border-bottom:1px solid var(--border);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+
+    background:#F5F3FF;
+
+    padding:12px;
+
+    text-align:left;
+
+    font-size:12px;
+
+    color:var(--text2);
+}
+
+td{
+
+    padding:12px;
+
+    border-bottom:1px solid #F3EEFF;
+
+    font-size:13px;
+}
+
+tbody tr:hover{
+    background:#FAF8FF;
+}
+
+.badge{
+
+    padding:4px 10px;
+
+    border-radius:999px;
+
+    font-size:12px;
+
+    font-weight:700;
+}
+
+.good{
+    background:#DCFCE7;
+    color:#166534;
+}
+
+.warn{
+    background:#FEF3C7;
+    color:#92400E;
+}
+
+.bad{
+    background:#FEE2E2;
+    color:#991B1B;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+/* DONUT */
+
+.donut-center{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    pointer-events:none;
+}
+
+.donut-value{
+
+    font-size:30px;
+
+    font-weight:800;
+}
+
+.donut-sub{
+
+    font-size:12px;
+
+    color:var(--text2);
+}
+
+/* BREAKDOWN */
+
+.breakdown-card{
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    overflow:hidden;
+}
+
+.break-title{
+
+    padding:12px 16px;
+
+    font-weight:700;
+
+    font-size:13px;
+}
+
+.mt-head{
+    background:#F5F3FF;
+    color:var(--purple2);
+}
+
+.gt-head{
+    background:#FFF1F1;
+    color:var(--red);
+}
+
+.break-row{
+
+    padding:10px 16px;
+
+    display:grid;
+
+    grid-template-columns:1fr auto;
+
+    gap:10px;
+
+    border-bottom:1px solid #F4F1FF;
+
+    font-size:13px;
+}
+
+.break-row:last-child{
+    border-bottom:none;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1000px){
+
+    .page{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:700px){
+
+    .kpi-grid{
+        grid-template-columns:1fr;
+    }
+
+    .overall{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="week-pill">
+
+        <label>Minggu</label>
+
+        <select id="weekFilter"></select>
+
+    </div>
+
+</header>
+
+<div class="hero">
+
+    <div class="hero-title">
+        Case Fill Dashboard
+    </div>
+
+    <div class="hero-sub">
+        GT & MT SCM Performance Monitoring
+    </div>
+
+</div>
+
+<div class="page">
+
+    <!-- LEFT -->
+
+    <div class="left">
+
+        <!-- KPI -->
+
+        <div class="kpi-grid">
+
+            <div class="kpi-card">
+
+                <div class="kpi-title">
+                    Modern Trade (MT)
+                </div>
+
+                <div class="kpi-value"
+                     id="mtCF">
+                     0%
+                </div>
+
+                <div class="kpi-mini">
+
+                    <div>
+                        Order
+                        <strong id="mtOrd">0</strong>
+                    </div>
+
+                    <div>
+                        Delivery
+                        <strong id="mtDel">0</strong>
+                    </div>
+
+                    <div>
+                        GAP
+                        <strong id="mtGap">0</strong>
+                    </div>
+
+                    <div>
+                        Sub Channel
+                        <strong id="mtCount">0</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="kpi-card">
+
+                <div class="kpi-title">
+                    General Trade (GT)
+                </div>
+
+                <div class="kpi-value"
+                     id="gtCF">
+                     0%
+                </div>
+
+                <div class="kpi-mini">
+
+                    <div>
+                        Order
+                        <strong id="gtOrd">0</strong>
+                    </div>
+
+                    <div>
+                        Delivery
+                        <strong id="gtDel">0</strong>
+                    </div>
+
+                    <div>
+                        GAP
+                        <strong id="gtGap">0</strong>
+                    </div>
+
+                    <div>
+                        Sub Channel
+                        <strong id="gtCount">0</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- OVERALL -->
+
+        <div class="overall">
+
+            <div class="overall-card">
+
+                <div class="overall-title">
+                    Total Order
+                </div>
+
+                <div class="overall-value"
+                     id="totOrd">
+                     0
+                </div>
+
+            </div>
+
+            <div class="overall-card">
+
+                <div class="overall-title">
+                    Total Delivery
+                </div>
+
+                <div class="overall-value"
+                     id="totDel">
+                     0
+                </div>
+
+            </div>
+
+            <div class="overall-card">
+
+                <div class="overall-title">
+                    Overall Case Fill
+                </div>
+
+                <div class="overall-value"
+                     id="totCF">
+                     0%
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BAR CHART -->
+
+        <div class="chart-card">
+
+            <div class="chart-title">
+                Case Fill % per Sub Channel
+            </div>
+
+            <div style="height:320px">
+
+                <canvas id="barChart"></canvas>
+
+            </div>
+
+        </div>
+
+        <!-- TABLE -->
+
+        <div class="table-card">
+
+            <div class="table-header">
+
+                <div class="chart-title">
+                    Detail Sub Channel
+                </div>
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Channel</th>
+                        <th>Sub Channel</th>
+                        <th>Order</th>
+                        <th>Delivery</th>
+                        <th>Gap</th>
+                        <th>Case Fill</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tableData">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+
+    <div class="sidebar">
+
+        <!-- DONUT -->
+
+        <div class="card">
+
+            <div class="chart-title">
+                Overall Delivered vs GAP
+            </div>
+
+            <div style="position:relative;width:220px;height:220px;margin:auto">
+
+                <canvas id="donutChart"></canvas>
+
+                <div class="donut-center">
+
+                    <div class="donut-value"
+                         id="donutCF">
+                         0%
+                    </div>
+
+                    <div class="donut-sub">
+                        Delivered
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BREAKDOWN -->
+
+        <div class="breakdown-card">
+
+            <div class="break-title mt-head">
+                MT Breakdown
+            </div>
+
+            <div id="mtBreakdown"></div>
+
+            <div class="break-title gt-head">
+                GT Breakdown
+            </div>
+
+            <div id="gtBreakdown"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+Chart.register(ChartDataLabels);
+
+const SPREADSHEET_ID =
+"1xTEZKFhTzaxupONEBxX0iQniYhsaMZlfEiCGEja_qTQ";
+
+const GID =
+"1343041753";
+
+const CSV_URL =
+`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID}`;
+
+let DATA = [];
+
+let barChart;
+let donutChart;
+
+function num(v){
+
+    return parseFloat(
+        String(v)
+        .replace(/,/g,'')
+        .replace('%','')
+    ) || 0;
+
+}
+
+function fmt(v){
+
+    return v.toLocaleString('id-ID');
+
+}
+
+function cfClass(v){
+
+    if(v >= 95) return "kpi-good";
+
+    if(v >= 85) return "kpi-warn";
+
+    return "kpi-bad";
+
+}
+
+function badgeClass(v){
+
+    if(v >= 95) return "badge good";
+
+    if(v >= 85) return "badge warn";
+
+    return "badge bad";
+
+}
+
+async function loadData(){
+
+    const res =
+    await fetch(CSV_URL);
+
+    const text =
+    await res.text();
+
+    const rows =
+    text
+    .split(/\r?\n/)
+    .slice(1)
+    .filter(r=>r.trim());
+
+    DATA = [];
+
+    rows.forEach(r=>{
+
+        const c =
+        r.split(",");
+
+        if(c.length >= 6){
+
+            const channel =
+            c[1]
+            .replace(/"/g,'');
+
+            const parent =
+            channel.includes("MT")
+            ? "MT"
+            : "GT";
+
+            DATA.push({
+
+                week:
+                c[0]
+                .replace(/"/g,''),
+
+                channel,
+
+                parent,
+
+                order:
+                num(c[2]),
+
+                delivery:
+                num(c[3]),
+
+                gap:
+                num(c[4]),
+
+                cf:
+                num(c[5])
+
+            });
+
+        }
+
+    });
+
+    setupFilter();
+
+}
+
+function setupFilter(){
+
+    const weeks =
+    [...new Set(
+        DATA.map(d=>d.week)
+    )];
+
+    const select =
+    document.getElementById(
+        "weekFilter"
+    );
+
+    select.innerHTML =
+    weeks.map(w=>
+        `<option>${w}</option>`
+    ).join("");
+
+    render(
+        weeks[0]
+    );
+
+    select.addEventListener(
+        "change",
+        ()=>render(select.value)
+    );
+
+}
+
+function render(week){
+
+    const rows =
+    DATA.filter(
+        d=>d.week === week
+    );
+
+    const mt =
+    rows.filter(r=>r.parent==="MT");
+
+    const gt =
+    rows.filter(r=>r.parent==="GT");
+
+    const mtOrd =
+    mt.reduce((a,b)=>a+b.order,0);
+
+    const mtDel =
+    mt.reduce((a,b)=>a+b.delivery,0);
+
+    const mtGap =
+    mt.reduce((a,b)=>a+b.gap,0);
+
+    const mtCF =
+    mtOrd
+    ? (mtDel/mtOrd)*100
+    : 0;
+
+    const gtOrd =
+    gt.reduce((a,b)=>a+b.order,0);
+
+    const gtDel =
+    gt.reduce((a,b)=>a+b.delivery,0);
+
+    const gtGap =
+    gt.reduce((a,b)=>a+b.gap,0);
+
+    const gtCF =
+    gtOrd
+    ? (gtDel/gtOrd)*100
+    : 0;
+
+    const totalOrd =
+    mtOrd + gtOrd;
+
+    const totalDel =
+    mtDel + gtDel;
+
+    const totalCF =
+    totalOrd
+    ? (totalDel/totalOrd)*100
+    : 0;
+
+    setKPI(
+        "mt",
+        mtCF,
+        mtOrd,
+        mtDel,
+        mtGap,
+        mt.length
+    );
+
+    setKPI(
+        "gt",
+        gtCF,
+        gtOrd,
+        gtDel,
+        gtGap,
+        gt.length
+    );
+
+    document.getElementById(
+        "totOrd"
+    ).innerHTML =
+    fmt(totalOrd);
+
+    document.getElementById(
+        "totDel"
+    ).innerHTML =
+    fmt(totalDel);
+
+    document.getElementById(
+        "totCF"
+    ).innerHTML =
+    totalCF.toFixed(2)+"%";
+
+    document.getElementById(
+        "donutCF"
+    ).innerHTML =
+    totalCF.toFixed(1)+"%";
+
+    buildTable(rows);
+
+    buildBreakdown(
+        "mtBreakdown",
+        mt
+    );
+
+    buildBreakdown(
+        "gtBreakdown",
+        gt
+    );
+
+    buildCharts(
+        rows,
+        totalCF
+    );
+
+}
+
+function setKPI(
+    prefix,
+    cf,
+    ord,
+    del,
+    gap,
+    count
+){
+
+    const el =
+    document.getElementById(
+        prefix+"CF"
+    );
+
+    el.innerHTML =
+    cf.toFixed(2)+"%";
+
+    el.className =
+    "kpi-value "+cfClass(cf);
+
+    document.getElementById(
+        prefix+"Ord"
+    ).innerHTML =
+    fmt(ord);
+
+    document.getElementById(
+        prefix+"Del"
+    ).innerHTML =
+    fmt(del);
+
+    document.getElementById(
+        prefix+"Gap"
+    ).innerHTML =
+    fmt(gap);
+
+    document.getElementById(
+        prefix+"Count"
+    ).innerHTML =
+    count;
+
+}
+
+function buildTable(rows){
+
+    let html = "";
+
+    rows.forEach(r=>{
+
+        html += `
+
+        <tr>
+
+            <td>${r.parent}</td>
+
+            <td>
+                ${r.channel}
+            </td>
+
+            <td>
+                ${fmt(r.order)}
+            </td>
+
+            <td>
+                ${fmt(r.delivery)}
+            </td>
+
+            <td>
+                ${fmt(r.gap)}
+            </td>
+
+            <td>
+
+                <span class="${badgeClass(r.cf)}">
+
+                    ${r.cf.toFixed(2)}%
+
+                </span>
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+    document.getElementById(
+        "tableData"
+    ).innerHTML =
+    html;
+
+}
+
+function buildBreakdown(id,rows){
+
+    let html = "";
+
+    rows
+    .sort((a,b)=>b.cf-a.cf)
+    .forEach(r=>{
+
+        html += `
+
+        <div class="break-row">
+
+            <div>
+                ${r.channel}
+            </div>
+
+            <strong>
+                ${r.cf.toFixed(1)}%
+            </strong>
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById(
+        id
+    ).innerHTML =
+    html;
+
+}
+
+function buildCharts(rows,totalCF){
+
+    if(barChart){
+
+        barChart.destroy();
+
+    }
+
+    if(donutChart){
+
+        donutChart.destroy();
+
+    }
+
+    const labels =
+    rows.map(r=>r.channel);
+
+    const values =
+    rows.map(r=>r.cf);
+
+    const colors =
+    rows.map(r=>
+        r.parent==="MT"
+        ? "#7C3AED"
+        : "#E53935"
+    );
+
+    /* BAR CHART */
+
+    barChart =
+    new Chart(
+
+        document.getElementById(
+            "barChart"
+        ),
+
+        {
+
+            type:"bar",
+
+            data:{
+
+                labels,
+
+                datasets:[{
+
+                    data:values,
+
+                    backgroundColor:colors,
+
+                    borderRadius:8
+
+                }]
+
+            },
+
+            options:{
+
+                responsive:true,
+
+                maintainAspectRatio:false,
+
+                plugins:{
+
+                    legend:{
+                        display:false
+                    },
+
+                    datalabels:{
+
+                        anchor:'end',
+
+                        align:'top',
+
+                        offset:6,
+
+                        color:'#1E1033',
+
+                        font:{
+                            weight:'bold',
+                            size:10
+                        },
+
+                        formatter:(value,context)=>{
+
+                            const row =
+                            rows[
+                                context.dataIndex
+                            ];
+
+                            return [
+
+                                value.toFixed(1)+"%",
+
+                                "Qty: " +
+                                row.order
+                                .toLocaleString()
+
+                            ];
+
+                        }
+
+                    }
+
+                },
+
+                scales:{
+
+                    y:{
+
+                        min:80,
+
+                        max:102,
+
+                        ticks:{
+                            callback:(v)=>v+"%"
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+    /* DONUT CHART */
+
+    donutChart =
+    new Chart(
+
+        document.getElementById(
+            "donutChart"
+        ),
+
+        {
+
+            type:"doughnut",
+
+            data:{
+
+                labels:[
+                    "Delivered",
+                    "Gap"
+                ],
+
+                datasets:[{
+
+                    data:[
+                        totalCF,
+                        100-totalCF
+                    ],
+
+                    backgroundColor:[
+                        "#7C3AED",
+                        "#FDE2E2"
+                    ],
+
+                    borderWidth:0
+
+                }]
+
+            },
+
+            options:{
+
+                cutout:'72%',
+
+                plugins:{
+
+                    legend:{
+                        display:false
+                    },
+
+                    datalabels:{
+                        display:false
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+}
+
+loadData();
+
+</script>
+
+</body>
+</html>
+
+
+08970872-a819-4996-853a-4c1ea0e1ebf6.png
+ko gak semua ngasih angka bukan nya harusnya ada angkanya semuanya diatas  % di tengah ya qty oreder. inget build penuh script diawal bukan kasih saya tambal sulam scriptnya
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -1235,3 +3179,538 @@ loadData();
 
 </body>
 </html>
+
+
+5bebb222-5e71-4be7-a197-5c2a74d58807.png
+ga ad pperubahan banget kalo minta kamu 
+
+Perubahannya sebenarnya sudah masuk, tapi problemnya ada di DATA kamu sendiri.
+
+Yang muncul angka cuma 4 bar karena:
+
+hanya 4 channel yang punya Case Fill > 0
+
+sisanya di Google Sheet:
+
+order = 0
+
+atau delivery = 0
+
+atau cf = 0
+
+Makanya Chart.js tidak menggambar batang → label juga hilang.
+
+Jadi bukan scriptnya gagal.
+
+Supaya SEMUA bar tetap muncul dan tetap ada angka:
+
+bar 0% tetap dibuat
+
+qty tetap tampil
+
+label dipaksa muncul di bawah kalau nilainya 0
+
+Kamu replace FULL function buildCharts() dengan ini.
+
+function buildCharts(rows,totalCF){
+
+    if(barChart){
+        barChart.destroy();
+    }
+
+    if(donutChart){
+        donutChart.destroy();
+    }
+
+    const labels =
+    rows.map(r=>r.channel);
+
+    /* FORCE MIN VALUE */
+
+    const values =
+    rows.map(r=>{
+
+        if(r.cf <= 0){
+            return 0.5;
+        }
+
+        return r.cf;
+
+    });
+
+    const colors =
+    rows.map(r=>
+
+        r.parent==="MT"
+        ? "#7C3AED"
+        : "#E53935"
+
+    );
+
+    /* BAR CHART */
+
+    barChart =
+    new Chart(
+
+        document.getElementById(
+            "barChart"
+        ),
+
+        {
+
+            type:"bar",
+
+            data:{
+
+                labels,
+
+                datasets:[{
+
+                    data:values,
+
+                    backgroundColor:colors,
+
+                    borderRadius:8
+
+                }]
+
+            },
+
+            options:{
+
+                responsive:true,
+
+                maintainAspectRatio:false,
+
+                layout:{
+                    padding:{
+                        top:50
+                    }
+                },
+
+                plugins:{
+
+                    legend:{
+                        display:false
+                    },
+
+                    datalabels:{
+
+                        display:true,
+
+                        clamp:true,
+
+                        clip:false,
+
+                        color:'#1E1033',
+
+                        font:{
+                            weight:'bold',
+                            size:10
+                        },
+
+                        anchor:(context)=>{
+
+                            const row =
+                            rows[
+                                context.dataIndex
+                            ];
+
+                            return row.cf <= 0
+                            ? 'start'
+                            : 'end';
+
+                        },
+
+                        align:(context)=>{
+
+                            const row =
+                            rows[
+                                context.dataIndex
+                            ];
+
+                            return row.cf <= 0
+                            ? 'top'
+                            : 'end';
+
+                        },
+
+                        offset:(context)=>{
+
+                            const row =
+                            rows[
+                                context.dataIndex
+                            ];
+
+                            return row.cf <= 0
+                            ? 10
+                            : -2;
+
+                        },
+
+                        formatter:(value,context)=>{
+
+                            const row =
+                            rows[
+                                context.dataIndex
+                            ];
+
+                            return [
+
+                                row.cf.toFixed(1)+"%",
+
+                                "Qty: " +
+                                fmt(row.order)
+
+                            ];
+
+                        }
+
+                    }
+
+                },
+
+                scales:{
+
+                    y:{
+
+                        min:0,
+
+                        max:102,
+
+                        ticks:{
+                            callback:(v)=>v+"%"
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+    /* DONUT */
+
+    donutChart =
+    new Chart(
+
+        document.getElementById(
+            "donutChart"
+        ),
+
+        {
+
+            type:"doughnut",
+
+            data:{
+
+                labels:[
+                    "Delivered",
+                    "Gap"
+                ],
+
+                datasets:[{
+
+                    data:[
+                        totalCF,
+                        100-totalCF
+                    ],
+
+                    backgroundColor:[
+                        "#7C3AED",
+                        "#FDE2E2"
+                    ],
+
+                    borderWidth:0
+
+                }]
+
+            },
+
+            options:{
+
+                cutout:'72%',
+
+                plugins:{
+
+                    legend:{
+                        display:false
+                    },
+
+                    datalabels:{
+                        display:false
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+}
+
+/* HEADER */
+header{
+background(--white);border-bottom:2px solid var(--bdr);
+padding:0 1.5rem;display;align-items;justify-content;
+height:60px;position;top:0;z-index:200;
+box-shadow:0 2px 12px rgba(107,33,168,.08);
+}
+.logo-group{display;align-items;gap:10px}
+.logo-icon{
+width:34px;height:34px;border-radius:9px;
+background(135deg,var(--pu) 0%,var(--sc) 100%);
+display;align-items;justify-content;
+}
+.logo-icon svg{width:18px;height:18px}
+.logo-text{font-family(--fd);font-size:17px;font-weight:800;color(--t1);letter-spacing:-.02em}
+.logo-text span{color(--pu-mid)}
+.hdr-right{display;align-items;gap:12px}
+.week-pill{
+display;align-items;gap:7px;background(--surf);
+border:1px solid var(--bdr);border-radius:999px;padding:5px 12px 5px 9px;
+}
+.week-pill label{font-size:11px;font-weight:500;color(--t3);white-space}
+.week-pill select{
+border;background;font-family(--fb);
+font-size:13px;font-weight:500;color(--pu-mid);cursor;outline;padding:0
+}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#ccc;transition .3s}
+.status-dot.ok{background:#1D9E75;box-shadow:0 0 0 3px #E1F5EE}
+.status-dot.err{background(--sc);box-shadow:0 0 0 3px var(--sc-pale)}
+
+/* HERO */
+.hero{
+background(130deg,var(--pu) 0%,#4F1C6E 45%,var(--sc) 100%);
+padding:2rem 1.5rem 1.75rem;position;overflow;
+}
+.hero::before{
+content:'';position;inset:0;
+background("data/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+}
+.hero::after{
+content:'';position;right:-60px;top:-60px;
+width:280px;height:280px;border-radius:50%;background(255,255,255,.05);
+}
+.hero-inner{position;max-width:1200px;margin:0 auto}
+.hero-eyebrow{font-size:11px;font-weight:500;color(255,255,255,.55);letter-spacing:.1em;text-transform;margin-bottom:6px}
+.hero-title{font-family(--fd);font-size:26px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:3px}
+.hero-sub{font-size:13px;color(255,255,255,.6)}
+
+/* LAYOUT */
+.page{max-width:1200px;margin:0 auto;padding:1.5rem;display;grid-template-columns:1fr 300px;gap:14px;align-items}
+
+/* LEFT */
+.left{display;flex-direction;gap:14px}
+
+/* KPI CHANNEL CARDS */
+.channel-cards{display;grid-template-columns:1fr 1fr;gap:12px}
+.ch-card{
+background(--white);border:1.5px solid var(--bdr);border-radius:14px;
+padding:18px 20px;position;overflow;
+transition .15s,box-shadow .15s;
+}
+.ch-card{transform(-2px);box-shadow:0 6px 24px rgba(107,33,168,.12)}
+.ch-card.gt-card{border-color:#FECACA}
+.ch-card::before{content:'';position;top:0;left:0;width:5px;height:100%;border-radius:5px 0 0 5px}
+.ch-card.mt-card::before{background(--pu-mid)}
+.ch-card.gt-card::before{background(--sc-mid)}
+.ch-tag{
+display;align-items;gap:6px;
+font-family(--fd);font-size:13px;font-weight:700;
+margin-bottom:12px;
+}
+.ch-tag .dot{width:10px;height:10px;border-radius:3px}
+.mt-dot{background(--pu-mid)}
+.gt-dot{background(--sc-mid)}
+.ch-cf{font-family(--fd);font-size:32px;font-weight:800;line-height:1;margin-bottom:8px}
+.ch-cf.good{color(--good)}
+.ch-cf.warn{color(--warn)}
+.ch-cf.bad{color(--bad)}
+.ch-meta{display;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--surf)}
+.ch-meta-item .lbl{font-size:10px;font-weight:500;color(--t3);text-transform;letter-spacing:.05em;margin-bottom:2px}
+.ch-meta-item .val{font-size:14px;font-weight:600;color(--t2)}
+
+/* OVERALL KPI */
+.overall-kpis{display;grid-template-columns(3,1fr);gap:10px}
+.kpi-mini{background(--white);border:1px solid var(--bdr);border-radius:11px;padding:14px 16px}
+.kpi-mini .lbl{font-size:10px;font-weight:500;color(--t3);text-transform;letter-spacing:.06em;margin-bottom:5px}
+.kpi-mini .val{font-family(--fd);font-size:20px;font-weight:700;color(--t1)}
+.kpi-mini .val.good{color(--good)}
+.kpi-mini .val.warn{color(--warn)}
+.kpi-mini .val.bad{color(--bad)}
+
+/* CHART CARD */
+.chart-card{background(--white);border:1px solid var(--bdr);border-radius:14px;padding:1.25rem 1.5rem}
+.card-title{font-family(--fd);font-size:12px;font-weight:700;color(--t2);text-transform;letter-spacing:.07em;margin-bottom:12px}
+.chart-legend{display;flex-wrap;gap:10px;font-size:11px;color(--t3);margin-bottom:10px}
+.leg-item{display;align-items;gap:5px}
+.leg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+
+/* RIGHT SIDEBAR */
+.sidebar{display;flex-direction;gap:12px}
+
+/* DONUT CARD */
+.donut-card{background(--white);border:1px solid var(--bdr);border-radius:14px;padding:1.25rem}
+.donut-wrap{position;width:150px;height:150px;margin:0 auto 12px}
+.donut-center{
+position;inset:0;display;flex-direction;
+align-items;justify-content;pointer-events;
+}
+.donut-pct{font-family(--fd);font-size:22px;font-weight:800;color(--t1);line-height:1}
+.donut-lbl{font-size:10px;color(--t3);margin-top:3px}
+.donut-legs{display;flex-direction;gap:6px;font-size:12px;color(--t2);padding:0 4px}
+.donut-leg-row{display;align-items;justify-content;gap:8px}
+.donut-leg-left{display;align-items;gap:6px}
+
+/* BREAKDOWN SIDEBAR */
+.breakdown-card{background(--white);border:1px solid var(--bdr);border-radius:14px;overflow}
+.bd-section-header{
+padding:10px 14px;display;align-items;gap:8px;
+font-family(--fd);font-size:12px;font-weight:700;letter-spacing:.06em;
+}
+.bd-section-header.mt-hd{background(--pu-xpale);color(--pu);border-bottom:1px solid var(--bdr)}
+.bd-section-header.gt-hd{background(--sc-pale);color(--sc);border-bottom:1px solid #FEE2E2;border-top:1px solid var(--bdr)}
+.bd-row{
+display;grid-template-columns:1fr auto auto;gap:8px;
+align-items;padding:8px 14px;border-bottom:1px solid #F5F3FF;
+font-size:12px;
+}
+.bd-row
+.bd-row{background(--off)}
+.bd-ch-name{color(--t2);font-weight:500;white-space;overflow;text-overflow;font-size:11px}
+.bd-cf{
+font-family(--fd);font-weight:700;font-size:13px;
+white-space;
+}
+.bd-cf.good{color(--good)}
+.bd-cf.warn{color(--warn)}
+.bd-cf.bad{color(--bad)}
+.bd-bar-wrap{width:60px;height:5px;background(--surf);border-radius:99px;overflow}
+.bd-bar{height:100%;border-radius:99px;transition .4s ease}
+.bd-bar.good{background(--good)}
+.bd-bar.warn{background(--warn)}
+.bd-bar.bad{background(--bad)}
+
+/* TABLE */
+.table-card{background(--white);border:1px solid var(--bdr);border-radius:14px;overflow}
+.table-head{padding:12px 16px;border-bottom:1px solid var(--bdr);background(--white)}
+table{width:100%;border-collapse;font-size:12px}
+thead tr{background(--surf)}
+th{padding:8px 12px;text-align;font-size:10px;font-weight:600;color(--t3);text-transform;letter-spacing:.06em;border-bottom:1px solid var(--bdr);white-space}
+td{padding:9px 12px;color(--t1);border-bottom:1px solid #F5F3FF}
+tbody tr td{border-bottom}
+tbody tr td{background(--off)}
+.ch-pip{
+display;align-items;justify-content;
+padding:2px 8px;border-radius:6px;font-family(--fd);font-size:11px;font-weight:700;
+}
+.pip-GT{background(--sc-pale);color(--sc)}
+.pip-MT{background(--pu-pale);color(--pu)}
+.pip-def{background(--surf);color(--t2)}
+.cf-badge{display;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
+.cf-badge.good{background(--good-bg);color(--good)}
+.cf-badge.warn{background(--warn-bg);color(--warn)}
+.cf-badge.bad{background(--bad-bg);color(--bad)}
+
+#statusMsg{font-size:11px;color(--t3);text-align;padding:1rem;grid-column:1/-1}
+#statusMsg.err{color(--sc)}
+
+@media(max-width:800px){
+.page{grid-template-columns:1fr}
+.channel-cards{grid-template-columns:1fr 1fr}
+}
+@media(max-width:500px){
+.channel-cards,.overall-kpis{grid-template-columns:1fr}
+.page{padding:1rem}
+}
+
+
+<!-- CHANNEL SUMMARY CARDS -->
+<div class="channel-cards">
+  <div class="ch-card mt-card">
+    <div class="ch-tag"><span class="dot mt-dot"></span>Modern Trade (MT)</div>
+    <div class="ch-cf" id="mt-cf">—</div>
+    <div style="font-size:11px;color:var(--t3)">Case Fill Rate</div>
+    <div class="ch-meta">
+      <div class="ch-meta-item"><div class="lbl">Order</div><div class="val" id="mt-ord">—</div></div>
+      <div class="ch-meta-item"><div class="lbl">Delivery</div><div class="val" id="mt-del">—</div></div>
+      <div class="ch-meta-item"><div class="lbl">GAP</div><div class="val" id="mt-gap">—</div></div>
+      <div class="ch-meta-item"><div class="lbl">Sub-channel</div><div class="val" id="mt-count">—</div></div>
+    </div>
+  </div>
+  <div class="ch-card gt-card">
+    <div class="ch-tag"><span class="dot gt-dot"></span>General Trade (GT)</div>
+    <div class="ch-cf" id="gt-cf">—</div>
+    <div style="font-size:11px;color:var(--t3)">Case Fill Rate</div>
+    <div class="ch-meta">
+      <div class="ch-meta-item"><div class="lbl">Order</div><div class="val" id="gt-ord">—</div></div>
+      <div class="ch-meta-item"><div class="lbl">Delivery</div><div class="val" id="gt-del">—</div></div>
+      <div class="ch-meta-item"><div class="lbl">GAP</div><div class="val" id="gt-gap">—</div></div>
+      <div class="ch-meta-item"><div class="lbl">Sub-channel</div><div class="val" id="gt-count">—</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERALL KPI ROW -->
+<div class="overall-kpis">
+  <div class="kpi-mini"><div class="lbl">Total Order</div><div class="val" id="tot-ord">—</div></div>
+  <div class="kpi-mini"><div class="lbl">Total Delivery</div><div class="val" id="tot-del">—</div></div>
+  <div class="kpi-mini"><div class="lbl">Overall Case Fill</div><div class="val" id="tot-cf">—</div></div>
+</div>
+
+<!-- BAR CHART -->
+<div class="chart-card">
+  <div class="card-title">Case Fill % per Sub-Channel</div>
+  <div class="chart-legend" id="barLegend"></div>
+  <div style="position:relative;width:100%;height:240px">
+    <canvas id="barChart" role="img" aria-label="Bar chart case fill per sub-channel">Case fill per sub-channel.</canvas>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="table-card">
+  <div class="table-head"><div class="card-title" style="margin:0">Detail Sub-Channel</div></div>
+  <table>
+    <thead><tr>
+      <th>Channel</th><th>Sub-Channel</th><th>Order</th><th>Delivery</th><th>GAP</th><th>Case Fill</th>
+    </tr></thead>
+    <tbody id="tableData">
+      <tr><td colspan="6" style="text-align:center;color:var(--t3);padding:20px">Memuat data...</td></tr>
+    </tbody>
+  </table>
+</div>
+<!-- DONUT -->
+<div class="donut-card">
+  <div class="card-title">Overall Delivered vs Gap</div>
+  <div class="donut-wrap">
+    <canvas id="donutChart" role="img" aria-label="Donut chart delivered vs gap">Delivered vs gap.</canvas>
+    <div class="donut-center">
+      <div class="donut-pct" id="donutPct">—</div>
+      <div class="donut-lbl">delivered</div>
+    </div>
+  </div>
+  <div class="donut-legs" id="donutLegend"></div>
+</div>
+
+<!-- BREAKDOWN LIST -->
+<div class="breakdown-card">
+  <div class="bd-section-header mt-hd">
+    <span>MT</span><span style="font-weight:400;font-size:11px;opacity:.7">Modern Trade</span>
+    <span style="margin-left:auto;font-size:13px" id="mt-cf-small">—</span>
+  </div>
+  <div id="mt-breakdown"></div>
+
+  <div class="bd-section-header gt-hd">
+    <span>GT</span><span style="font-weight:400;font-size:11px;opacity:.7">General Trade</span>
+    <span style="margin-left:auto;font-size:13px" id="gt-cf-small">—</span>
+  </div>
+  <div id="gt-breakdown"></div>
+</div>
+
+Close
