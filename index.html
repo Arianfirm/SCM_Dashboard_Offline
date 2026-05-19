@@ -1,345 +1,739 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Case Fill Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple:     #6B21A8;
+    --purple-mid: #7C3AED;
+    --purple-lt:  #A78BFA;
+    --purple-pale:#EDE9FE;
+    --scarlet:    #C0142C;
+    --scarlet-mid:#E53935;
+    --scarlet-lt: #FF8A80;
+    --scarlet-pale:#FFF0F0;
+    --white:      #FFFFFF;
+    --off-white:  #F9F7FE;
+    --surface:    #F3EEFF;
+    --border:     #DDD6FE;
+    --text-1:     #1E1033;
+    --text-2:     #4B3E6B;
+    --text-3:     #7C6FA5;
+    --good:       #0F6E56;
+    --good-bg:    #E1F5EE;
+    --warn:       #854F0B;
+    --warn-bg:    #FAEEDA;
+    --bad:        #991B1B;
+    --bad-bg:     #FEE2E2;
+    --font-display: 'Syne', sans-serif;
+    --font-body:    'DM Sans', sans-serif;
+  }
+
+  html, body {
+    background: var(--off-white);
+    color: var(--text-1);
+    font-family: var(--font-body);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--white);
+    border-bottom: 2px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(107,33,168,0.08);
+  }
+
+  .logo-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--scarlet) 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-icon svg { width: 20px; height: 20px; }
+
+  .logo-text {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-1);
+    letter-spacing: -0.02em;
+  }
+  .logo-text span {
+    color: var(--purple-mid);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .week-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px 6px 10px;
+  }
+  .week-pill label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+  .week-pill select {
+    border: none;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--purple);
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+    transition: background 0.3s;
+  }
+  .status-dot.ok  { background: #1D9E75; box-shadow: 0 0 0 3px #E1F5EE; }
+  .status-dot.err { background: var(--scarlet); box-shadow: 0 0 0 3px var(--scarlet-pale); }
+
+  /* ── HERO BAND ── */
+  .hero-band {
+    background: linear-gradient(130deg, var(--purple) 0%, #4F1C6E 45%, var(--scarlet) 100%);
+    padding: 2.5rem 2rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-band::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-band::after {
+    content: '';
+    position: absolute;
+    right: -80px; top: -80px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .hero-inner {
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .hero-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+  }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.75rem 2rem 3rem;
+  }
+
+  /* ── KPI GRID ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+
+  .kpi-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(107,33,168,0.12);
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--purple-mid);
+    border-radius: 4px 0 0 4px;
+  }
+  .kpi-card.accent-scarlet::before { background: var(--scarlet-mid); }
+  .kpi-card.accent-blend::before {
+    background: linear-gradient(180deg, var(--purple-mid), var(--scarlet-mid));
+  }
+
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-1);
+    line-height: 1;
+  }
+  .kpi-value.good { color: var(--good); }
+  .kpi-value.warn { color: var(--warn); }
+  .kpi-value.bad  { color: var(--bad); }
+
+  /* ── CHARTS ROW ── */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 14px;
+    margin-bottom: 1.5rem;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--text-3);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .legend-dot {
+    width: 9px; height: 9px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .donut-outer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .donut-wrap {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 12px;
+  }
+  .donut-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .donut-pct {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-1);
+    line-height: 1;
+  }
+  .donut-lbl {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 3px;
+  }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .table-head-bar {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .table-head-bar .card-title { margin: 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead tr {
+    background: var(--surface);
+  }
+  th {
+    padding: 10px 20px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 11px 20px;
+    color: var(--text-1);
+    border-bottom: 1px solid #F3EEFF;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--off-white); }
+
+  .ch-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .ch-MT { background: var(--purple-pale); color: var(--purple); }
+  .ch-GT { background: var(--scarlet-pale); color: var(--scarlet); }
+  .ch-default { background: var(--surface); color: var(--text-2); }
+
+  .cf-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .cf-good { background: var(--good-bg); color: var(--good); }
+  .cf-warn { background: var(--warn-bg); color: var(--warn); }
+  .cf-bad  { background: var(--bad-bg);  color: var(--bad); }
+
+  /* ── STATUS BAR ── */
+  #statusMsg {
+    font-size: 12px;
+    color: var(--text-3);
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+  #statusMsg.err { color: var(--scarlet); }
+
+  @media (max-width: 620px) {
+    .charts-row { grid-template-columns: 1fr; }
+    header { padding: 0 1rem; }
+    main { padding: 1.25rem 1rem 2rem; }
+    .hero-band { padding: 1.75rem 1rem 1.5rem; }
+    .hero-title { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-group">
+    <div class="logo-icon">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="10" width="4" height="8" rx="1.5" fill="white" fill-opacity="0.9"/>
+        <rect x="8" y="6" width="4" height="12" rx="1.5" fill="white"/>
+        <rect x="14" y="2" width="4" height="16" rx="1.5" fill="white" fill-opacity="0.7"/>
+      </svg>
+    </div>
+    <div class="logo-text">Fill<span>Track</span></div>
+  </div>
+  <div class="header-right">
+    <div class="week-pill">
+      <label for="weekFilter">Minggu</label>
+      <select id="weekFilter"></select>
+    </div>
+    <div class="status-dot" id="statusDot" title="Status koneksi"></div>
+  </div>
+</header>
+
+<!-- HERO BAND -->
+<div class="hero-band">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Sales Analytics</div>
+    <div class="hero-title">Case Fill Dashboard</div>
+    <div class="hero-sub">Delivery performance by channel — data live dari Google Sheets</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi-card accent-blend">
+      <div class="kpi-label">Total Order Qty</div>
+      <div class="kpi-value" id="totalOrder">—</div>
+    </div>
+    <div class="kpi-card accent-blend">
+      <div class="kpi-label">Total Delivery Qty</div>
+      <div class="kpi-value" id="totalDelivery">—</div>
+    </div>
+    <div class="kpi-card accent-blend">
+      <div class="kpi-label">Overall Case Fill</div>
+      <div class="kpi-value" id="caseFill">—</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">MT Case Fill</div>
+      <div class="kpi-value" id="mtQty">—</div>
+    </div>
+    <div class="kpi-card accent-scarlet">
+      <div class="kpi-label">GT Case Fill</div>
+      <div class="kpi-value" id="gtQty">—</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Case Fill % per Channel</div>
+        <div class="legend" id="barLegend"></div>
+      </div>
+      <div style="position:relative;width:100%;height:230px;">
+        <canvas id="barChart" role="img" aria-label="Bar chart case fill per channel">Case fill per channel.</canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Delivered vs Gap</div>
+      </div>
+      <div class="donut-outer">
+        <div class="donut-wrap">
+          <canvas id="donutChart" role="img" aria-label="Donut chart delivered vs gap">Delivered vs gap.</canvas>
+          <div class="donut-center">
+            <div class="donut-pct" id="donutPct">—</div>
+            <div class="donut-lbl">delivered</div>
+          </div>
+        </div>
+        <div class="legend" id="donutLegend" style="flex-direction:column;gap:8px;align-self:flex-start;padding-left:4px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <div class="table-head-bar">
+      <div class="card-title">Detail per Channel</div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Channel</th>
+          <th>Order Qty</th>
+          <th>Delivery Qty</th>
+          <th>Gap</th>
+          <th>Case Fill</th>
+        </tr>
+      </thead>
+      <tbody id="tableData">
+        <tr><td colspan="5" style="text-align:center;color:#7C6FA5;padding:24px;">Memuat data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="statusMsg">Menghubungkan ke Google Sheets...</div>
+</main>
+
 <script>
-
-const SPREADSHEET_ID =
-"1xTEZKFhTzaxupONEBxX0iQniYhsaMZlfEiCGEja_qTQ";
-
-const BREAKDOWN_GID =
-"1343041753";
-
-/* =========================
-CSV URL
-========================= */
-
-const csvUrl =
-`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${BREAKDOWN_GID}`;
+const SPREADSHEET_ID = "1xTEZKFhTzaxupONEBxX0iQniYhsaMZlfEiCGEja_qTQ";
+const BREAKDOWN_GID  = "1343041753";
+const csvUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${BREAKDOWN_GID}`;
 
 let dashboardData = [];
+let barChart, donutChart;
 
-let barChart;
-let donutChart;
+const CHANNEL_COLORS = {
+  MT: '#7C3AED',
+  GT: '#E53935',
+  DEFAULT: '#4F1C6E'
+};
+const PALETTE = ['#7C3AED','#E53935','#C084FC','#F87171','#A855F7','#FB923C','#6D28D9','#DC2626'];
 
-/* =========================
-LOAD DATA
-========================= */
+function parseCSVLine(line) {
+  const result = []; let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      if (inQ && line[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ;
+    } else if (c === ',' && !inQ) { result.push(cur.trim()); cur = ''; }
+    else cur += c;
+  }
+  result.push(cur.trim()); return result;
+}
 
-async function loadData(){
-
-    const res =
-    await fetch(csvUrl);
-
-    const csv =
-    await res.text();
-
-    const rows =
-    csv.split("\n")
-    .slice(1);
+async function loadData() {
+  const dot = document.getElementById('statusDot');
+  try {
+    const res = await fetch(csvUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const csv = await res.text();
+    const rows = csv.split(/\r?\n/).slice(1).filter(r => r.trim());
 
     dashboardData = [];
-
-    rows.forEach(r=>{
-
-        const c =
-        r.split(",");
-
-        if(c.length >= 6){
-
-            dashboardData.push({
-
-                week:
-                c[0]
-                .replace(/"/g,''),
-
-                channel:
-                c[1]
-                .replace(/"/g,''),
-
-                orderQty:
-                parseFloat(c[2]) || 0,
-
-                deliveryQty:
-                parseFloat(c[3]) || 0,
-
-                gap:
-                parseFloat(c[4]) || 0,
-
-                caseFill:
-                parseFloat(c[5]) || 0
-
-            });
-
-        }
-
+    rows.forEach(r => {
+      const c = parseCSVLine(r);
+      if (c.length >= 6) {
+        const cf = parseFloat(c[5].replace('%','').replace(/,/g,'.'));
+        dashboardData.push({
+          week:        c[0].replace(/"/g,'').trim(),
+          channel:     c[1].replace(/"/g,'').trim(),
+          orderQty:    parseFloat(c[2].replace(/[",]/g,'')) || 0,
+          deliveryQty: parseFloat(c[3].replace(/[",]/g,'')) || 0,
+          gap:         parseFloat(c[4].replace(/[",]/g,'')) || 0,
+          caseFill:    isNaN(cf) ? 0 : cf
+        });
+      }
     });
 
+    if (!dashboardData.length) throw new Error('Tidak ada data ditemukan');
+    dot.classList.add('ok');
     setupFilter();
+    document.getElementById('statusMsg').textContent =
+      `✓ Data berhasil dimuat — ${dashboardData.length} baris`;
 
+  } catch(e) {
+    dot.classList.add('err');
+    const msg = document.getElementById('statusMsg');
+    msg.textContent = `⚠ Error: ${e.message}. Pastikan spreadsheet diset publik (Anyone with the link → Viewer).`;
+    msg.classList.add('err');
+    document.getElementById('tableData').innerHTML =
+      `<tr><td colspan="5" style="text-align:center;color:#991B1B;padding:24px;">Gagal memuat data.<br>Cek pengaturan akses Google Sheets.</td></tr>`;
+  }
 }
 
-/* =========================
-FILTER
-========================= */
-
-function setupFilter(){
-
-    const weeks =
-    [...new Set(
-        dashboardData.map(d=>d.week)
-    )];
-
-    const filter =
-    document.getElementById(
-        "weekFilter"
-    );
-
-    filter.innerHTML = "";
-
-    weeks.forEach(w=>{
-
-        filter.innerHTML +=
-        `<option value="${w}">
-            ${w}
-        </option>`;
-
-    });
-
-    renderDashboard(
-        weeks[0]
-    );
-
-    filter.addEventListener(
-        "change",
-        ()=>{
-
-            renderDashboard(
-                filter.value
-            );
-
-        }
-    );
-
+function setupFilter() {
+  const weeks = [...new Set(dashboardData.map(d => d.week))];
+  const sel = document.getElementById('weekFilter');
+  sel.innerHTML = weeks.map(w => `<option value="${w}">${w}</option>`).join('');
+  renderDashboard(weeks[0]);
+  sel.addEventListener('change', () => renderDashboard(sel.value));
 }
 
-/* =========================
-RENDER DASHBOARD
-========================= */
-
-function renderDashboard(week){
-
-    const data =
-    dashboardData.filter(
-        d=>d.week === week
-    );
-
-    let totalOrder = 0;
-    let totalDelivery = 0;
-    let totalGap = 0;
-
-    let mtOrder = 0;
-    let mtDelivery = 0;
-
-    let gtOrder = 0;
-    let gtDelivery = 0;
-
-    let labels = [];
-    let values = [];
-
-    let tableHTML = "";
-
-    data.forEach(d=>{
-
-        totalOrder += d.orderQty;
-        totalDelivery += d.deliveryQty;
-        totalGap += d.gap;
-
-        labels.push(d.channel);
-        values.push(d.caseFill);
-
-        /* MT */
-
-        if(d.channel === "MT"){
-
-            mtOrder += d.orderQty;
-            mtDelivery += d.deliveryQty;
-
-        }
-
-        /* GT */
-
-        if(d.channel === "GT"){
-
-            gtOrder += d.orderQty;
-            gtDelivery += d.deliveryQty;
-
-        }
-
-        tableHTML += `
-
-        <tr>
-
-            <td>${d.channel}</td>
-
-            <td>
-                ${d.orderQty.toLocaleString()}
-            </td>
-
-            <td>
-                ${d.deliveryQty.toLocaleString()}
-            </td>
-
-            <td class="good">
-                ${d.caseFill.toFixed(2)}%
-            </td>
-
-        </tr>
-
-        `;
-
-    });
-
-    /* CASE FILL */
-
-    const totalCF =
-    totalOrder
-    ? (totalDelivery / totalOrder) * 100
-    : 0;
-
-    const mtCF =
-    mtOrder
-    ? (mtDelivery / mtOrder) * 100
-    : 0;
-
-    const gtCF =
-    gtOrder
-    ? (gtDelivery / gtOrder) * 100
-    : 0;
-
-    /* KPI */
-
-    document.getElementById(
-        "totalOrder"
-    ).innerHTML =
-    totalOrder.toLocaleString();
-
-    document.getElementById(
-        "totalDelivery"
-    ).innerHTML =
-    totalDelivery.toLocaleString();
-
-    document.getElementById(
-        "caseFill"
-    ).innerHTML =
-    totalCF.toFixed(2) +
-    "% Total CF";
-
-    document.getElementById(
-        "mtQty"
-    ).innerHTML =
-    mtCF.toFixed(2) + "%";
-
-    document.getElementById(
-        "gtQty"
-    ).innerHTML =
-    gtCF.toFixed(2) + "%";
-
-    /* TABLE */
-
-    document.getElementById(
-        "tableData"
-    ).innerHTML =
-    tableHTML;
-
-    createCharts(
-        labels,
-        values,
-        totalCF
-    );
-
+function cfClass(v) {
+  return v >= 95 ? 'cf-good' : v >= 85 ? 'cf-warn' : 'cf-bad';
+}
+function kpiClass(v) {
+  return v >= 95 ? 'good' : v >= 85 ? 'warn' : 'bad';
+}
+function chBadgeClass(ch) {
+  if (ch === 'MT') return 'ch-MT';
+  if (ch === 'GT') return 'ch-GT';
+  return 'ch-default';
 }
 
-/* =========================
-CHART
-========================= */
+function renderDashboard(week) {
+  const data = dashboardData.filter(d => d.week === week);
+  let totalOrder=0, totalDelivery=0;
+  let mtOrder=0, mtDelivery=0, gtOrder=0, gtDelivery=0;
+  let labels=[], values=[], colors=[], tableHTML='';
 
-function createCharts(
-    labels,
-    values,
-    totalCF
-){
+  data.forEach(d => {
+    totalOrder    += d.orderQty;
+    totalDelivery += d.deliveryQty;
+    if (d.channel==='MT') { mtOrder+=d.orderQty; mtDelivery+=d.deliveryQty; }
+    if (d.channel==='GT') { gtOrder+=d.orderQty; gtDelivery+=d.deliveryQty; }
+    labels.push(d.channel);
+    values.push(parseFloat(d.caseFill.toFixed(2)));
+    colors.push(CHANNEL_COLORS[d.channel] || PALETTE[labels.length % PALETTE.length]);
 
-    if(barChart){
+    tableHTML += `<tr>
+      <td><span class="ch-badge ${chBadgeClass(d.channel)}">${d.channel}</span></td>
+      <td>${d.orderQty.toLocaleString('id-ID')}</td>
+      <td>${d.deliveryQty.toLocaleString('id-ID')}</td>
+      <td>${d.gap.toLocaleString('id-ID')}</td>
+      <td><span class="cf-badge ${cfClass(d.caseFill)}">${d.caseFill.toFixed(2)}%</span></td>
+    </tr>`;
+  });
 
-        barChart.destroy();
+  const totalCF = totalOrder ? (totalDelivery/totalOrder)*100 : 0;
+  const mtCF    = mtOrder    ? (mtDelivery/mtOrder)*100 : 0;
+  const gtCF    = gtOrder    ? (gtDelivery/gtOrder)*100 : 0;
 
+  const set = (id, val, cls) => {
+    const el = document.getElementById(id);
+    el.textContent = val;
+    if (cls) el.className = 'kpi-value ' + cls;
+  };
+
+  set('totalOrder',    totalOrder.toLocaleString('id-ID'));
+  set('totalDelivery', totalDelivery.toLocaleString('id-ID'));
+  set('caseFill',      totalCF.toFixed(2) + '%', kpiClass(totalCF));
+  set('mtQty',         mtCF.toFixed(2) + '%',    kpiClass(mtCF));
+  set('gtQty',         gtCF.toFixed(2) + '%',    kpiClass(gtCF));
+
+  document.getElementById('tableData').innerHTML = tableHTML ||
+    `<tr><td colspan="5" style="text-align:center;color:#7C6FA5;padding:24px;">Tidak ada data untuk minggu ini</td></tr>`;
+  document.getElementById('donutPct').textContent = totalCF.toFixed(1) + '%';
+
+  createCharts(labels, values, colors, totalCF);
+}
+
+function createCharts(labels, values, colors, totalCF) {
+  if (barChart)   barChart.destroy();
+  if (donutChart) donutChart.destroy();
+
+  document.getElementById('barLegend').innerHTML = labels.map((l,i) =>
+    `<span class="legend-item"><span class="legend-dot" style="background:${colors[i]}"></span>${l} ${values[i]}%</span>`
+  ).join('');
+
+  barChart = new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Case Fill %',
+        data: values,
+        backgroundColor: colors.map(c => c + 'DD'),
+        borderColor: colors,
+        borderWidth: 1.5,
+        borderRadius: 8,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1E1033',
+          titleColor: '#A78BFA',
+          bodyColor: '#fff',
+          padding: 10,
+          callbacks: { label: ctx => ` Case Fill: ${ctx.parsed.y.toFixed(2)}%` }
+        }
+      },
+      scales: {
+        y: {
+          min: 0, max: 105,
+          ticks: { callback: v => v + '%', font: { size: 11 }, color: '#7C6FA5' },
+          grid: { color: '#EDE9FE' }
+        },
+        x: {
+          ticks: { font: { size: 12, weight: '600' }, color: '#4B3E6B' },
+          grid: { display: false }
+        }
+      }
     }
+  });
 
-    if(donutChart){
+  const del = parseFloat(totalCF.toFixed(2));
+  const gap = parseFloat((100-totalCF).toFixed(2));
 
-        donutChart.destroy();
+  document.getElementById('donutLegend').innerHTML =
+    `<span class="legend-item"><span class="legend-dot" style="background:#7C3AED"></span>Delivered&nbsp;<strong>${del}%</strong></span>
+     <span class="legend-item"><span class="legend-dot" style="background:#FEE2E2;border:1px solid #F87171"></span>Gap&nbsp;<strong>${gap}%</strong></span>`;
 
+  donutChart = new Chart(document.getElementById('donutChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Delivered','Gap'],
+      datasets: [{
+        data: [del, gap],
+        backgroundColor: ['#7C3AED','#FEE2E2'],
+        borderColor:     ['#6B21A8','#FECACA'],
+        borderWidth: 2,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      cutout: '74%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1E1033',
+          titleColor: '#A78BFA',
+          bodyColor: '#fff',
+          padding: 10,
+          callbacks: { label: ctx => ` ${ctx.parsed.toFixed(2)}%` }
+        }
+      }
     }
-
-    barChart = new Chart(
-
-        document.getElementById(
-            "barChart"
-        ),
-
-        {
-
-            type:"bar",
-
-            data:{
-
-                labels:labels,
-
-                datasets:[{
-
-                    label:"Case Fill",
-
-                    data:values
-
-                }]
-
-            }
-
-        }
-
-    );
-
-    donutChart = new Chart(
-
-        document.getElementById(
-            "donutChart"
-        ),
-
-        {
-
-            type:"doughnut",
-
-            data:{
-
-                labels:[
-                    "Delivered",
-                    "Gap"
-                ],
-
-                datasets:[{
-
-                    data:[
-                        totalCF,
-                        100-totalCF
-                    ]
-
-                }]
-
-            }
-
-        }
-
-    );
-
+  });
 }
 
 loadData();
-
 </script>
+</body>
+</html>
