@@ -6,7 +6,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>SCM Executive Dashboard</title>
+<title>SCM Offline Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 
@@ -512,8 +512,6 @@ canvas{
 max-height:320px;
 }
 
-/* MOBILE */
-
 @media(max-width:1200px){
 
 .grid{
@@ -584,8 +582,6 @@ Trend SKU Laku
 <!-- MAIN -->
 
 <div class="main">
-
-<!-- TOPBAR -->
 
 <div class="topbar">
 
@@ -801,9 +797,7 @@ const KPI_BREAKDOWN =
 const TOP_LOSS_PRODUCT =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1801155860&single=true&output=csv";
 
-/* =========================
-GLOBAL
-========================= */
+/* GLOBAL */
 
 let channelData = [];
 let breakdownData = [];
@@ -812,26 +806,42 @@ let lossData = [];
 let barChart;
 let donutChart;
 
-/* =========================
-ROBUST CSV PARSER
-========================= */
+/* NUMBER FORMAT */
+
+function num(v){
+
+return parseFloat(
+String(v || 0)
+.replace(",", ".")
+) || 0;
+
+}
+
+function fmt(v){
+
+return num(v)
+.toLocaleString("id-ID");
+
+}
+
+/* CSV PARSER */
 
 function parseCSV(text){
 
 const lines =
-text.trim().split('\\n');
+text.trim().split('\n');
 
 const headers =
 lines[0]
 .split(',')
-.map(h=>
+.map(h =>
 h.replace(/"/g,'').trim()
 );
 
-return lines.slice(1).map(line=>{
+return lines.slice(1).map(line => {
 
 const values =
-line.match(/(".*?"|[^",]+)(?=\\s*,|\\s*$)/g);
+line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
 
 const obj = {};
 
@@ -852,13 +862,6 @@ return obj;
 
 }
 
-function fmt(n){
-
-return Number(n || 0)
-.toLocaleString("id-ID");
-
-}
-
 /* NAVIGATION */
 
 function showPage(page,btn){
@@ -873,13 +876,12 @@ document
 
 btn.classList.add("active");
 
-document.getElementById(
-page+"Page"
-).classList.add("active");
+document.getElementById(page+"Page")
+.classList.add("active");
 
 }
 
-/* LOAD */
+/* LOAD DATA */
 
 async function loadData(){
 
@@ -899,7 +901,7 @@ setupWeek();
 
 }
 
-/* WEEK */
+/* WEEK FILTER */
 
 function setupWeek(){
 
@@ -958,20 +960,20 @@ channels.find(d=>
 
 if(mt){
 
-document.getElementById("mtOrder").innerHTML =
+mtOrder.innerHTML =
 fmt(mt["Order Quantity"]);
 
-document.getElementById("mtDelivery").innerHTML =
+mtDelivery.innerHTML =
 fmt(mt["Delivery Quantity"]);
 
-document.getElementById("mtGap").innerHTML =
+mtGap.innerHTML =
 fmt(mt["GAP"]);
 
-document.getElementById("mtCF").innerHTML =
-Number(mt["Case Fill"] || 0).toFixed(2)+"%";
+mtCF.innerHTML =
+num(mt["Case Fill"]).toFixed(2)+"%";
 
-document.getElementById("mtCF2").innerHTML =
-Number(mt["Case Fill"] || 0).toFixed(2)+"%";
+mtCF2.innerHTML =
+num(mt["Case Fill"]).toFixed(2)+"%";
 
 }
 
@@ -979,31 +981,31 @@ Number(mt["Case Fill"] || 0).toFixed(2)+"%";
 
 if(gt){
 
-document.getElementById("gtOrder").innerHTML =
+gtOrder.innerHTML =
 fmt(gt["Order Quantity"]);
 
-document.getElementById("gtDelivery").innerHTML =
+gtDelivery.innerHTML =
 fmt(gt["Delivery Quantity"]);
 
-document.getElementById("gtGap").innerHTML =
+gtGap.innerHTML =
 fmt(gt["GAP"]);
 
-document.getElementById("gtCF").innerHTML =
-Number(gt["Case Fill"] || 0).toFixed(2)+"%";
+gtCF.innerHTML =
+num(gt["Case Fill"]).toFixed(2)+"%";
 
-document.getElementById("gtCF2").innerHTML =
-Number(gt["Case Fill"] || 0).toFixed(2)+"%";
+gtCF2.innerHTML =
+num(gt["Case Fill"]).toFixed(2)+"%";
 
 }
 
 /* TABLE */
 
-document.getElementById("tableBody").innerHTML =
+tableBody.innerHTML =
 breakdown.map(d=>`
 
 <tr>
 
-<td>${d["Channel Breakdown"] || '-'}</td>
+<td>${d["Channel"] || '-'}</td>
 
 <td>${fmt(d["Order Quantity"])}</td>
 
@@ -1012,7 +1014,7 @@ breakdown.map(d=>`
 <td>${fmt(d["GAP"])}</td>
 
 <td>
-${Number(d["Case Fill"] || 0).toFixed(2)}%
+${num(d["Case Fill"]).toFixed(2)}%
 </td>
 
 </tr>
@@ -1021,17 +1023,17 @@ ${Number(d["Case Fill"] || 0).toFixed(2)}%
 
 /* LOSS */
 
-document.getElementById("lossContainer").innerHTML =
+lossContainer.innerHTML =
 losses
 
 .filter(d =>
-Number(d["GAP"]) < 0
+num(d["GAP"]) < 0
 )
 
 .sort((a,b)=>
-Number(a["GAP"])
+num(a["GAP"])
 -
-Number(b["GAP"])
+num(b["GAP"])
 )
 
 .slice(0,12)
@@ -1070,7 +1072,7 @@ ${fmt(d["GAP"])}
 <div class="sku-box">
 <small>CASE FILL</small>
 <strong class="cf">
-${Number(d["Case Fill"] || 0).toFixed(1)}%
+${num(d["Case Fill"]).toFixed(1)}%
 </strong>
 </div>
 
@@ -1082,13 +1084,13 @@ ${Number(d["Case Fill"] || 0).toFixed(1)}%
 
 /* BEST */
 
-document.getElementById("bestContainer").innerHTML =
+bestContainer.innerHTML =
 losses
 
 .sort((a,b)=>
-Number(b["Delivery Quantity"])
+num(b["Delivery Quantity"])
 -
-Number(a["Delivery Quantity"])
+num(a["Delivery Quantity"])
 )
 
 .slice(0,12)
@@ -1127,7 +1129,7 @@ ${fmt(d["GAP"])}
 <div class="sku-box">
 <small>CASE FILL</small>
 <strong class="cf">
-${Number(d["Case Fill"] || 0).toFixed(1)}%
+${num(d["Case Fill"]).toFixed(1)}%
 </strong>
 </div>
 
@@ -1161,17 +1163,22 @@ data:{
 
 labels:
 data.map(d=>
-d["Channel Breakdown"]
+d["Channel"]
 ),
 
 datasets:[{
 
 data:
 data.map(d=>
-Number(d["Case Fill"] || 0)
+num(d["Case Fill"])
 ),
 
-borderRadius:14
+borderRadius:14,
+
+backgroundColor:[
+"#EF4444",
+"#7C3AED"
+]
 
 }]
 
@@ -1209,7 +1216,7 @@ callback:v=>v+"%"
 const avg =
 data.length
 ? data.reduce((a,b)=>
-a + Number(b["Case Fill"] || 0)
+a + num(b["Case Fill"])
 ,0) / data.length
 : 0;
 
@@ -1231,6 +1238,11 @@ datasets:[{
 data:[
 avg,
 100-avg
+],
+
+backgroundColor:[
+"#7C3AED",
+"#EF4444"
 ]
 
 }]
