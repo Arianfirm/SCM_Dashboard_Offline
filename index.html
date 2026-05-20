@@ -89,7 +89,7 @@ margin-bottom:40px;
 
 .logo h1{
 
-font-size:28px;
+font-size:30px;
 font-weight:800;
 
 }
@@ -184,7 +184,7 @@ margin-bottom:28px;
 
 .title h2{
 
-font-size:36px;
+font-size:38px;
 font-weight:800;
 
 }
@@ -295,7 +295,7 @@ background:var(--red);
 
 .kpi-big{
 
-font-size:72px;
+font-size:74px;
 
 font-weight:800;
 
@@ -434,13 +434,14 @@ color:var(--green);
 font-weight:700;
 }
 
-/* CHART */
+.cf{
+color:#A855F7;
+font-weight:700;
+}
 
 canvas{
 max-height:340px;
 }
-
-/* MOBILE */
 
 @media(max-width:1200px){
 
@@ -634,6 +635,8 @@ id="gtCF">
 
 <div class="grid">
 
+<!-- BAR -->
+
 <div class="card">
 
 <div class="card-title">
@@ -644,10 +647,12 @@ Channel Breakdown
 
 </div>
 
+<!-- PIE -->
+
 <div class="card">
 
 <div class="card-title">
-Overall Case Fill
+Service Level
 </div>
 
 <canvas id="donutChart"></canvas>
@@ -656,12 +661,12 @@ Overall Case Fill
 
 </div>
 
-<!-- BREAKDOWN -->
+<!-- TABLE -->
 
 <div class="card">
 
 <div class="card-title">
-KPI Breakdown
+GT / MT Breakdown
 </div>
 
 <div class="table-wrap">
@@ -692,7 +697,7 @@ KPI Breakdown
 
 </div>
 
-<!-- LOSS SKU -->
+<!-- LOSS -->
 
 <div class="page"
 id="lossPage">
@@ -705,7 +710,7 @@ Loss SKU Trend
 
 <div class="table-wrap">
 
-<table id="lossTable">
+<table>
 
 <thead id="lossHead"></thead>
 
@@ -732,7 +737,7 @@ Top Selling SKU
 
 <div class="table-wrap">
 
-<table id="topTable">
+<table>
 
 <thead id="topHead"></thead>
 
@@ -763,9 +768,7 @@ const KPI_BREAKDOWN =
 const TOP_LOSS_PRODUCT =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1801155860&single=true&output=csv";
 
-/* =========================
-GLOBAL
-========================= */
+/* GLOBAL */
 
 let channelData = [];
 let breakdownData = [];
@@ -795,7 +798,7 @@ return num(v)
 }
 
 /* =========================
-PAGE
+NAVIGATION
 ========================= */
 
 function showPage(page,btn){
@@ -958,22 +961,37 @@ num(gt["Case Fill"]).toFixed(2)+"%";
 
 /* TABLE */
 
+const sortedBreakdown =
+[...breakdown]
+
+.sort((a,b)=>
+num(b["Delivery Quantity"])
+-
+num(a["Delivery Quantity"])
+);
+
 tableBody.innerHTML =
-breakdown.map(d=>`
+sortedBreakdown.map(d=>`
 
 <tr>
 
-<td>${d.Channel}</td>
+<td>
+${d["Channel Breakdown"] || '-'}
+</td>
 
-<td>${fmt(d["Order Quantity"])}</td>
+<td>
+${fmt(d["Order Quantity"])}
+</td>
 
-<td>${fmt(d["Delivery Quantity"])}</td>
+<td>
+${fmt(d["Delivery Quantity"])}
+</td>
 
 <td class="loss">
 ${fmt(d["GAP"])}
 </td>
 
-<td>
+<td class="cf">
 ${num(d["Case Fill"]).toFixed(2)}%
 </td>
 
@@ -981,22 +999,16 @@ ${num(d["Case Fill"]).toFixed(2)}%
 
 `).join('');
 
-/* LOSS TABLE */
+/* BUILD */
 
 buildLossTable();
-
-/* TOP TABLE */
-
 buildTopTable();
-
-/* CHART */
-
-buildCharts(breakdown);
+buildCharts(channels);
 
 }
 
 /* =========================
-LOSS MATRIX
+LOSS TABLE
 ========================= */
 
 function buildLossTable(){
@@ -1024,6 +1036,23 @@ num(d["GAP"]);
 
 });
 
+const sorted =
+Object.entries(grouped)
+
+.sort((a,b)=>{
+
+const totalA =
+Object.values(a[1])
+.reduce((x,y)=>x+y,0);
+
+const totalB =
+Object.values(b[1])
+.reduce((x,y)=>x+y,0);
+
+return totalA - totalB;
+
+});
+
 lossHead.innerHTML =
 
 `
@@ -1040,9 +1069,7 @@ ${weeks.map(w=>
 
 lossBody.innerHTML =
 
-Object.keys(grouped)
-
-.map(sku=>`
+sorted.map(([sku,data])=>`
 
 <tr>
 
@@ -1052,8 +1079,8 @@ ${weeks.map(w=>`
 
 <td class="loss">
 
-${grouped[sku][w]
-? fmt(grouped[sku][w])
+${data[w]
+? fmt(data[w])
 : '-'}
 
 </td>
@@ -1092,6 +1119,23 @@ num(d["Delivery Quantity"]);
 
 });
 
+const sorted =
+Object.entries(grouped)
+
+.sort((a,b)=>{
+
+const totalA =
+Object.values(a[1])
+.reduce((x,y)=>x+y,0);
+
+const totalB =
+Object.values(b[1])
+.reduce((x,y)=>x+y,0);
+
+return totalB - totalA;
+
+});
+
 topHead.innerHTML =
 
 `
@@ -1108,9 +1152,7 @@ ${weeks.map(w=>
 
 topBody.innerHTML =
 
-Object.keys(grouped)
-
-.map(sku=>`
+sorted.map(([sku,data])=>`
 
 <tr>
 
@@ -1120,8 +1162,8 @@ ${weeks.map(w=>`
 
 <td class="success">
 
-${grouped[sku][w]
-? fmt(grouped[sku][w])
+${data[w]
+? fmt(data[w])
 : '-'}
 
 </td>
@@ -1167,11 +1209,11 @@ data.map(d=>
 num(d["Case Fill"])
 ),
 
-borderRadius:12,
+borderRadius:14,
 
 backgroundColor:[
-"#EF4444",
-"#7C3AED"
+"#7C3AED",
+"#EF4444"
 ]
 
 }]
@@ -1206,6 +1248,8 @@ callback:v=>v+"%"
 }
 
 );
+
+/* DONUT */
 
 const avg =
 data.reduce((a,b)=>
@@ -1258,6 +1302,8 @@ display:false
 );
 
 }
+
+/* LOAD */
 
 loadData();
 
