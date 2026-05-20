@@ -3,12 +3,12 @@
 
 <head>
 
-<meta charset="UTF-8"/>
+<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <title>SCM Executive Dashboard</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -22,22 +22,22 @@
 
 :root{
 
-    --purple:#7C3AED;
-    --purple2:#A855F7;
-
     --bg:#F5F7FB;
     --card:#FFFFFF;
 
     --text:#111827;
     --muted:#6B7280;
 
-    --border:#ECECF2;
+    --border:#ECEEF4;
+
+    --purple:#7C3AED;
+    --purple2:#9333EA;
 
     --green:#10B981;
     --red:#EF4444;
 
     --shadow:
-    0 10px 30px rgba(0,0,0,.04);
+    0 10px 35px rgba(15,23,42,.06);
 
 }
 
@@ -55,7 +55,7 @@ body{
 
 .header{
 
-    height:82px;
+    height:84px;
 
     background:
     linear-gradient(
@@ -66,11 +66,11 @@ body{
 
     display:flex;
 
-    align-items:center;
-
     justify-content:space-between;
 
-    padding:0 32px;
+    align-items:center;
+
+    padding:0 34px;
 
     color:white;
 
@@ -88,9 +88,9 @@ body{
 
 .brand p{
 
-    font-size:13px;
+    margin-top:5px;
 
-    margin-top:4px;
+    font-size:13px;
 
     opacity:.9;
 
@@ -100,33 +100,35 @@ body{
 
     border:none;
 
-    background:rgba(255,255,255,.15);
+    background:rgba(255,255,255,.16);
 
     color:white;
 
-    padding:12px 18px;
+    padding:13px 18px;
 
-    border-radius:14px;
-
-    outline:none;
+    border-radius:16px;
 
     font-weight:600;
+
+    outline:none;
 
 }
 
 .week-filter option{
+
     color:black;
+
 }
 
-/* LAYOUT */
+/* APP */
 
-.layout{
+.app{
 
     display:grid;
 
     grid-template-columns:250px 1fr;
 
-    min-height:calc(100vh - 82px);
+    min-height:calc(100vh - 84px);
 
 }
 
@@ -138,11 +140,11 @@ body{
 
     border-right:1px solid var(--border);
 
-    padding:24px 18px;
+    padding:28px 18px;
 
 }
 
-.nav{
+.menu{
 
     display:flex;
 
@@ -152,7 +154,7 @@ body{
 
 }
 
-.nav button{
+.menu button{
 
     border:none;
 
@@ -162,27 +164,27 @@ body{
 
     border-radius:18px;
 
+    cursor:pointer;
+
     text-align:left;
 
     font-size:14px;
 
     font-weight:600;
 
-    cursor:pointer;
+    color:var(--muted);
 
     transition:.2s;
 
-    color:var(--muted);
+}
+
+.menu button:hover{
+
+    background:#F4F5FA;
 
 }
 
-.nav button:hover{
-
-    background:#F3F4F6;
-
-}
-
-.nav button.active{
+.menu button.active{
 
     background:
     linear-gradient(
@@ -199,7 +201,7 @@ body{
 
 .content{
 
-    padding:28px;
+    padding:30px;
 
 }
 
@@ -225,9 +227,9 @@ body{
 
     grid-template-columns:repeat(2,1fr);
 
-    gap:22px;
+    gap:24px;
 
-    margin-bottom:24px;
+    margin-bottom:26px;
 
 }
 
@@ -235,11 +237,11 @@ body{
 
     background:white;
 
-    border-radius:28px;
-
     border:1px solid var(--border);
 
-    padding:28px;
+    border-radius:30px;
+
+    padding:30px;
 
     box-shadow:var(--shadow);
 
@@ -253,7 +255,7 @@ body{
 
     align-items:center;
 
-    margin-bottom:18px;
+    margin-bottom:20px;
 
 }
 
@@ -271,9 +273,9 @@ body{
 
     border-radius:999px;
 
-    color:white;
-
     font-size:12px;
+
+    color:white;
 
     font-weight:700;
 
@@ -289,7 +291,7 @@ body{
 
 .kpi-big{
 
-    font-size:68px;
+    font-size:72px;
 
     line-height:1;
 
@@ -297,7 +299,7 @@ body{
 
     font-weight:800;
 
-    margin-bottom:24px;
+    margin-bottom:26px;
 
 }
 
@@ -323,9 +325,9 @@ body{
 
 .detail small{
 
-    font-size:11px;
-
     color:var(--muted);
+
+    font-size:11px;
 
 }
 
@@ -359,7 +361,7 @@ body{
 
     background:white;
 
-    border-radius:28px;
+    border-radius:30px;
 
     border:1px solid var(--border);
 
@@ -375,7 +377,7 @@ body{
 
     font-weight:700;
 
-    margin-bottom:20px;
+    margin-bottom:24px;
 
 }
 
@@ -385,8 +387,8 @@ body{
 
     position:relative;
 
-    width:280px;
-    height:280px;
+    width:290px;
+    height:290px;
 
     margin:auto;
 
@@ -410,7 +412,7 @@ body{
 
 .donut-center h1{
 
-    font-size:54px;
+    font-size:58px;
 
     font-family:'Syne',sans-serif;
 
@@ -418,9 +420,9 @@ body{
 
 .donut-center span{
 
-    color:var(--muted);
-
     margin-top:6px;
+
+    color:var(--muted);
 
 }
 
@@ -440,17 +442,17 @@ th{
 
     padding:14px;
 
-    border-bottom:1px solid var(--border);
-
     font-size:12px;
 
     color:var(--muted);
+
+    border-bottom:1px solid var(--border);
 
 }
 
 td{
 
-    padding:16px 14px;
+    padding:18px 14px;
 
     border-bottom:1px solid #F3F4F6;
 
@@ -458,9 +460,9 @@ td{
 
 }
 
-/* SKU PAGE */
+/* SKU */
 
-.sku-list{
+.sku-grid-page{
 
     display:grid;
 
@@ -474,7 +476,7 @@ td{
 
     background:white;
 
-    border-radius:26px;
+    border-radius:28px;
 
     border:1px solid var(--border);
 
@@ -496,7 +498,7 @@ td{
 
 }
 
-.sku-grid{
+.sku-detail{
 
     display:grid;
 
@@ -530,7 +532,7 @@ td{
 
     margin-top:8px;
 
-    font-size:20px;
+    font-size:18px;
 
 }
 
@@ -546,6 +548,8 @@ td{
     color:var(--purple);
 }
 
+/* RESPONSIVE */
+
 @media(max-width:1200px){
 
     .grid{
@@ -554,7 +558,7 @@ td{
 
     }
 
-    .sku-list{
+    .sku-grid-page{
 
         grid-template-columns:1fr;
 
@@ -564,7 +568,7 @@ td{
 
 @media(max-width:900px){
 
-    .layout{
+    .app{
 
         grid-template-columns:1fr;
 
@@ -606,15 +610,15 @@ td{
 
 </div>
 
-<!-- LAYOUT -->
+<!-- APP -->
 
-<div class="layout">
+<div class="app">
 
     <!-- SIDEBAR -->
 
     <div class="sidebar">
 
-        <div class="nav">
+        <div class="menu">
 
             <button class="active"
                     onclick="showPage('overview',this)">
@@ -751,7 +755,7 @@ td{
                 <div class="card">
 
                     <div class="card-title">
-                        Case Fill % per Sub Channel
+                        Case Fill % per Channel Breakdown
                     </div>
 
                     <canvas id="barChart"
@@ -829,7 +833,7 @@ td{
         <div class="page"
              id="lossPage">
 
-            <div class="sku-list"
+            <div class="sku-grid-page"
                  id="lossContainer">
             </div>
 
@@ -840,7 +844,7 @@ td{
         <div class="page"
              id="bestPage">
 
-            <div class="sku-list"
+            <div class="sku-grid-page"
                  id="bestContainer">
             </div>
 
@@ -853,7 +857,7 @@ td{
 <script>
 
 /* =========================
-API CSV GOOGLE SHEET
+CSV API
 ========================= */
 
 const KPI_CHANNEL =
@@ -930,7 +934,7 @@ function showPage(page,btn){
     );
 
     document
-    .querySelectorAll(".nav button")
+    .querySelectorAll(".menu button")
     .forEach(b=>
         b.classList.remove("active")
     );
@@ -1083,13 +1087,17 @@ function render(week){
     const totalOrder =
     channels.reduce(
         (a,b)=>
-        a+Number(b["Order Quantity"]),0
+        a+Number(
+            b["Order Quantity"]
+        ),0
     );
 
     const totalDelivery =
     channels.reduce(
         (a,b)=>
-        a+Number(b["Delivery Quantity"]),0
+        a+Number(
+            b["Delivery Quantity"]
+        ),0
     );
 
     const overall =
@@ -1109,13 +1117,21 @@ function render(week){
 
         <tr>
 
-            <td>${d["Channel Breakdown"]}</td>
+            <td>
+                ${d["Channel Breakdown"]}
+            </td>
 
-            <td>${fmt(d["Order Quantity"])}</td>
+            <td>
+                ${fmt(d["Order Quantity"])}
+            </td>
 
-            <td>${fmt(d["Delivery Quantity"])}</td>
+            <td>
+                ${fmt(d["Delivery Quantity"])}
+            </td>
 
-            <td>${fmt(d["GAP"])}</td>
+            <td>
+                ${fmt(d["GAP"])}
+            </td>
 
             <td>
                 ${Number(d["Case Fill"]).toFixed(2)}%
@@ -1125,7 +1141,7 @@ function render(week){
 
     `).join('');
 
-    /* LOSS PAGE */
+    /* LOSS */
 
     document.getElementById(
         "lossContainer"
@@ -1134,30 +1150,38 @@ function render(week){
     .sort((a,b)=>
         Number(b.GAP)-Number(a.GAP)
     )
-    .slice(0,20)
+    .slice(0,12)
     .map(d=>`
 
         <div class="sku-card">
 
             <div class="sku-name">
+
                 ${d["Product Name"]}
+
             </div>
 
-            <div class="sku-grid">
+            <div class="sku-detail">
 
                 <div class="sku-box">
                     <small>ORDER</small>
-                    <strong>${fmt(d["Order Quantity"])}</strong>
+                    <strong>
+                        ${fmt(d["Order Quantity"])}
+                    </strong>
                 </div>
 
                 <div class="sku-box">
                     <small>DELIVERY</small>
-                    <strong>${fmt(d["Delivery Quantity"])}</strong>
+                    <strong>
+                        ${fmt(d["Delivery Quantity"])}
+                    </strong>
                 </div>
 
                 <div class="sku-box">
                     <small>GAP</small>
-                    <strong class="loss">${fmt(d["GAP"])}</strong>
+                    <strong class="loss">
+                        ${fmt(d["GAP"])}
+                    </strong>
                 </div>
 
                 <div class="sku-box">
@@ -1173,31 +1197,41 @@ function render(week){
 
     `).join('');
 
-    /* BEST PAGE */
+    /* BEST */
 
     document.getElementById(
         "bestContainer"
     ).innerHTML =
     losses
     .sort((a,b)=>
-        Number(b["Delivery Quantity"])
+
+        Number(
+            b["Delivery Quantity"]
+        )
         -
-        Number(a["Delivery Quantity"])
+        Number(
+            a["Delivery Quantity"]
+        )
+
     )
-    .slice(0,20)
+    .slice(0,12)
     .map(d=>`
 
         <div class="sku-card">
 
             <div class="sku-name">
+
                 ${d["Product Name"]}
+
             </div>
 
-            <div class="sku-grid">
+            <div class="sku-detail">
 
                 <div class="sku-box">
                     <small>ORDER</small>
-                    <strong>${fmt(d["Order Quantity"])}</strong>
+                    <strong>
+                        ${fmt(d["Order Quantity"])}
+                    </strong>
                 </div>
 
                 <div class="sku-box">
@@ -1209,7 +1243,9 @@ function render(week){
 
                 <div class="sku-box">
                     <small>GAP</small>
-                    <strong>${fmt(d["GAP"])}</strong>
+                    <strong>
+                        ${fmt(d["GAP"])}
+                    </strong>
                 </div>
 
                 <div class="sku-box">
@@ -1271,7 +1307,7 @@ function buildCharts(data,overall){
 
                     data:values,
 
-                    borderRadius:12,
+                    borderRadius:14,
 
                     backgroundColor:
                     labels.map(l=>
@@ -1298,13 +1334,25 @@ function buildCharts(data,overall){
 
                 scales:{
 
+                    x:{
+                        grid:{
+                            display:false
+                        }
+                    },
+
                     y:{
+
                         min:0,
                         max:110,
+
+                        grid:{
+                            color:"#F3F4F6"
+                        },
 
                         ticks:{
                             callback:v=>v+"%"
                         }
+
                     }
 
                 }
@@ -1353,7 +1401,7 @@ function buildCharts(data,overall){
 
             options:{
 
-                cutout:"74%",
+                cutout:"76%",
 
                 plugins:{
                     legend:{
@@ -1374,4 +1422,5 @@ loadData();
 </script>
 
 </body>
+
 </html>
