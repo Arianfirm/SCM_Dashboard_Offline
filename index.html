@@ -6,11 +6,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>SCM Dashboard</title>
+<title>SCM Executive Dashboard</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
@@ -23,9 +23,12 @@
 :root{
 
     --purple:#7C3AED;
-    --purple2:#6D28D9;
+    --purple2:#9333EA;
 
-    --bg:#F6F7FB;
+    --red:#EF4444;
+    --green:#10B981;
+
+    --bg:#F5F7FB;
     --card:#FFFFFF;
 
     --text:#111827;
@@ -33,11 +36,8 @@
 
     --border:#E5E7EB;
 
-    --green:#10B981;
-    --red:#EF4444;
-
-    --fontTitle:'Syne',sans-serif;
-    --fontBody:'DM Sans',sans-serif;
+    --shadow:
+    0 10px 30px rgba(0,0,0,.05);
 
 }
 
@@ -45,9 +45,9 @@ body{
 
     background:var(--bg);
 
-    color:var(--text);
+    font-family:'Inter',sans-serif;
 
-    font-family:var(--fontBody);
+    color:var(--text);
 
 }
 
@@ -55,7 +55,7 @@ body{
 
 .header{
 
-    height:78px;
+    height:84px;
 
     background:
     linear-gradient(
@@ -64,73 +64,59 @@ body{
         var(--purple2)
     );
 
-    display:flex;
+    padding:0 28px;
 
-    align-items:center;
+    display:flex;
 
     justify-content:space-between;
 
-    padding:0 28px;
+    align-items:center;
 
     color:white;
-
-    position:sticky;
-
-    top:0;
-
-    z-index:100;
 
 }
 
 .brand h1{
 
-    font-family:var(--fontTitle);
+    font-family:'Syne',sans-serif;
 
-    font-size:28px;
+    font-size:34px;
 
     font-weight:800;
+
+    letter-spacing:.5px;
 
 }
 
 .brand p{
 
-    font-size:12px;
-
-    opacity:.8;
-
     margin-top:4px;
 
-}
+    font-size:13px;
 
-.filter-wrap{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
+    opacity:.9;
 
 }
 
-.filter-wrap select{
+.week-filter{
 
-    background:rgba(255,255,255,.14);
+    background:rgba(255,255,255,.15);
 
     border:none;
 
-    color:white;
-
-    padding:12px 16px;
+    padding:12px 18px;
 
     border-radius:14px;
 
-    outline:none;
+    color:white;
 
     font-weight:600;
 
+    outline:none;
+
 }
 
-.filter-wrap select option{
+.week-filter option{
 
     color:black;
 
@@ -142,11 +128,11 @@ body{
 
     display:grid;
 
-    grid-template-columns:260px 1fr;
+    grid-template-columns:340px 1fr;
 
-    gap:22px;
+    gap:24px;
 
-    padding:22px;
+    padding:24px;
 
 }
 
@@ -158,67 +144,107 @@ body{
 
     flex-direction:column;
 
-    gap:18px;
+    gap:22px;
 
 }
 
-.sidebar-card{
+.side-card{
 
     background:white;
 
+    border-radius:24px;
+
     border:1px solid var(--border);
 
-    border-radius:22px;
+    box-shadow:var(--shadow);
 
     overflow:hidden;
 
 }
 
-.sidebar-title{
+.side-header{
 
-    padding:16px 18px;
+    padding:18px 22px;
 
     border-bottom:1px solid var(--border);
 
     font-weight:700;
 
-    font-size:14px;
+    font-size:15px;
 
 }
 
-.loss-item{
+.sku-card{
 
-    padding:16px 18px;
+    padding:18px 22px;
 
     border-bottom:1px solid #F3F4F6;
 
 }
 
-.loss-item:last-child{
+.sku-card:last-child{
 
     border-bottom:none;
 
 }
 
-.loss-name{
+.sku-name{
 
     font-size:13px;
 
     font-weight:700;
 
-    margin-bottom:8px;
+    line-height:1.5;
+
+    margin-bottom:14px;
 
 }
 
-.loss-gap{
+.sku-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+
+    margin-bottom:14px;
+
+}
+
+.sku-item small{
+
+    color:var(--muted);
+
+    font-size:11px;
+
+}
+
+.sku-item strong{
+
+    display:block;
+
+    margin-top:5px;
+
+    font-size:16px;
+
+}
+
+.loss{
 
     color:var(--red);
 
-    font-weight:800;
+}
 
-    font-size:22px;
+.success{
 
-    font-family:var(--fontTitle);
+    color:var(--green);
+
+}
+
+.cf{
+
+    color:var(--purple);
 
 }
 
@@ -234,20 +260,13 @@ body{
 
     overflow:hidden;
 
-    margin-top:10px;
-
 }
 
 .progress div{
 
     height:100%;
 
-    background:
-    linear-gradient(
-        90deg,
-        #EF4444,
-        #F97316
-    );
+    border-radius:999px;
 
 }
 
@@ -259,7 +278,7 @@ body{
 
     flex-direction:column;
 
-    gap:22px;
+    gap:24px;
 
 }
 
@@ -269,51 +288,121 @@ body{
 
     display:grid;
 
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(2,1fr);
+
+    gap:20px;
+
+}
+
+.kpi-card{
+
+    background:white;
+
+    border-radius:24px;
+
+    border:1px solid var(--border);
+
+    box-shadow:var(--shadow);
+
+    padding:24px;
+
+}
+
+.kpi-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:22px;
+
+}
+
+.kpi-title{
+
+    font-size:18px;
+
+    font-weight:700;
+
+}
+
+.kpi-badge{
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    color:white;
+
+}
+
+.mt{
+
+    background:var(--purple);
+
+}
+
+.gt{
+
+    background:var(--red);
+
+}
+
+.kpi-cf{
+
+    font-size:58px;
+
+    font-family:'Syne',sans-serif;
+
+    font-weight:800;
+
+    line-height:1;
+
+    margin-bottom:22px;
+
+}
+
+.kpi-detail{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
 
     gap:18px;
 
 }
 
-.kpi{
+.detail-box{
 
-    background:white;
+    background:#F9FAFB;
 
-    border:1px solid var(--border);
+    border-radius:16px;
 
-    border-radius:22px;
-
-    padding:22px;
+    padding:16px;
 
 }
 
-.kpi small{
+.detail-box small{
 
     color:var(--muted);
 
-    font-size:12px;
+    font-size:11px;
 
 }
 
-.kpi h2{
-
-    margin-top:12px;
-
-    font-size:40px;
-
-    font-family:var(--fontTitle);
-
-}
-
-.kpi span{
+.detail-box strong{
 
     display:block;
 
     margin-top:8px;
 
-    font-size:13px;
-
-    color:var(--muted);
+    font-size:20px;
 
 }
 
@@ -325,7 +414,7 @@ body{
 
     grid-template-columns:2fr 1fr;
 
-    gap:20px;
+    gap:24px;
 
 }
 
@@ -335,21 +424,68 @@ body{
 
     background:white;
 
+    border-radius:24px;
+
     border:1px solid var(--border);
 
-    border-radius:22px;
+    box-shadow:var(--shadow);
 
-    padding:22px;
+    padding:24px;
 
 }
 
 .card-title{
 
-    font-size:16px;
+    font-size:18px;
 
     font-weight:700;
 
-    margin-bottom:18px;
+    margin-bottom:20px;
+
+}
+
+/* DONUT */
+
+.donut-wrap{
+
+    position:relative;
+
+    width:280px;
+    height:280px;
+
+    margin:auto;
+
+}
+
+.donut-center{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.donut-center h1{
+
+    font-size:52px;
+
+    font-family:'Syne',sans-serif;
+
+}
+
+.donut-center span{
+
+    margin-top:6px;
+
+    color:var(--muted);
 
 }
 
@@ -367,11 +503,11 @@ th{
 
     text-align:left;
 
-    padding:12px;
-
-    font-size:12px;
+    padding:14px;
 
     color:var(--muted);
+
+    font-size:12px;
 
     border-bottom:1px solid var(--border);
 
@@ -379,7 +515,7 @@ th{
 
 td{
 
-    padding:14px 12px;
+    padding:16px 14px;
 
     border-bottom:1px solid #F3F4F6;
 
@@ -387,88 +523,19 @@ td{
 
 }
 
-/* DONUT */
-
-.donut-wrap{
-
-    position:relative;
-
-    width:260px;
-    height:260px;
-
-    margin:auto;
-
-}
-
-.donut-center{
-
-    position:absolute;
-
-    inset:0;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-}
-
-.donut-center h1{
-
-    font-size:42px;
-
-    font-family:var(--fontTitle);
-
-}
-
-.donut-center span{
-
-    color:var(--muted);
-
-    margin-top:6px;
-
-}
-
-/* BREAKDOWN */
-
-.breakdown{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:12px;
-
-}
-
-.break-row{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:14px;
-
-    background:#F9FAFB;
-
-    border-radius:14px;
-
-}
-
-.break-row strong{
-
-    color:var(--purple);
-
-}
-
 /* RESPONSIVE */
 
-@media(max-width:1200px){
+@media(max-width:1300px){
+
+    .layout{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+@media(max-width:1000px){
 
     .grid{
 
@@ -477,16 +544,6 @@ td{
     }
 
     .kpi-grid{
-
-        grid-template-columns:1fr 1fr;
-
-    }
-
-}
-
-@media(max-width:900px){
-
-    .layout{
 
         grid-template-columns:1fr;
 
@@ -511,17 +568,14 @@ td{
         </h1>
 
         <p>
-            Case Fill Monitoring
+            Executive Case Fill Monitoring
         </p>
 
     </div>
 
-    <div class="filter-wrap">
-
-        <select id="weekFilter">
-        </select>
-
-    </div>
+    <select id="weekFilter"
+            class="week-filter">
+    </select>
 
 </div>
 
@@ -535,25 +589,25 @@ td{
 
         <!-- LOSS -->
 
-        <div class="sidebar-card">
+        <div class="side-card">
 
-            <div class="sidebar-title">
+            <div class="side-header">
                 Trend SKU Loss
             </div>
 
-            <div id="lossList"></div>
+            <div id="lossContainer"></div>
 
         </div>
 
         <!-- BEST -->
 
-        <div class="sidebar-card">
+        <div class="side-card">
 
-            <div class="sidebar-title">
+            <div class="side-header">
                 Trend SKU Laku
             </div>
 
-            <div id="bestList"></div>
+            <div id="bestContainer"></div>
 
         </div>
 
@@ -567,67 +621,153 @@ td{
 
         <div class="kpi-grid">
 
-            <div class="kpi">
+            <!-- MT -->
 
-                <small>
-                    Overall Case Fill
-                </small>
+            <div class="kpi-card">
 
-                <h2 id="overallCF">
+                <div class="kpi-top">
+
+                    <div class="kpi-title">
+                        Modern Trade
+                    </div>
+
+                    <div class="kpi-badge mt">
+                        MT
+                    </div>
+
+                </div>
+
+                <div class="kpi-cf"
+                     id="mtCF">
                     0%
-                </h2>
+                </div>
 
-                <span>
-                    Delivery / Order
-                </span>
+                <div class="kpi-detail">
+
+                    <div class="detail-box">
+
+                        <small>
+                            ORDER
+                        </small>
+
+                        <strong id="mtOrder">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="detail-box">
+
+                        <small>
+                            DELIVERY
+                        </small>
+
+                        <strong id="mtDelivery">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="detail-box">
+
+                        <small>
+                            GAP
+                        </small>
+
+                        <strong id="mtGap">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="detail-box">
+
+                        <small>
+                            CASE FILL
+                        </small>
+
+                        <strong id="mtCF2">
+                            0%
+                        </strong>
+
+                    </div>
+
+                </div>
 
             </div>
 
-            <div class="kpi">
+            <!-- GT -->
 
-                <small>
-                    Total Order
-                </small>
+            <div class="kpi-card">
 
-                <h2 id="totalOrder">
-                    0
-                </h2>
+                <div class="kpi-top">
 
-                <span>
-                    Order Quantity
-                </span>
+                    <div class="kpi-title">
+                        General Trade
+                    </div>
 
-            </div>
+                    <div class="kpi-badge gt">
+                        GT
+                    </div>
 
-            <div class="kpi">
+                </div>
 
-                <small>
-                    Total Delivery
-                </small>
+                <div class="kpi-cf"
+                     id="gtCF">
+                    0%
+                </div>
 
-                <h2 id="totalDelivery">
-                    0
-                </h2>
+                <div class="kpi-detail">
 
-                <span>
-                    Delivered Qty
-                </span>
+                    <div class="detail-box">
 
-            </div>
+                        <small>
+                            ORDER
+                        </small>
 
-            <div class="kpi">
+                        <strong id="gtOrder">
+                            0
+                        </strong>
 
-                <small>
-                    Total GAP
-                </small>
+                    </div>
 
-                <h2 id="totalGap">
-                    0
-                </h2>
+                    <div class="detail-box">
 
-                <span>
-                    Loss Quantity
-                </span>
+                        <small>
+                            DELIVERY
+                        </small>
+
+                        <strong id="gtDelivery">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="detail-box">
+
+                        <small>
+                            GAP
+                        </small>
+
+                        <strong id="gtGap">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="detail-box">
+
+                        <small>
+                            CASE FILL
+                        </small>
+
+                        <strong id="gtCF2">
+                            0%
+                        </strong>
+
+                    </div>
+
+                </div>
 
             </div>
 
@@ -642,7 +782,7 @@ td{
             <div class="card">
 
                 <div class="card-title">
-                    Channel Breakdown
+                    Case Fill % per Sub Channel
                 </div>
 
                 <canvas id="barChart"
@@ -656,7 +796,7 @@ td{
             <div class="card">
 
                 <div class="card-title">
-                    Delivered vs GAP
+                    Overall Delivered vs GAP
                 </div>
 
                 <div class="donut-wrap">
@@ -665,7 +805,7 @@ td{
 
                     <div class="donut-center">
 
-                        <h1 id="donutText">
+                        <h1 id="overallCF">
                             0%
                         </h1>
 
@@ -681,55 +821,35 @@ td{
 
         </div>
 
-        <!-- TABLE + BREAKDOWN -->
+        <!-- TABLE -->
 
-        <div class="grid">
+        <div class="card">
 
-            <!-- TABLE -->
-
-            <div class="card">
-
-                <div class="card-title">
-                    KPI Breakdown
-                </div>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Breakdown</th>
-                            <th>Order</th>
-                            <th>Delivery</th>
-                            <th>Gap</th>
-                            <th>CF%</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="tableBody">
-
-                    </tbody>
-
-                </table>
-
+            <div class="card-title">
+                KPI Breakdown
             </div>
 
-            <!-- CHANNEL -->
+            <table>
 
-            <div class="card">
+                <thead>
 
-                <div class="card-title">
-                    Channel KPI
-                </div>
+                    <tr>
 
-                <div class="breakdown"
-                     id="channelBreakdown">
-                </div>
+                        <th>Breakdown</th>
+                        <th>Order</th>
+                        <th>Delivery</th>
+                        <th>Gap</th>
+                        <th>Case Fill</th>
 
-            </div>
+                    </tr>
+
+                </thead>
+
+                <tbody id="tableBody">
+
+                </tbody>
+
+            </table>
 
         </div>
 
@@ -773,12 +893,11 @@ function parseCSV(text){
     text.trim().split("\n");
 
     const headers =
-    rows[0]
-    .split(",");
+    rows[0].split(",");
 
     return rows.slice(1).map(row=>{
 
-        const values =
+        const cols =
         row.split(",");
 
         const obj = {};
@@ -786,8 +905,8 @@ function parseCSV(text){
         headers.forEach((h,i)=>{
 
             obj[h.trim()] =
-            values[i]
-            ? values[i]
+            cols[i]
+            ? cols[i]
                 .replace(/"/g,'')
                 .trim()
             : "";
@@ -844,7 +963,7 @@ async function loadData(){
 }
 
 /* =========================
-WEEK FILTER
+WEEK
 ========================= */
 
 function setupWeek(){
@@ -872,9 +991,7 @@ function setupWeek(){
 
     ).join('');
 
-    render(
-        weeks[0]
-    );
+    render(weeks[0]);
 
     select.addEventListener(
         "change",
@@ -891,67 +1008,128 @@ function render(week){
 
     const channels =
     channelData.filter(
-        d=>d.Week === week
+        d=>d.Week===week
     );
 
     const breakdown =
     breakdownData.filter(
-        d=>d.Week === week
+        d=>d.Week===week
     );
 
     const losses =
     lossData.filter(
-        d=>d.Week === week
+        d=>d.Week===week
     );
 
-    /* KPI */
+    /* MT */
 
-    let totalOrder = 0;
-    let totalDelivery = 0;
-    let totalGap = 0;
+    const mt =
+    channels.find(d=>
+        d.Channel.includes("MT")
+    );
 
-    channels.forEach(d=>{
+    /* GT */
 
-        totalOrder +=
-        Number(d["Order Quantity"]) || 0;
+    const gt =
+    channels.find(d=>
+        d.Channel.includes("GT")
+    );
 
-        totalDelivery +=
-        Number(d["Delivery Quantity"]) || 0;
+    /* MT KPI */
 
-        totalGap +=
-        Number(d["GAP"]) || 0;
+    if(mt){
 
-    });
+        document.getElementById(
+            "mtOrder"
+        ).innerHTML =
+        fmt(mt["Order Quantity"]);
 
-    const cf =
-    totalOrder
-    ? (totalDelivery/totalOrder)*100
-    : 0;
+        document.getElementById(
+            "mtDelivery"
+        ).innerHTML =
+        fmt(mt["Delivery Quantity"]);
+
+        document.getElementById(
+            "mtGap"
+        ).innerHTML =
+        fmt(mt["GAP"]);
+
+        document.getElementById(
+            "mtCF"
+        ).innerHTML =
+        Number(mt["Case Fill"])
+        .toFixed(2)+"%";
+
+        document.getElementById(
+            "mtCF2"
+        ).innerHTML =
+        Number(mt["Case Fill"])
+        .toFixed(2)+"%";
+
+    }
+
+    /* GT KPI */
+
+    if(gt){
+
+        document.getElementById(
+            "gtOrder"
+        ).innerHTML =
+        fmt(gt["Order Quantity"]);
+
+        document.getElementById(
+            "gtDelivery"
+        ).innerHTML =
+        fmt(gt["Delivery Quantity"]);
+
+        document.getElementById(
+            "gtGap"
+        ).innerHTML =
+        fmt(gt["GAP"]);
+
+        document.getElementById(
+            "gtCF"
+        ).innerHTML =
+        Number(gt["Case Fill"])
+        .toFixed(2)+"%";
+
+        document.getElementById(
+            "gtCF2"
+        ).innerHTML =
+        Number(gt["Case Fill"])
+        .toFixed(2)+"%";
+
+    }
+
+    /* OVERALL */
+
+    const totalOrder =
+    channels.reduce(
+        (a,b)=>
+        a+Number(
+        b["Order Quantity"]
+        ),0
+    );
+
+    const totalDelivery =
+    channels.reduce(
+        (a,b)=>
+        a+Number(
+        b["Delivery Quantity"]
+        ),0
+    );
+
+    const overall =
+    (
+        totalDelivery
+        /
+        totalOrder
+    ) * 100;
 
     document.getElementById(
         "overallCF"
     ).innerHTML =
-    cf.toFixed(2)+"%";
-
-    document.getElementById(
-        "totalOrder"
-    ).innerHTML =
-    fmt(totalOrder);
-
-    document.getElementById(
-        "totalDelivery"
-    ).innerHTML =
-    fmt(totalDelivery);
-
-    document.getElementById(
-        "totalGap"
-    ).innerHTML =
-    fmt(totalGap);
-
-    document.getElementById(
-        "donutText"
-    ).innerHTML =
-    cf.toFixed(1)+"%";
+    overall.toFixed(1)+"%";
 
     /* TABLE */
 
@@ -979,38 +1157,17 @@ function render(week){
             </td>
 
             <td>
-                ${Number(d["Case Fill"]).toFixed(2)}%
+                ${Number(d["Case Fill"])
+                .toFixed(2)}%
             </td>
 
         </tr>
 
     `).join('');
 
-    /* CHANNEL KPI */
-
-    document.getElementById(
-        "channelBreakdown"
-    ).innerHTML =
-    channels.map(d=>`
-
-        <div class="break-row">
-
-            <span>
-                ${d.Channel}
-            </span>
-
-            <strong>
-                ${Number(d["Case Fill"])
-                .toFixed(1)}%
-            </strong>
-
-        </div>
-
-    `).join('');
-
     /* LOSS */
 
-    const topLoss =
+    const lossTop =
     [...losses]
     .sort((a,b)=>
 
@@ -1022,24 +1179,82 @@ function render(week){
     .slice(0,5);
 
     const maxGap =
-    Number(topLoss[0]?.GAP || 1);
+    Number(lossTop[0]?.GAP || 1);
 
     document.getElementById(
-        "lossList"
+        "lossContainer"
     ).innerHTML =
-    topLoss.map(d=>`
+    lossTop.map(d=>`
 
-        <div class="loss-item">
+        <div class="sku-card">
 
-            <div class="loss-name">
+            <div class="sku-name">
 
                 ${d["Product Name"]}
 
             </div>
 
-            <div class="loss-gap">
+            <div class="sku-grid">
 
-                ${fmt(d.GAP)}
+                <div class="sku-item">
+
+                    <small>
+                        ORDER
+                    </small>
+
+                    <strong>
+                        ${fmt(
+                            d["Order Quantity"]
+                        )}
+                    </strong>
+
+                </div>
+
+                <div class="sku-item">
+
+                    <small>
+                        DELIVERY
+                    </small>
+
+                    <strong>
+                        ${fmt(
+                            d["Delivery Quantity"]
+                        )}
+                    </strong>
+
+                </div>
+
+                <div class="sku-item">
+
+                    <small>
+                        GAP
+                    </small>
+
+                    <strong class="loss">
+
+                        ${fmt(
+                            d["GAP"]
+                        )}
+
+                    </strong>
+
+                </div>
+
+                <div class="sku-item">
+
+                    <small>
+                        CASE FILL
+                    </small>
+
+                    <strong class="cf">
+
+                        ${Number(
+                            d["Case Fill"]
+                        ).toFixed(1)}%
+
+                    </strong>
+
+                </div>
 
             </div>
 
@@ -1051,7 +1266,13 @@ function render(week){
                             Number(d.GAP)
                             / maxGap
                         ) * 100
-                    }%
+                    }%;
+                    background:
+                    linear-gradient(
+                        90deg,
+                        #EF4444,
+                        #F97316
+                    );
                 ">
                 </div>
 
@@ -1061,46 +1282,107 @@ function render(week){
 
     `).join('');
 
-    /* BEST SELLER */
+    /* BEST */
 
-    const best =
+    const bestTop =
     [...losses]
     .sort((a,b)=>
 
-        Number(b["Delivery Quantity"])
+        Number(
+            b["Delivery Quantity"]
+        )
         -
-        Number(a["Delivery Quantity"])
+        Number(
+            a["Delivery Quantity"]
+        )
 
     )
     .slice(0,5);
 
-    const maxDel =
+    const maxBest =
     Number(
-        best[0]?.["Delivery Quantity"]
+        bestTop[0]?.["Delivery Quantity"]
         || 1
     );
 
     document.getElementById(
-        "bestList"
+        "bestContainer"
     ).innerHTML =
-    best.map(d=>`
+    bestTop.map(d=>`
 
-        <div class="loss-item">
+        <div class="sku-card">
 
-            <div class="loss-name">
+            <div class="sku-name">
 
                 ${d["Product Name"]}
 
             </div>
 
-            <div class="loss-gap"
-                 style="
-                 color:var(--green)
-                 ">
+            <div class="sku-grid">
 
-                ${fmt(
-                    d["Delivery Quantity"]
-                )}
+                <div class="sku-item">
+
+                    <small>
+                        ORDER
+                    </small>
+
+                    <strong>
+
+                        ${fmt(
+                            d["Order Quantity"]
+                        )}
+
+                    </strong>
+
+                </div>
+
+                <div class="sku-item">
+
+                    <small>
+                        DELIVERY
+                    </small>
+
+                    <strong class="success">
+
+                        ${fmt(
+                            d["Delivery Quantity"]
+                        )}
+
+                    </strong>
+
+                </div>
+
+                <div class="sku-item">
+
+                    <small>
+                        GAP
+                    </small>
+
+                    <strong>
+
+                        ${fmt(
+                            d["GAP"]
+                        )}
+
+                    </strong>
+
+                </div>
+
+                <div class="sku-item">
+
+                    <small>
+                        CASE FILL
+                    </small>
+
+                    <strong class="cf">
+
+                        ${Number(
+                            d["Case Fill"]
+                        ).toFixed(1)}%
+
+                    </strong>
+
+                </div>
 
             </div>
 
@@ -1110,8 +1392,10 @@ function render(week){
                     width:${
                         (
                             Number(
-                            d["Delivery Quantity"]
-                            ) / maxDel
+                                d["Delivery Quantity"]
+                            )
+                            /
+                            maxBest
                         ) * 100
                     }%;
                     background:
@@ -1131,7 +1415,7 @@ function render(week){
 
     buildCharts(
         breakdown,
-        cf
+        overall
     );
 
 }
@@ -1140,7 +1424,7 @@ function render(week){
 CHART
 ========================= */
 
-function buildCharts(data,cf){
+function buildCharts(data,overall){
 
     if(barChart)
         barChart.destroy();
@@ -1155,10 +1439,10 @@ function buildCharts(data,cf){
 
     const values =
     data.map(
-        d=>Number(d["Case Fill"]) || 0
+        d=>Number(
+            d["Case Fill"]
+        )
     );
-
-    /* BAR */
 
     barChart =
     new Chart(
@@ -1179,6 +1463,8 @@ function buildCharts(data,cf){
 
                     data:values,
 
+                    borderRadius:12,
+
                     backgroundColor:
                     labels.map(l=>
 
@@ -1186,9 +1472,7 @@ function buildCharts(data,cf){
                         ? "#7C3AED"
                         : "#EF4444"
 
-                    ),
-
-                    borderRadius:12
+                    )
 
                 }]
 
@@ -1215,8 +1499,7 @@ function buildCharts(data,cf){
                         max:110,
 
                         ticks:{
-                            callback:v=>
-                            v+"%"
+                            callback:v=>v+"%"
                         }
 
                     }
@@ -1228,8 +1511,6 @@ function buildCharts(data,cf){
         }
 
     );
-
-    /* DONUT */
 
     donutChart =
     new Chart(
@@ -1252,8 +1533,8 @@ function buildCharts(data,cf){
                 datasets:[{
 
                     data:[
-                        cf,
-                        100-cf
+                        overall,
+                        100-overall
                     ],
 
                     backgroundColor:[
@@ -1269,7 +1550,7 @@ function buildCharts(data,cf){
 
             options:{
 
-                cutout:"75%",
+                cutout:"74%",
 
                 plugins:{
 
