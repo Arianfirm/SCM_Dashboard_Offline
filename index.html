@@ -510,8 +510,6 @@ Top Selling SKU
 
 <div class="main">
 
-<!-- TOPBAR -->
-
 <div class="topbar">
 
 <div class="title">
@@ -647,15 +645,15 @@ Channel Breakdown
 
 </div>
 
-<!-- PIE -->
+<!-- SERVICE LEVEL -->
 
 <div class="card">
 
 <div class="card-title">
-Service Level
+Service Level Trend
 </div>
 
-<canvas id="donutChart"></canvas>
+<canvas id="serviceChart"></canvas>
 
 </div>
 
@@ -677,7 +675,7 @@ GT / MT Breakdown
 
 <tr>
 
-<th>Channel</th>
+<th>Breakdown</th>
 <th>Order</th>
 <th>Delivery</th>
 <th>Gap</th>
@@ -724,7 +722,7 @@ Loss SKU Trend
 
 </div>
 
-<!-- TOP SELLING -->
+<!-- TOP -->
 
 <div class="page"
 id="topPage">
@@ -768,14 +766,16 @@ const KPI_BREAKDOWN =
 const TOP_LOSS_PRODUCT =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1801155860&single=true&output=csv";
 
-/* GLOBAL */
+/* =========================
+GLOBAL
+========================= */
 
 let channelData = [];
 let breakdownData = [];
 let lossData = [];
 
 let barChart;
-let donutChart;
+let serviceChart;
 
 /* =========================
 UTIL
@@ -868,7 +868,7 @@ function setupWeek(){
 
 const weeks =
 [...new Set(
-lossData.map(d=>d.Week)
+channelData.map(d=>d.Week)
 )];
 
 const select =
@@ -904,13 +904,6 @@ breakdownData.filter(
 d=>d.Week===week
 );
 
-const losses =
-lossData.filter(
-d=>d.Week===week
-);
-
-/* KPI */
-
 const mt =
 channels.find(d=>
 (d.Channel || '').includes("MT")
@@ -920,6 +913,8 @@ const gt =
 channels.find(d=>
 (d.Channel || '').includes("GT")
 );
+
+/* KPI */
 
 if(mt){
 
@@ -959,16 +954,30 @@ num(gt["Case Fill"]).toFixed(2)+"%";
 
 }
 
-/* TABLE */
+/* BREAKDOWN SORT */
 
 const sortedBreakdown =
 [...breakdown]
 
-.sort((a,b)=>
-num(b["Delivery Quantity"])
--
-num(a["Delivery Quantity"])
-);
+.sort((a,b)=>{
+
+const channelA =
+a["Channel Breakdown"] || '';
+
+const channelB =
+b["Channel Breakdown"] || '';
+
+if(channelA.includes("MT") && channelB.includes("GT"))
+return -1;
+
+if(channelA.includes("GT") && channelB.includes("MT"))
+return 1;
+
+return channelA.localeCompare(channelB);
+
+});
+
+/* TABLE */
 
 tableBody.innerHTML =
 sortedBreakdown.map(d=>`
@@ -976,7 +985,7 @@ sortedBreakdown.map(d=>`
 <tr>
 
 <td>
-${d["Channel Breakdown"] || '-'}
+${d["Channel Breakdown"]}
 </td>
 
 <td>
@@ -1003,7 +1012,8 @@ ${num(d["Case Fill"]).toFixed(2)}%
 
 buildLossTable();
 buildTopTable();
-buildCharts(channels);
+buildBarChart(channels);
+buildServiceLevel();
 
 }
 
@@ -1094,7 +1104,7 @@ ${data[w]
 }
 
 /* =========================
-TOP SELLING
+TOP TABLE
 ========================= */
 
 function buildTopTable(){
@@ -1177,16 +1187,13 @@ ${data[w]
 }
 
 /* =========================
-CHART
+BAR CHART
 ========================= */
 
-function buildCharts(data){
+function buildBarChart(data){
 
 if(barChart)
 barChart.destroy();
-
-if(donutChart)
-donutChart.destroy();
 
 barChart =
 new Chart(
@@ -1249,37 +1256,62 @@ callback:v=>v+"%"
 
 );
 
-/* DONUT */
+}
 
-const avg =
-data.reduce((a,b)=>
+/* =========================
+SERVICE LEVEL TREND
+========================= */
+
+function buildServiceLevel(){
+
+if(serviceChart)
+serviceChart.destroy();
+
+const weeks =
+[...new Set(
+channelData.map(d=>d.Week)
+)];
+
+const avgData =
+weeks.map(w=>{
+
+const rows =
+channelData.filter(d=>d.Week===w);
+
+return rows.reduce((a,b)=>
 a + num(b["Case Fill"])
-,0) / data.length;
+,0) / rows.length;
 
-donutChart =
+});
+
+serviceChart =
 new Chart(
 
-document.getElementById("donutChart"),
+document.getElementById("serviceChart"),
 
 {
 
-type:"doughnut",
+type:"line",
 
 data:{
 
-labels:["Delivered","Gap"],
+labels:weeks,
 
 datasets:[{
 
-data:[
-avg,
-100-avg
-],
+label:"Service Level",
 
-backgroundColor:[
-"#7C3AED",
-"#EF4444"
-]
+data:avgData,
+
+borderColor:"#7C3AED",
+
+backgroundColor:"rgba(124,58,237,.15)",
+
+fill:true,
+
+tension:.4,
+
+pointRadius:5
 
 }]
 
@@ -1287,12 +1319,25 @@ backgroundColor:[
 
 options:{
 
-cutout:"76%",
-
 plugins:{
 legend:{
 display:false
 }
+},
+
+scales:{
+
+y:{
+
+min:0,
+max:110,
+
+ticks:{
+callback:v=>v+"%"
+}
+
+}
+
 }
 
 }
