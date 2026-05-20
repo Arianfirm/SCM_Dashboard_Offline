@@ -1,7 +1,3 @@
-<!-- REBUILD FINAL VERSION -->
-<!-- SKU LOSS SUDAH FILTER GAP NEGATIF -->
-<!-- DESIGN PREMIUM DARK EXECUTIVE -->
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,12 +23,12 @@ box-sizing:border-box;
 :root{
 
 --bg:#0b0911;
---card:#14111d;
-
---card2:#1b1727;
+--sidebar:#12101B;
+--card:#171320;
+--card2:#1F1A2B;
 
 --text:#ffffff;
---muted:#8B90A7;
+--muted:#8E94A7;
 
 --purple:#7C3AED;
 --purple2:#A855F7;
@@ -50,7 +46,7 @@ background:
 linear-gradient(
 180deg,
 #0b0911,
-#120f1c
+#141020
 );
 
 font-family:'Plus Jakarta Sans',sans-serif;
@@ -74,13 +70,11 @@ position:fixed;
 left:0;
 top:0;
 
-background:rgba(20,17,29,.95);
-
-backdrop-filter:blur(20px);
+background:var(--sidebar);
 
 border-right:1px solid var(--border);
 
-padding:26px 18px;
+padding:28px 18px;
 
 }
 
@@ -144,7 +138,7 @@ text-align:left;
 
 .nav button:hover{
 
-background:#1D192A;
+background:#1E1A2A;
 
 color:white;
 
@@ -185,7 +179,7 @@ justify-content:space-between;
 
 align-items:center;
 
-margin-bottom:30px;
+margin-bottom:28px;
 
 }
 
@@ -207,9 +201,9 @@ color:var(--muted);
 
 }
 
-.filter select{
+select{
 
-background:#1D192A;
+background:#1F1A2B;
 
 border:none;
 
@@ -219,24 +213,20 @@ border-radius:14px;
 
 color:white;
 
-font-weight:600;
-
 outline:none;
+
+font-weight:600;
 
 }
 
 /* PAGE */
 
 .page{
-
 display:none;
-
 }
 
 .page.active{
-
 display:block;
-
 }
 
 /* KPI */
@@ -259,7 +249,7 @@ background:var(--card);
 
 border:1px solid var(--border);
 
-border-radius:28px;
+border-radius:30px;
 
 padding:28px;
 
@@ -379,7 +369,7 @@ background:var(--card);
 
 border:1px solid var(--border);
 
-border-radius:28px;
+border-radius:30px;
 
 padding:28px;
 
@@ -391,7 +381,7 @@ font-size:18px;
 
 font-weight:700;
 
-margin-bottom:24px;
+margin-bottom:22px;
 
 }
 
@@ -425,7 +415,7 @@ padding:18px 14px;
 
 font-size:13px;
 
-border-bottom:1px solid rgba(255,255,255,.04);
+border-bottom:1px solid rgba(255,255,255,.05);
 
 }
 
@@ -515,20 +505,16 @@ color:var(--green);
 color:#A855F7;
 }
 
-/* RESPONSIVE */
+/* MOBILE */
 
 @media(max-width:1200px){
 
 .grid{
-
 grid-template-columns:1fr;
-
 }
 
 .sku-grid{
-
 grid-template-columns:1fr;
-
 }
 
 }
@@ -536,25 +522,17 @@ grid-template-columns:1fr;
 @media(max-width:900px){
 
 .sidebar{
-
-width:100%;
-
-height:auto;
-
 position:relative;
-
+width:100%;
+height:auto;
 }
 
 .main{
-
 margin-left:0;
-
 }
 
 .kpi-grid{
-
 grid-template-columns:1fr;
-
 }
 
 }
@@ -571,13 +549,9 @@ grid-template-columns:1fr;
 
 <div class="logo">
 
-<h1>
-SCM Dashboard
-</h1>
+<h1>SCM Dashboard</h1>
 
-<p>
-Executive Monitoring
-</p>
+<p>Executive Monitoring</p>
 
 </div>
 
@@ -610,21 +584,13 @@ Trend SKU Laku
 
 <div class="title">
 
-<h2>
-Supply Chain Dashboard
-</h2>
+<h2>Supply Chain Dashboard</h2>
 
-<p>
-Realtime KPI Monitoring
-</p>
+<p>Realtime KPI Monitoring</p>
 
 </div>
-
-<div class="filter">
 
 <select id="weekFilter"></select>
-
-</div>
 
 </div>
 
@@ -817,9 +783,7 @@ id="bestContainer">
 
 <script>
 
-/* =========================
-API CSV
-========================= */
+/* CSV API */
 
 const KPI_CHANNEL =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=349702860&single=true&output=csv";
@@ -830,9 +794,7 @@ const KPI_BREAKDOWN =
 const TOP_LOSS_PRODUCT =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1801155860&single=true&output=csv";
 
-/* =========================
-GLOBAL
-========================= */
+/* GLOBAL */
 
 let channelData = [];
 let breakdownData = [];
@@ -841,22 +803,17 @@ let lossData = [];
 let barChart;
 let donutChart;
 
-/* =========================
-HELPER
-========================= */
+/* CSV PARSER */
 
 function parseCSV(text){
 
-const rows =
-text.trim().split("\\n");
+const rows = text.trim().split("\\n");
 
-const headers =
-rows[0].split(",");
+const headers = rows[0].split(",");
 
 return rows.slice(1).map(row=>{
 
-const cols =
-row.split(",");
+const cols = row.split(",");
 
 const obj = {};
 
@@ -864,9 +821,7 @@ headers.forEach((h,i)=>{
 
 obj[h.trim()] =
 cols[i]
-? cols[i]
-.replace(/"/g,'')
-.trim()
+? cols[i].replace(/"/g,'').trim()
 : "";
 
 });
@@ -884,92 +839,58 @@ return Number(n)
 
 }
 
-/* =========================
-NAVIGATION
-========================= */
+/* NAVIGATION */
 
 function showPage(page,btn){
 
 document
 .querySelectorAll(".page")
-.forEach(p=>
-p.classList.remove("active")
-);
+.forEach(p=>p.classList.remove("active"));
 
 document
 .querySelectorAll(".nav button")
-.forEach(b=>
-b.classList.remove("active")
-);
+.forEach(b=>b.classList.remove("active"));
 
 btn.classList.add("active");
 
-document.getElementById(
-page+"Page"
-).classList.add("active");
+document.getElementById(page+"Page")
+.classList.add("active");
 
 }
 
-/* =========================
-LOAD
-========================= */
+/* LOAD */
 
 async function loadData(){
 
-const [
-c1,
-c2,
-c3
-] = await Promise.all([
+const [c1,c2,c3] = await Promise.all([
 
-fetch(KPI_CHANNEL)
-.then(r=>r.text()),
-
-fetch(KPI_BREAKDOWN)
-.then(r=>r.text()),
-
-fetch(TOP_LOSS_PRODUCT)
-.then(r=>r.text())
+fetch(KPI_CHANNEL).then(r=>r.text()),
+fetch(KPI_BREAKDOWN).then(r=>r.text()),
+fetch(TOP_LOSS_PRODUCT).then(r=>r.text())
 
 ]);
 
-channelData =
-parseCSV(c1);
-
-breakdownData =
-parseCSV(c2);
-
-lossData =
-parseCSV(c3);
+channelData = parseCSV(c1);
+breakdownData = parseCSV(c2);
+lossData = parseCSV(c3);
 
 setupWeek();
 
 }
 
-/* =========================
-WEEK
-========================= */
+/* WEEK */
 
 function setupWeek(){
 
-const weeks =
-[...new Set(
-breakdownData.map(
-d=>d.Week
-)
+const weeks = [...new Set(
+breakdownData.map(d=>d.Week)
 )];
 
 const select =
-document.getElementById(
-"weekFilter"
-);
+document.getElementById("weekFilter");
 
 select.innerHTML =
-weeks.map(w=>
-
-`<option>${w}</option>`
-
-).join('');
+weeks.map(w=>`<option>${w}</option>`).join('');
 
 render(weeks[0]);
 
@@ -980,38 +901,24 @@ select.addEventListener(
 
 }
 
-/* =========================
-RENDER
-========================= */
+/* RENDER */
 
 function render(week){
 
 const channels =
-channelData.filter(
-d=>d.Week===week
-);
+channelData.filter(d=>d.Week===week);
 
 const breakdown =
-breakdownData.filter(
-d=>d.Week===week
-);
+breakdownData.filter(d=>d.Week===week);
 
 const losses =
-lossData.filter(
-d=>d.Week===week
-);
+lossData.filter(d=>d.Week===week);
 
 const mt =
-channels.find(
-d=>d.Channel.includes("MT")
-);
+channels.find(d=>d.Channel.includes("MT"));
 
 const gt =
-channels.find(
-d=>d.Channel.includes("GT")
-);
-
-/* MT */
+channels.find(d=>d.Channel.includes("GT"));
 
 if(mt){
 
@@ -1025,16 +932,12 @@ mtGap.innerHTML =
 fmt(mt["GAP"]);
 
 mtCF.innerHTML =
-Number(mt["Case Fill"])
-.toFixed(2)+"%";
+Number(mt["Case Fill"]).toFixed(2)+"%";
 
 mtCF2.innerHTML =
-Number(mt["Case Fill"])
-.toFixed(2)+"%";
+Number(mt["Case Fill"]).toFixed(2)+"%";
 
 }
-
-/* GT */
 
 if(gt){
 
@@ -1048,12 +951,10 @@ gtGap.innerHTML =
 fmt(gt["GAP"]);
 
 gtCF.innerHTML =
-Number(gt["Case Fill"])
-.toFixed(2)+"%";
+Number(gt["Case Fill"]).toFixed(2)+"%";
 
 gtCF2.innerHTML =
-Number(gt["Case Fill"])
-.toFixed(2)+"%";
+Number(gt["Case Fill"]).toFixed(2)+"%";
 
 }
 
@@ -1064,25 +965,16 @@ breakdown.map(d=>`
 
 <tr>
 
-<td>
-${d["Channel Breakdown"]}
-</td>
+<td>${d["Channel Breakdown"]}</td>
+
+<td>${fmt(d["Order Quantity"])}</td>
+
+<td>${fmt(d["Delivery Quantity"])}</td>
+
+<td>${fmt(d["GAP"])}</td>
 
 <td>
-${fmt(d["Order Quantity"])}
-</td>
-
-<td>
-${fmt(d["Delivery Quantity"])}
-</td>
-
-<td>
-${fmt(d["GAP"])}
-</td>
-
-<td>
-${Number(d["Case Fill"])
-.toFixed(2)}%
+${Number(d["Case Fill"]).toFixed(2)}%
 </td>
 
 </tr>
@@ -1119,46 +1011,31 @@ ${d["Product Name"]}
 <div class="sku-detail">
 
 <div class="sku-box">
-
 <small>ORDER</small>
-
 <strong>
 ${fmt(d["Order Quantity"])}
 </strong>
-
 </div>
 
 <div class="sku-box">
-
 <small>DELIVERY</small>
-
 <strong>
 ${fmt(d["Delivery Quantity"])}
 </strong>
-
 </div>
 
 <div class="sku-box">
-
 <small>GAP</small>
-
 <strong class="loss">
 ${fmt(d["GAP"])}
 </strong>
-
 </div>
 
 <div class="sku-box">
-
 <small>CASE FILL</small>
-
 <strong class="cf">
-
-${Number(d["Case Fill"])
-.toFixed(1)}%
-
+${Number(d["Case Fill"]).toFixed(1)}%
 </strong>
-
 </div>
 
 </div>
@@ -1173,15 +1050,9 @@ bestContainer.innerHTML =
 losses
 
 .sort((a,b)=>
-
-Number(
-b["Delivery Quantity"]
-)
+Number(b["Delivery Quantity"])
 -
-Number(
-a["Delivery Quantity"]
-)
-
+Number(a["Delivery Quantity"])
 )
 
 .slice(0,12)
@@ -1199,50 +1070,31 @@ ${d["Product Name"]}
 <div class="sku-detail">
 
 <div class="sku-box">
-
 <small>ORDER</small>
-
 <strong>
 ${fmt(d["Order Quantity"])}
 </strong>
-
 </div>
 
 <div class="sku-box">
-
 <small>DELIVERY</small>
-
 <strong class="success">
-
-${fmt(
-d["Delivery Quantity"]
-)}
-
+${fmt(d["Delivery Quantity"])}
 </strong>
-
 </div>
 
 <div class="sku-box">
-
 <small>GAP</small>
-
 <strong>
 ${fmt(d["GAP"])}
 </strong>
-
 </div>
 
 <div class="sku-box">
-
 <small>CASE FILL</small>
-
 <strong class="cf">
-
-${Number(d["Case Fill"])
-.toFixed(1)}%
-
+${Number(d["Case Fill"]).toFixed(1)}%
 </strong>
-
 </div>
 
 </div>
@@ -1251,15 +1103,11 @@ ${Number(d["Case Fill"])
 
 `).join('');
 
-buildCharts(
-breakdown
-);
+buildCharts(breakdown);
 
 }
 
-/* =========================
-CHART
-========================= */
+/* CHART */
 
 function buildCharts(data){
 
@@ -1272,9 +1120,7 @@ donutChart.destroy();
 barChart =
 new Chart(
 
-document.getElementById(
-"barChart"
-),
+document.getElementById("barChart"),
 
 {
 
@@ -1283,16 +1129,12 @@ type:"bar",
 data:{
 
 labels:
-data.map(
-d=>d["Channel Breakdown"]
-),
+data.map(d=>d["Channel Breakdown"]),
 
 datasets:[{
 
 data:
-data.map(
-d=>Number(d["Case Fill"])
-),
+data.map(d=>Number(d["Case Fill"])),
 
 borderRadius:14
 
@@ -1330,21 +1172,14 @@ callback:v=>v+"%"
 );
 
 const avg =
-data.reduce(
-(a,b)=>
-a+Number(
-b["Case Fill"]
-),0
-)
-/
-data.length;
+data.reduce((a,b)=>
+a+Number(b["Case Fill"]),0)
+/ data.length;
 
 donutChart =
 new Chart(
 
-document.getElementById(
-"donutChart"
-),
+document.getElementById("donutChart"),
 
 {
 
@@ -1352,10 +1187,7 @@ type:"doughnut",
 
 data:{
 
-labels:[
-"Delivered",
-"Gap"
-],
+labels:["Delivered","Gap"],
 
 datasets:[{
 
@@ -1391,5 +1223,4 @@ loadData();
 </script>
 
 </body>
-
 </html>
