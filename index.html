@@ -6,7 +6,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>SCM Dashboard</title>
+<title>SCM Executive Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 
@@ -45,7 +45,7 @@ box-sizing:border-box;
 
 body{
 
-background:#F5F7FB;
+background:var(--bg);
 
 font-family:'Plus Jakarta Sans',sans-serif;
 
@@ -68,8 +68,6 @@ left:0;
 top:0;
 
 background:#111827;
-
-border-right:1px solid rgba(255,255,255,.06);
 
 padding:28px 18px;
 
@@ -166,7 +164,7 @@ padding:30px;
 
 }
 
-/* TOPBAR */
+/* HEADER */
 
 .topbar{
 
@@ -188,9 +186,6 @@ linear-gradient(
 #7C3AED,
 #3B82F6
 );
-
-box-shadow:
-0 10px 40px rgba(59,130,246,.18);
 
 }
 
@@ -215,4 +210,1142 @@ color:rgba(255,255,255,.8);
 
 select{
 
-background:rgba(255,255,
+background:rgba(255,255,255,.15);
+
+border:none;
+
+padding:14px 18px;
+
+border-radius:14px;
+
+color:white;
+
+outline:none;
+
+font-weight:600;
+
+}
+
+/* PAGE */
+
+.page{
+display:none;
+}
+
+.page.active{
+display:block;
+}
+
+/* KPI */
+
+.kpi-grid{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:24px;
+
+margin-bottom:24px;
+
+}
+
+.kpi{
+
+background:white;
+
+border:1px solid var(--border);
+
+border-radius:30px;
+
+padding:28px;
+
+box-shadow:
+0 4px 20px rgba(15,23,42,.04);
+
+}
+
+.kpi-top{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:20px;
+
+}
+
+.kpi-title{
+
+font-size:22px;
+font-weight:700;
+
+}
+
+.badge{
+
+padding:8px 14px;
+
+border-radius:999px;
+
+font-size:12px;
+font-weight:700;
+
+color:white;
+
+}
+
+.mt{
+
+background:
+linear-gradient(
+135deg,
+#7C3AED,
+#3B82F6
+);
+
+}
+
+.gt{
+
+background:
+linear-gradient(
+135deg,
+#2563EB,
+#60A5FA
+);
+
+}
+
+.kpi-big{
+
+font-size:72px;
+
+font-weight:800;
+
+line-height:1;
+
+margin-bottom:24px;
+
+color:#111827;
+
+}
+
+.kpi-detail{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:14px;
+
+}
+
+.detail{
+
+background:#F8FAFC;
+
+padding:16px;
+
+border-radius:18px;
+
+border:1px solid #EEF2F7;
+
+}
+
+.detail small{
+
+font-size:11px;
+
+color:var(--muted);
+
+}
+
+.detail strong{
+
+display:block;
+
+margin-top:8px;
+
+font-size:22px;
+
+}
+
+/* GRID */
+
+.grid{
+
+display:grid;
+
+grid-template-columns:2fr 1fr;
+
+gap:24px;
+
+margin-bottom:24px;
+
+}
+
+/* CARD */
+
+.card{
+
+background:white;
+
+border:1px solid var(--border);
+
+border-radius:30px;
+
+padding:28px;
+
+box-shadow:
+0 4px 20px rgba(15,23,42,.04);
+
+}
+
+.card-title{
+
+font-size:20px;
+font-weight:700;
+
+margin-bottom:22px;
+
+}
+
+/* TABLE */
+
+.table-wrap{
+
+overflow:auto;
+
+}
+
+table{
+
+width:100%;
+
+border-collapse:collapse;
+
+}
+
+th{
+
+padding:14px;
+
+text-align:left;
+
+font-size:12px;
+
+color:#64748B;
+
+border-bottom:1px solid #E2E8F0;
+
+white-space:nowrap;
+
+}
+
+td{
+
+padding:16px 14px;
+
+font-size:13px;
+
+border-bottom:1px solid #EEF2F7;
+
+white-space:nowrap;
+
+}
+
+.loss{
+color:var(--red);
+font-weight:700;
+}
+
+.success{
+color:var(--green);
+font-weight:700;
+}
+
+.cf{
+color:#7C3AED;
+font-weight:700;
+}
+
+canvas{
+max-height:340px;
+}
+
+@media(max-width:1200px){
+
+.grid{
+grid-template-columns:1fr;
+}
+
+}
+
+@media(max-width:900px){
+
+.sidebar{
+position:relative;
+width:100%;
+height:auto;
+}
+
+.main{
+margin-left:0;
+}
+
+.kpi-grid{
+grid-template-columns:1fr;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<div class="logo">
+
+<h1>SCM Dashboard</h1>
+
+<p>Executive Monitoring</p>
+
+</div>
+
+<div class="nav">
+
+<button class="active"
+onclick="showPage('overview',this)">
+Overview
+</button>
+
+<button onclick="showPage('loss',this)">
+Loss SKU Trend
+</button>
+
+<button onclick="showPage('top',this)">
+Top Selling SKU
+</button>
+
+</div>
+
+</div>
+
+<!-- MAIN -->
+
+<div class="main">
+
+<!-- HEADER -->
+
+<div class="topbar">
+
+<div class="title">
+
+<h2>Supply Chain Dashboard</h2>
+
+<p>Realtime KPI Monitoring</p>
+
+</div>
+
+<select id="weekFilter"></select>
+
+</div>
+
+<!-- OVERVIEW -->
+
+<div class="page active"
+id="overviewPage">
+
+<div class="kpi-grid">
+
+<!-- MT -->
+
+<div class="kpi">
+
+<div class="kpi-top">
+
+<div class="kpi-title">
+Modern Trade
+</div>
+
+<div class="badge mt">
+MT
+</div>
+
+</div>
+
+<div class="kpi-big"
+id="mtCF">
+0%
+</div>
+
+<div class="kpi-detail">
+
+<div class="detail">
+<small>ORDER</small>
+<strong id="mtOrder">0</strong>
+</div>
+
+<div class="detail">
+<small>DELIVERY</small>
+<strong id="mtDelivery">0</strong>
+</div>
+
+<div class="detail">
+<small>GAP</small>
+<strong id="mtGap">0</strong>
+</div>
+
+<div class="detail">
+<small>CASE FILL</small>
+<strong id="mtCF2">0%</strong>
+</div>
+
+</div>
+
+</div>
+
+<!-- GT -->
+
+<div class="kpi">
+
+<div class="kpi-top">
+
+<div class="kpi-title">
+General Trade
+</div>
+
+<div class="badge gt">
+GT
+</div>
+
+</div>
+
+<div class="kpi-big"
+id="gtCF">
+0%
+</div>
+
+<div class="kpi-detail">
+
+<div class="detail">
+<small>ORDER</small>
+<strong id="gtOrder">0</strong>
+</div>
+
+<div class="detail">
+<small>DELIVERY</small>
+<strong id="gtDelivery">0</strong>
+</div>
+
+<div class="detail">
+<small>GAP</small>
+<strong id="gtGap">0</strong>
+</div>
+
+<div class="detail">
+<small>CASE FILL</small>
+<strong id="gtCF2">0%</strong>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- CHART -->
+
+<div class="grid">
+
+<div class="card">
+
+<div class="card-title">
+Channel Breakdown
+</div>
+
+<canvas id="barChart"></canvas>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+Service Level Trend
+</div>
+
+<canvas id="serviceChart"></canvas>
+
+</div>
+
+</div>
+
+<!-- TABLE -->
+
+<div class="card">
+
+<div class="card-title">
+GT / MT Breakdown
+</div>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Breakdown</th>
+<th>Order</th>
+<th>Delivery</th>
+<th>Gap</th>
+<th>Case Fill</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tableBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- LOSS -->
+
+<div class="page"
+id="lossPage">
+
+<div class="card">
+
+<div class="card-title">
+Loss SKU Trend
+</div>
+
+<div class="table-wrap">
+
+<table>
+
+<thead id="lossHead"></thead>
+
+<tbody id="lossBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- TOP -->
+
+<div class="page"
+id="topPage">
+
+<div class="card">
+
+<div class="card-title">
+Top Selling SKU
+</div>
+
+<div class="table-wrap">
+
+<table>
+
+<thead id="topHead"></thead>
+
+<tbody id="topBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* API */
+
+const KPI_CHANNEL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=349702860&single=true&output=csv";
+
+const KPI_BREAKDOWN =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1343041753&single=true&output=csv";
+
+const TOP_LOSS_PRODUCT =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1801155860&single=true&output=csv";
+
+/* GLOBAL */
+
+let channelData = [];
+let breakdownData = [];
+let lossData = [];
+
+let barChart;
+let serviceChart;
+
+/* UTIL */
+
+function num(v){
+
+return parseFloat(
+String(v || 0)
+.replace(",", ".")
+) || 0;
+
+}
+
+function fmt(v){
+
+return num(v)
+.toLocaleString("id-ID");
+
+}
+
+/* PAGE */
+
+function showPage(page,btn){
+
+document
+.querySelectorAll(".page")
+.forEach(p=>p.classList.remove("active"));
+
+document
+.querySelectorAll(".nav button")
+.forEach(b=>b.classList.remove("active"));
+
+btn.classList.add("active");
+
+document
+.getElementById(page+"Page")
+.classList.add("active");
+
+}
+
+/* LOAD CSV */
+
+async function loadCSV(url){
+
+return new Promise(resolve=>{
+
+Papa.parse(url,{
+
+download:true,
+header:true,
+skipEmptyLines:true,
+
+complete:(results)=>{
+
+resolve(results.data);
+
+}
+
+});
+
+});
+
+}
+
+async function loadData(){
+
+channelData =
+await loadCSV(KPI_CHANNEL);
+
+breakdownData =
+await loadCSV(KPI_BREAKDOWN);
+
+lossData =
+await loadCSV(TOP_LOSS_PRODUCT);
+
+setupWeek();
+
+}
+
+/* WEEK */
+
+function setupWeek(){
+
+const weeks =
+[...new Set(
+channelData.map(d=>d.Week)
+)];
+
+const select =
+document.getElementById("weekFilter");
+
+select.innerHTML =
+weeks.map(w=>
+`<option value="${w}">${w}</option>`
+).join('');
+
+render(weeks[0]);
+
+select.addEventListener(
+"change",
+()=>render(select.value)
+);
+
+}
+
+/* RENDER */
+
+function render(week){
+
+const channels =
+channelData.filter(
+d=>d.Week===week
+);
+
+const breakdown =
+breakdownData.filter(
+d=>d.Week===week
+);
+
+const mt =
+channels.find(d=>
+(d.Channel || '').includes("MT")
+);
+
+const gt =
+channels.find(d=>
+(d.Channel || '').includes("GT")
+);
+
+if(mt){
+
+mtOrder.innerHTML =
+fmt(mt["Order Quantity"]);
+
+mtDelivery.innerHTML =
+fmt(mt["Delivery Quantity"]);
+
+mtGap.innerHTML =
+fmt(mt["GAP"]);
+
+mtCF.innerHTML =
+num(mt["Case Fill"]).toFixed(2)+"%";
+
+mtCF2.innerHTML =
+num(mt["Case Fill"]).toFixed(2)+"%";
+
+}
+
+if(gt){
+
+gtOrder.innerHTML =
+fmt(gt["Order Quantity"]);
+
+gtDelivery.innerHTML =
+fmt(gt["Delivery Quantity"]);
+
+gtGap.innerHTML =
+fmt(gt["GAP"]);
+
+gtCF.innerHTML =
+num(gt["Case Fill"]).toFixed(2)+"%";
+
+gtCF2.innerHTML =
+num(gt["Case Fill"]).toFixed(2)+"%";
+
+}
+
+/* SORT */
+
+const sortedBreakdown =
+[...breakdown]
+
+.sort((a,b)=>{
+
+const A =
+a["Channel Breakdown"] || '';
+
+const B =
+b["Channel Breakdown"] || '';
+
+if(A.includes("MT") && B.includes("GT"))
+return -1;
+
+if(A.includes("GT") && B.includes("MT"))
+return 1;
+
+return B.localeCompare(A);
+
+});
+
+/* TABLE */
+
+tableBody.innerHTML =
+sortedBreakdown.map(d=>`
+
+<tr>
+
+<td>${d["Channel Breakdown"]}</td>
+
+<td>${fmt(d["Order Quantity"])}</td>
+
+<td>${fmt(d["Delivery Quantity"])}</td>
+
+<td class="loss">${fmt(d["GAP"])}</td>
+
+<td class="cf">
+${num(d["Case Fill"]).toFixed(2)}%
+</td>
+
+</tr>
+
+`).join('');
+
+/* BUILD */
+
+buildLossTable();
+buildTopTable();
+buildBarChart(channels);
+buildServiceChart();
+
+}
+
+/* LOSS */
+
+function buildLossTable(){
+
+const weeks =
+[...new Set(
+lossData.map(d=>d.Week)
+)];
+
+const grouped = {};
+
+lossData.forEach(d=>{
+
+if(num(d["GAP"]) >= 0)
+return;
+
+const sku =
+d["Product Name"];
+
+if(!grouped[sku])
+grouped[sku] = {};
+
+grouped[sku][d.Week] =
+num(d["GAP"]);
+
+});
+
+const sorted =
+Object.entries(grouped)
+
+.sort((a,b)=>{
+
+const totalA =
+Object.values(a[1])
+.reduce((x,y)=>x+y,0);
+
+const totalB =
+Object.values(b[1])
+.reduce((x,y)=>x+y,0);
+
+return totalA - totalB;
+
+});
+
+lossHead.innerHTML =
+
+`
+<tr>
+
+<th>SKU Name</th>
+
+${weeks.map(w=>
+`<th>${w}</th>`
+).join('')}
+
+</tr>
+`;
+
+lossBody.innerHTML =
+
+sorted.map(([sku,data])=>`
+
+<tr>
+
+<td>${sku}</td>
+
+${weeks.map(w=>`
+
+<td class="loss">
+
+${data[w]
+? fmt(data[w])
+: '-'}
+
+</td>
+
+`).join('')}
+
+</tr>
+
+`).join('');
+
+}
+
+/* TOP */
+
+function buildTopTable(){
+
+const weeks =
+[...new Set(
+lossData.map(d=>d.Week)
+)];
+
+const grouped = {};
+
+lossData.forEach(d=>{
+
+const sku =
+d["Product Name"];
+
+if(!grouped[sku])
+grouped[sku] = {};
+
+grouped[sku][d.Week] =
+num(d["Delivery Quantity"]);
+
+});
+
+const sorted =
+Object.entries(grouped)
+
+.sort((a,b)=>{
+
+const totalA =
+Object.values(a[1])
+.reduce((x,y)=>x+y,0);
+
+const totalB =
+Object.values(b[1])
+.reduce((x,y)=>x+y,0);
+
+return totalB - totalA;
+
+});
+
+topHead.innerHTML =
+
+`
+<tr>
+
+<th>SKU Name</th>
+
+${weeks.map(w=>
+`<th>${w}</th>`
+).join('')}
+
+</tr>
+`;
+
+topBody.innerHTML =
+
+sorted.map(([sku,data])=>`
+
+<tr>
+
+<td>${sku}</td>
+
+${weeks.map(w=>`
+
+<td class="success">
+
+${data[w]
+? fmt(data[w])
+: '-'}
+
+</td>
+
+`).join('')}
+
+</tr>
+
+`).join('');
+
+}
+
+/* BAR */
+
+function buildBarChart(data){
+
+if(barChart)
+barChart.destroy();
+
+barChart =
+new Chart(
+
+document.getElementById("barChart"),
+
+{
+
+type:"bar",
+
+data:{
+
+labels:
+data.map(d=>d.Channel),
+
+datasets:[{
+
+data:
+data.map(d=>
+num(d["Case Fill"])
+),
+
+backgroundColor:[
+"#7C3AED",
+"#3B82F6"
+],
+
+borderRadius:14
+
+}]
+
+},
+
+options:{
+
+plugins:{
+legend:{
+display:false
+}
+},
+
+scales:{
+
+y:{
+
+min:0,
+max:110,
+
+ticks:{
+callback:v=>v+"%"
+}
+
+}
+
+}
+
+}
+
+}
+
+);
+
+}
+
+/* SERVICE */
+
+function buildServiceChart(){
+
+if(serviceChart)
+serviceChart.destroy();
+
+const weeks =
+[...new Set(
+channelData.map(d=>d.Week)
+)];
+
+const avgData =
+weeks.map(w=>{
+
+const rows =
+channelData.filter(d=>d.Week===w);
+
+return rows.reduce((a,b)=>
+a + num(b["Case Fill"])
+,0) / rows.length;
+
+});
+
+serviceChart =
+new Chart(
+
+document.getElementById("serviceChart"),
+
+{
+
+type:"line",
+
+data:{
+
+labels:weeks,
+
+datasets:[{
+
+data:avgData,
+
+borderColor:"#3B82F6",
+
+backgroundColor:"rgba(59,130,246,.1)",
+
+fill:true,
+
+tension:.4,
+
+pointRadius:5
+
+}]
+
+},
+
+options:{
+
+plugins:{
+legend:{
+display:false
+}
+},
+
+scales:{
+
+y:{
+
+min:0,
+max:110,
+
+ticks:{
+callback:v=>v+"%"
+}
+
+}
+
+}
+
+}
+
+}
+
+);
+
+}
+
+loadData();
+
+</script>
+
+</body>
+</html>
