@@ -6,7 +6,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>SCM Case Fill Dashboard</title>
+<title>SCM Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet"/>
 
@@ -22,20 +22,19 @@
 
 :root{
 
-    --bg:#0F0B1A;
-    --card:#171126;
-    --card2:#1E1630;
-
     --purple:#7C3AED;
-    --purple2:#A855F7;
+    --purple2:#6D28D9;
 
-    --red:#EF4444;
+    --bg:#F6F7FB;
+    --card:#FFFFFF;
+
+    --text:#111827;
+    --muted:#6B7280;
+
+    --border:#E5E7EB;
+
     --green:#10B981;
-
-    --text:#F8FAFC;
-    --muted:#A1A1AA;
-
-    --border:rgba(255,255,255,.06);
+    --red:#EF4444;
 
     --fontTitle:'Syne',sans-serif;
     --fontBody:'DM Sans',sans-serif;
@@ -44,11 +43,7 @@
 
 body{
 
-    background:linear-gradient(
-        180deg,
-        #0B0814 0%,
-        #120C20 100%
-    );
+    background:var(--bg);
 
     color:var(--text);
 
@@ -56,31 +51,34 @@ body{
 
 }
 
-/* SIDEBAR */
+/* HEADER */
 
-.sidebar{
+.header{
 
-    position:fixed;
+    height:78px;
 
-    left:0;
+    background:
+    linear-gradient(
+        135deg,
+        var(--purple),
+        var(--purple2)
+    );
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 28px;
+
+    color:white;
+
+    position:sticky;
+
     top:0;
 
-    width:260px;
-    height:100vh;
-
-    background:#120D1F;
-
-    border-right:1px solid var(--border);
-
-    padding:24px 18px;
-
-    overflow:auto;
-
-}
-
-.brand{
-
-    margin-bottom:32px;
+    z-index:100;
 
 }
 
@@ -88,7 +86,7 @@ body{
 
     font-family:var(--fontTitle);
 
-    font-size:26px;
+    font-size:28px;
 
     font-weight:800;
 
@@ -96,65 +94,160 @@ body{
 
 .brand p{
 
-    color:var(--muted);
-
     font-size:12px;
 
-    margin-top:6px;
+    opacity:.8;
+
+    margin-top:4px;
 
 }
 
-.menu{
+.filter-wrap{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.filter-wrap select{
+
+    background:rgba(255,255,255,.14);
+
+    border:none;
+
+    color:white;
+
+    padding:12px 16px;
+
+    border-radius:14px;
+
+    outline:none;
+
+    font-weight:600;
+
+}
+
+.filter-wrap select option{
+
+    color:black;
+
+}
+
+/* LAYOUT */
+
+.layout{
+
+    display:grid;
+
+    grid-template-columns:260px 1fr;
+
+    gap:22px;
+
+    padding:22px;
+
+}
+
+/* SIDEBAR */
+
+.sidebar{
 
     display:flex;
 
     flex-direction:column;
 
-    gap:10px;
+    gap:18px;
 
 }
 
-.menu button{
+.sidebar-card{
 
-    background:transparent;
+    background:white;
 
-    border:none;
+    border:1px solid var(--border);
 
-    color:var(--muted);
+    border-radius:22px;
 
-    padding:14px 16px;
+    overflow:hidden;
 
-    border-radius:14px;
+}
 
-    text-align:left;
+.sidebar-title{
+
+    padding:16px 18px;
+
+    border-bottom:1px solid var(--border);
+
+    font-weight:700;
 
     font-size:14px;
 
-    cursor:pointer;
+}
 
-    transition:.2s;
+.loss-item{
+
+    padding:16px 18px;
+
+    border-bottom:1px solid #F3F4F6;
 
 }
 
-.menu button:hover{
+.loss-item:last-child{
 
-    background:rgba(255,255,255,.04);
-
-    color:white;
+    border-bottom:none;
 
 }
 
-.menu button.active{
+.loss-name{
 
-    background:linear-gradient(
-        135deg,
-        var(--purple),
-        var(--purple2)
-    );
-
-    color:white;
+    font-size:13px;
 
     font-weight:700;
+
+    margin-bottom:8px;
+
+}
+
+.loss-gap{
+
+    color:var(--red);
+
+    font-weight:800;
+
+    font-size:22px;
+
+    font-family:var(--fontTitle);
+
+}
+
+.progress{
+
+    width:100%;
+
+    height:8px;
+
+    background:#F3F4F6;
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+    margin-top:10px;
+
+}
+
+.progress div{
+
+    height:100%;
+
+    background:
+    linear-gradient(
+        90deg,
+        #EF4444,
+        #F97316
+    );
 
 }
 
@@ -162,49 +255,11 @@ body{
 
 .main{
 
-    margin-left:260px;
-
-    padding:24px;
-
-}
-
-/* HEADER */
-
-.topbar{
-
     display:flex;
 
-    justify-content:space-between;
+    flex-direction:column;
 
-    align-items:center;
-
-    margin-bottom:22px;
-
-}
-
-.page-title{
-
-    font-family:var(--fontTitle);
-
-    font-size:34px;
-
-    font-weight:800;
-
-}
-
-.week-select{
-
-    background:var(--card);
-
-    border:1px solid var(--border);
-
-    color:white;
-
-    padding:10px 14px;
-
-    border-radius:12px;
-
-    outline:none;
+    gap:22px;
 
 }
 
@@ -218,17 +273,11 @@ body{
 
     gap:18px;
 
-    margin-bottom:22px;
-
 }
 
 .kpi{
 
-    background:linear-gradient(
-        180deg,
-        #1B1430,
-        #171126
-    );
+    background:white;
 
     border:1px solid var(--border);
 
@@ -250,7 +299,7 @@ body{
 
     margin-top:12px;
 
-    font-size:38px;
+    font-size:40px;
 
     font-family:var(--fontTitle);
 
@@ -262,9 +311,9 @@ body{
 
     margin-top:8px;
 
-    color:#C4B5FD;
-
     font-size:13px;
+
+    color:var(--muted);
 
 }
 
@@ -276,9 +325,7 @@ body{
 
     grid-template-columns:2fr 1fr;
 
-    gap:18px;
-
-    margin-bottom:18px;
+    gap:20px;
 
 }
 
@@ -286,15 +333,11 @@ body{
 
 .card{
 
-    background:linear-gradient(
-        180deg,
-        #1A1428,
-        #161122
-    );
+    background:white;
 
     border:1px solid var(--border);
 
-    border-radius:24px;
+    border-radius:22px;
 
     padding:22px;
 
@@ -324,11 +367,13 @@ th{
 
     text-align:left;
 
-    color:var(--muted);
+    padding:12px;
 
     font-size:12px;
 
-    padding:12px;
+    color:var(--muted);
+
+    border-bottom:1px solid var(--border);
 
 }
 
@@ -336,77 +381,9 @@ td{
 
     padding:14px 12px;
 
-    border-top:1px solid rgba(255,255,255,.04);
+    border-bottom:1px solid #F3F4F6;
 
     font-size:13px;
-
-}
-
-/* LIST */
-
-.list{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:14px;
-
-}
-
-.list-item{
-
-    background:rgba(255,255,255,.03);
-
-    border-radius:16px;
-
-    padding:14px;
-
-}
-
-.list-item h4{
-
-    font-size:14px;
-
-}
-
-.list-item span{
-
-    color:var(--red);
-
-    font-weight:700;
-
-    display:block;
-
-    margin-top:8px;
-
-}
-
-.progress{
-
-    width:100%;
-
-    height:8px;
-
-    background:rgba(255,255,255,.06);
-
-    border-radius:999px;
-
-    overflow:hidden;
-
-    margin-top:10px;
-
-}
-
-.progress div{
-
-    height:100%;
-
-    background:linear-gradient(
-        90deg,
-        #EF4444,
-        #F97316
-    );
 
 }
 
@@ -455,15 +432,43 @@ td{
 
 }
 
+/* BREAKDOWN */
+
+.breakdown{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+}
+
+.break-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:14px;
+
+    background:#F9FAFB;
+
+    border-radius:14px;
+
+}
+
+.break-row strong{
+
+    color:var(--purple);
+
+}
+
 /* RESPONSIVE */
 
 @media(max-width:1200px){
-
-    .kpi-grid{
-
-        grid-template-columns:1fr 1fr;
-
-    }
 
     .grid{
 
@@ -471,21 +476,19 @@ td{
 
     }
 
+    .kpi-grid{
+
+        grid-template-columns:1fr 1fr;
+
+    }
+
 }
 
 @media(max-width:900px){
 
-    .sidebar{
+    .layout{
 
-        width:100%;
-        height:auto;
-        position:relative;
-
-    }
-
-    .main{
-
-        margin-left:0;
+        grid-template-columns:1fr;
 
     }
 
@@ -497,9 +500,9 @@ td{
 
 <body>
 
-<!-- SIDEBAR -->
+<!-- HEADER -->
 
-<div class="sidebar">
+<div class="header">
 
     <div class="brand">
 
@@ -513,159 +516,164 @@ td{
 
     </div>
 
-    <div class="menu">
+    <div class="filter-wrap">
 
-        <button class="active">
-            Overview
-        </button>
-
-        <button>
-            Trend SKU Laku
-        </button>
-
-        <button>
-            Trend SKU Loss
-        </button>
-
-        <button>
-            Region Performance
-        </button>
-
-        <button>
-            Channel Breakdown
-        </button>
+        <select id="weekFilter">
+        </select>
 
     </div>
 
 </div>
 
-<!-- MAIN -->
+<!-- LAYOUT -->
 
-<div class="main">
+<div class="layout">
 
-    <!-- HEADER -->
+    <!-- SIDEBAR -->
 
-    <div class="topbar">
+    <div class="sidebar">
 
-        <div class="page-title">
-            Overview Dashboard
-        </div>
+        <!-- LOSS -->
 
-        <select class="week-select"
-                id="weekFilter">
-        </select>
+        <div class="sidebar-card">
 
-    </div>
+            <div class="sidebar-title">
+                Trend SKU Loss
+            </div>
 
-    <!-- KPI -->
-
-    <div class="kpi-grid">
-
-        <div class="kpi">
-
-            <small>
-                Overall Case Fill
-            </small>
-
-            <h2 id="overallCF">
-                0%
-            </h2>
-
-            <span>
-                Total Performance
-            </span>
+            <div id="lossList"></div>
 
         </div>
 
-        <div class="kpi">
+        <!-- BEST -->
 
-            <small>
-                Total Order
-            </small>
+        <div class="sidebar-card">
 
-            <h2 id="totalOrder">
-                0
-            </h2>
+            <div class="sidebar-title">
+                Trend SKU Laku
+            </div>
 
-            <span>
-                Order Quantity
-            </span>
-
-        </div>
-
-        <div class="kpi">
-
-            <small>
-                Total Delivery
-            </small>
-
-            <h2 id="totalDelivery">
-                0
-            </h2>
-
-            <span>
-                Delivered Qty
-            </span>
-
-        </div>
-
-        <div class="kpi">
-
-            <small>
-                Total GAP
-            </small>
-
-            <h2 id="totalGap">
-                0
-            </h2>
-
-            <span>
-                Loss Quantity
-            </span>
+            <div id="bestList"></div>
 
         </div>
 
     </div>
 
-    <!-- GRID -->
+    <!-- MAIN -->
 
-    <div class="grid">
+    <div class="main">
 
-        <!-- BAR -->
+        <!-- KPI -->
 
-        <div class="card">
+        <div class="kpi-grid">
 
-            <div class="card-title">
-                Channel Case Fill
+            <div class="kpi">
+
+                <small>
+                    Overall Case Fill
+                </small>
+
+                <h2 id="overallCF">
+                    0%
+                </h2>
+
+                <span>
+                    Delivery / Order
+                </span>
+
             </div>
 
-            <canvas id="barChart"
-                    height="120">
-            </canvas>
+            <div class="kpi">
+
+                <small>
+                    Total Order
+                </small>
+
+                <h2 id="totalOrder">
+                    0
+                </h2>
+
+                <span>
+                    Order Quantity
+                </span>
+
+            </div>
+
+            <div class="kpi">
+
+                <small>
+                    Total Delivery
+                </small>
+
+                <h2 id="totalDelivery">
+                    0
+                </h2>
+
+                <span>
+                    Delivered Qty
+                </span>
+
+            </div>
+
+            <div class="kpi">
+
+                <small>
+                    Total GAP
+                </small>
+
+                <h2 id="totalGap">
+                    0
+                </h2>
+
+                <span>
+                    Loss Quantity
+                </span>
+
+            </div>
 
         </div>
 
-        <!-- DONUT -->
+        <!-- CHART -->
 
-        <div class="card">
+        <div class="grid">
 
-            <div class="card-title">
-                Delivered vs GAP
+            <!-- BAR -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    Channel Breakdown
+                </div>
+
+                <canvas id="barChart"
+                        height="120">
+                </canvas>
+
             </div>
 
-            <div class="donut-wrap">
+            <!-- DONUT -->
 
-                <canvas id="donutChart"></canvas>
+            <div class="card">
 
-                <div class="donut-center">
+                <div class="card-title">
+                    Delivered vs GAP
+                </div>
 
-                    <h1 id="donutText">
-                        0%
-                    </h1>
+                <div class="donut-wrap">
 
-                    <span>
-                        Delivered
-                    </span>
+                    <canvas id="donutChart"></canvas>
+
+                    <div class="donut-center">
+
+                        <h1 id="donutText">
+                            0%
+                        </h1>
+
+                        <span>
+                            Delivered
+                        </span>
+
+                    </div>
 
                 </div>
 
@@ -673,54 +681,54 @@ td{
 
         </div>
 
-    </div>
+        <!-- TABLE + BREAKDOWN -->
 
-    <!-- GRID 2 -->
+        <div class="grid">
 
-    <div class="grid">
+            <!-- TABLE -->
 
-        <!-- TABLE -->
+            <div class="card">
 
-        <div class="card">
+                <div class="card-title">
+                    KPI Breakdown
+                </div>
 
-            <div class="card-title">
-                KPI Breakdown
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Breakdown</th>
+                            <th>Order</th>
+                            <th>Delivery</th>
+                            <th>Gap</th>
+                            <th>CF%</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="tableBody">
+
+                    </tbody>
+
+                </table>
+
             </div>
 
-            <table>
+            <!-- CHANNEL -->
 
-                <thead>
+            <div class="card">
 
-                    <tr>
+                <div class="card-title">
+                    Channel KPI
+                </div>
 
-                        <th>Channel</th>
-                        <th>Order</th>
-                        <th>Delivery</th>
-                        <th>Gap</th>
-                        <th>CF%</th>
+                <div class="breakdown"
+                     id="channelBreakdown">
+                </div>
 
-                    </tr>
-
-                </thead>
-
-                <tbody id="tableBody">
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-        <!-- LOSS -->
-
-        <div class="card">
-
-            <div class="card-title">
-                Trend SKU Loss
-            </div>
-
-            <div class="list"
-                 id="lossList">
             </div>
 
         </div>
@@ -732,7 +740,7 @@ td{
 <script>
 
 /* =========================
-API URL
+API
 ========================= */
 
 const KPI_CHANNEL =
@@ -745,6 +753,17 @@ const LOSS_PRODUCT =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1801155860&single=true&output=csv";
 
 /* =========================
+GLOBAL
+========================= */
+
+let channelData = [];
+let breakdownData = [];
+let lossData = [];
+
+let barChart;
+let donutChart;
+
+/* =========================
 HELPER
 ========================= */
 
@@ -753,9 +772,31 @@ function parseCSV(text){
     const rows =
     text.trim().split("\n");
 
-    return rows.map(r=>
-        r.split(",")
-    );
+    const headers =
+    rows[0]
+    .split(",");
+
+    return rows.slice(1).map(row=>{
+
+        const values =
+        row.split(",");
+
+        const obj = {};
+
+        headers.forEach((h,i)=>{
+
+            obj[h.trim()] =
+            values[i]
+            ? values[i]
+                .replace(/"/g,'')
+                .trim()
+            : "";
+
+        });
+
+        return obj;
+
+    });
 
 }
 
@@ -767,74 +808,118 @@ function fmt(n){
 }
 
 /* =========================
-LOAD DATA
+LOAD
 ========================= */
 
-async function loadDashboard(){
+async function loadData(){
 
-    /* KPI CHANNEL */
+    const [
+        c1,
+        c2,
+        c3
+    ] = await Promise.all([
 
-    const res1 =
-    await fetch(KPI_CHANNEL);
+        fetch(KPI_CHANNEL)
+        .then(r=>r.text()),
 
-    const txt1 =
-    await res1.text();
+        fetch(KPI_BREAKDOWN)
+        .then(r=>r.text()),
 
-    const data1 =
-    parseCSV(txt1);
+        fetch(LOSS_PRODUCT)
+        .then(r=>r.text())
 
-    /* KPI BREAKDOWN */
+    ]);
 
-    const res2 =
-    await fetch(KPI_BREAKDOWN);
+    channelData =
+    parseCSV(c1);
 
-    const txt2 =
-    await res2.text();
+    breakdownData =
+    parseCSV(c2);
 
-    const data2 =
-    parseCSV(txt2);
+    lossData =
+    parseCSV(c3);
 
-    /* LOSS */
-
-    const res3 =
-    await fetch(LOSS_PRODUCT);
-
-    const txt3 =
-    await res3.text();
-
-    const data3 =
-    parseCSV(txt3);
-
-    buildKPI(data1);
-
-    buildTable(data2);
-
-    buildLoss(data3);
-
-    buildCharts(data2);
+    setupWeek();
 
 }
 
 /* =========================
-KPI
+WEEK FILTER
 ========================= */
 
-function buildKPI(data){
+function setupWeek(){
+
+    const weeks =
+    [...new Set(
+
+        breakdownData.map(
+            d=>d.Week
+        )
+
+    )];
+
+    const select =
+    document.getElementById(
+        "weekFilter"
+    );
+
+    select.innerHTML =
+    weeks.map(w=>
+
+        `<option value="${w}">
+            ${w}
+        </option>`
+
+    ).join('');
+
+    render(
+        weeks[0]
+    );
+
+    select.addEventListener(
+        "change",
+        ()=>render(select.value)
+    );
+
+}
+
+/* =========================
+RENDER
+========================= */
+
+function render(week){
+
+    const channels =
+    channelData.filter(
+        d=>d.Week === week
+    );
+
+    const breakdown =
+    breakdownData.filter(
+        d=>d.Week === week
+    );
+
+    const losses =
+    lossData.filter(
+        d=>d.Week === week
+    );
+
+    /* KPI */
 
     let totalOrder = 0;
     let totalDelivery = 0;
     let totalGap = 0;
 
-    data.slice(1).forEach(r=>{
+    channels.forEach(d=>{
 
         totalOrder +=
-        Number(r[1]) || 0;
+        Number(d["Order Quantity"]) || 0;
 
         totalDelivery +=
-        Number(r[2]) || 0;
+        Number(d["Delivery Quantity"]) || 0;
 
         totalGap +=
-        Number(r[3]) || 0;
+        Number(d["GAP"]) || 0;
 
     });
 
@@ -846,7 +931,7 @@ function buildKPI(data){
     document.getElementById(
         "overallCF"
     ).innerHTML =
-    cf.toFixed(1)+"%";
+    cf.toFixed(2)+"%";
 
     document.getElementById(
         "totalOrder"
@@ -868,84 +953,186 @@ function buildKPI(data){
     ).innerHTML =
     cf.toFixed(1)+"%";
 
-}
-
-/* =========================
-TABLE
-========================= */
-
-function buildTable(data){
-
-    let html = "";
-
-    data.slice(1).forEach(r=>{
-
-        html += `
-
-        <tr>
-
-            <td>${r[1]}</td>
-            <td>${fmt(r[2])}</td>
-            <td>${fmt(r[3])}</td>
-            <td>${fmt(r[4])}</td>
-            <td>${r[5]}%</td>
-
-        </tr>
-
-        `;
-
-    });
+    /* TABLE */
 
     document.getElementById(
         "tableBody"
     ).innerHTML =
-    html;
+    breakdown.map(d=>`
 
-}
+        <tr>
 
-/* =========================
-LOSS
-========================= */
+            <td>
+                ${d["Channel Breakdown"]}
+            </td>
 
-function buildLoss(data){
+            <td>
+                ${fmt(d["Order Quantity"])}
+            </td>
 
-    let html = "";
+            <td>
+                ${fmt(d["Delivery Quantity"])}
+            </td>
 
-    data.slice(1,6).forEach(r=>{
+            <td>
+                ${fmt(d["GAP"])}
+            </td>
 
-        const gap =
-        Number(r[4]) || 0;
+            <td>
+                ${Number(d["Case Fill"]).toFixed(2)}%
+            </td>
 
-        html += `
+        </tr>
 
-        <div class="list-item">
+    `).join('');
 
-            <h4>
-                ${r[1]}
-            </h4>
+    /* CHANNEL KPI */
+
+    document.getElementById(
+        "channelBreakdown"
+    ).innerHTML =
+    channels.map(d=>`
+
+        <div class="break-row">
 
             <span>
-                GAP : ${fmt(gap)}
+                ${d.Channel}
             </span>
+
+            <strong>
+                ${Number(d["Case Fill"])
+                .toFixed(1)}%
+            </strong>
+
+        </div>
+
+    `).join('');
+
+    /* LOSS */
+
+    const topLoss =
+    [...losses]
+    .sort((a,b)=>
+
+        Number(b.GAP)
+        -
+        Number(a.GAP)
+
+    )
+    .slice(0,5);
+
+    const maxGap =
+    Number(topLoss[0]?.GAP || 1);
+
+    document.getElementById(
+        "lossList"
+    ).innerHTML =
+    topLoss.map(d=>`
+
+        <div class="loss-item">
+
+            <div class="loss-name">
+
+                ${d["Product Name"]}
+
+            </div>
+
+            <div class="loss-gap">
+
+                ${fmt(d.GAP)}
+
+            </div>
 
             <div class="progress">
 
                 <div style="
-                    width:${Math.min(gap/1000*100,100)}%
-                "></div>
+                    width:${
+                        (
+                            Number(d.GAP)
+                            / maxGap
+                        ) * 100
+                    }%
+                ">
+                </div>
 
             </div>
 
         </div>
 
-        `;
+    `).join('');
 
-    });
+    /* BEST SELLER */
+
+    const best =
+    [...losses]
+    .sort((a,b)=>
+
+        Number(b["Delivery Quantity"])
+        -
+        Number(a["Delivery Quantity"])
+
+    )
+    .slice(0,5);
+
+    const maxDel =
+    Number(
+        best[0]?.["Delivery Quantity"]
+        || 1
+    );
 
     document.getElementById(
-        "lossList"
+        "bestList"
     ).innerHTML =
-    html;
+    best.map(d=>`
+
+        <div class="loss-item">
+
+            <div class="loss-name">
+
+                ${d["Product Name"]}
+
+            </div>
+
+            <div class="loss-gap"
+                 style="
+                 color:var(--green)
+                 ">
+
+                ${fmt(
+                    d["Delivery Quantity"]
+                )}
+
+            </div>
+
+            <div class="progress">
+
+                <div style="
+                    width:${
+                        (
+                            Number(
+                            d["Delivery Quantity"]
+                            ) / maxDel
+                        ) * 100
+                    }%;
+                    background:
+                    linear-gradient(
+                        90deg,
+                        #10B981,
+                        #34D399
+                    );
+                ">
+                </div>
+
+            </div>
+
+        </div>
+
+    `).join('');
+
+    buildCharts(
+        breakdown,
+        cf
+    );
 
 }
 
@@ -953,18 +1140,27 @@ function buildLoss(data){
 CHART
 ========================= */
 
-function buildCharts(data){
+function buildCharts(data,cf){
+
+    if(barChart)
+        barChart.destroy();
+
+    if(donutChart)
+        donutChart.destroy();
 
     const labels =
-    data.slice(1).map(r=>r[1]);
+    data.map(
+        d=>d["Channel Breakdown"]
+    );
 
     const values =
-    data.slice(1).map(r=>
-        Number(r[5]) || 0
+    data.map(
+        d=>Number(d["Case Fill"]) || 0
     );
 
     /* BAR */
 
+    barChart =
     new Chart(
 
         document.getElementById(
@@ -984,7 +1180,13 @@ function buildCharts(data){
                     data:values,
 
                     backgroundColor:
-                    "#7C3AED",
+                    labels.map(l=>
+
+                        l.includes("MT")
+                        ? "#7C3AED"
+                        : "#EF4444"
+
+                    ),
 
                     borderRadius:12
 
@@ -993,6 +1195,8 @@ function buildCharts(data){
             },
 
             options:{
+
+                responsive:true,
 
                 plugins:{
 
@@ -1008,7 +1212,12 @@ function buildCharts(data){
 
                         min:0,
 
-                        max:110
+                        max:110,
+
+                        ticks:{
+                            callback:v=>
+                            v+"%"
+                        }
 
                     }
 
@@ -1022,10 +1231,7 @@ function buildCharts(data){
 
     /* DONUT */
 
-    const avg =
-    values.reduce((a,b)=>a+b,0)
-    / values.length;
-
+    donutChart =
     new Chart(
 
         document.getElementById(
@@ -1046,13 +1252,13 @@ function buildCharts(data){
                 datasets:[{
 
                     data:[
-                        avg,
-                        100-avg
+                        cf,
+                        100-cf
                     ],
 
                     backgroundColor:[
                         "#7C3AED",
-                        "#2B1F47"
+                        "#E5E7EB"
                     ],
 
                     borderWidth:0
@@ -1081,7 +1287,7 @@ function buildCharts(data){
 
 }
 
-loadDashboard();
+loadData();
 
 </script>
 
