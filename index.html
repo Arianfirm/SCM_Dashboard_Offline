@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8"/>
@@ -782,8 +781,6 @@ Top Selling SKU
 
 <script>
 
-/* API */
-
 const KPI_CHANNEL =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=349702860&single=true&output=csv";
 
@@ -793,16 +790,12 @@ const KPI_BREAKDOWN =
 const TOP_LOSS_PRODUCT =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1801155860&single=true&output=csv";
 
-/* GLOBAL */
-
 let channelData = [];
 let breakdownData = [];
 let lossData = [];
 
 let barChart;
 let serviceChart;
-
-/* UTIL */
 
 function num(v){
 
@@ -819,8 +812,6 @@ return num(v)
 .toLocaleString("id-ID");
 
 }
-
-/* PAGE */
 
 function showPage(page,btn){
 
@@ -839,8 +830,6 @@ document
 .classList.add("active");
 
 }
-
-/* LOAD CSV */
 
 async function loadCSV(url){
 
@@ -879,8 +868,6 @@ setupWeek();
 
 }
 
-/* WEEK */
-
 function setupWeek(){
 
 const weeks =
@@ -904,8 +891,6 @@ select.addEventListener(
 );
 
 }
-
-/* RENDER */
 
 function render(week){
 
@@ -967,8 +952,6 @@ num(gt["Case Fill"]).toFixed(2)+"%";
 
 }
 
-/* SORT */
-
 const sortedBreakdown =
 [...breakdown]
 
@@ -990,14 +973,12 @@ return B.localeCompare(A);
 
 });
 
-/* TABLE */
-
 tableBody.innerHTML =
 sortedBreakdown.map(d=>`
 
 <tr>
 
-<td>${d["Channel Breakdown"]}</td>
+<td>${d["Channel Breakdown"] || '-'}</td>
 
 <td>${fmt(d["Order Quantity"])}</td>
 
@@ -1013,16 +994,12 @@ ${num(d["Case Fill"]).toFixed(2)}%
 
 `).join('');
 
-/* BUILD */
-
 buildLossTable();
 buildTopTable();
 buildBarChart(channels);
 buildServiceChart();
 
 }
-
-/* LOSS */
 
 function buildLossTable(){
 
@@ -1039,7 +1016,7 @@ if(num(d["GAP"]) >= 0)
 return;
 
 const sku =
-d["Product Name"];
+d["Product Name"] || 'Unknown';
 
 if(!grouped[sku])
 grouped[sku] = {};
@@ -1106,8 +1083,6 @@ ${data[w]
 
 }
 
-/* TOP */
-
 function buildTopTable(){
 
 const weeks =
@@ -1120,7 +1095,7 @@ const grouped = {};
 lossData.forEach(d=>{
 
 const sku =
-d["Product Name"];
+d["Product Name"] || 'Unknown';
 
 if(!grouped[sku])
 grouped[sku] = {};
@@ -1187,8 +1162,6 @@ ${data[w]
 
 }
 
-/* BAR */
-
 function buildBarChart(data){
 
 if(barChart)
@@ -1206,7 +1179,9 @@ type:"bar",
 data:{
 
 labels:
-data.map(d=>d.Channel),
+data.map(d=>
+d.Channel || '-'
+),
 
 datasets:[{
 
@@ -1257,8 +1232,6 @@ callback:v=>v+"%"
 
 }
 
-/* SERVICE */
-
 function buildServiceChart(){
 
 if(serviceChart)
@@ -1275,9 +1248,11 @@ weeks.map(w=>{
 const rows =
 channelData.filter(d=>d.Week===w);
 
-return rows.reduce((a,b)=>
+return rows.length
+? rows.reduce((a,b)=>
 a + num(b["Case Fill"])
-,0) / rows.length;
+,0) / rows.length
+: 0;
 
 });
 
