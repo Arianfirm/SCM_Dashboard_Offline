@@ -6,7 +6,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>SCM Executive Dashboard</title>
+<title>SCM Offline Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 
@@ -23,17 +23,18 @@ box-sizing:border-box;
 
 :root{
 
---bg:#0B0911;
---sidebar:#12101B;
+--bg:#0B1020;
 
---card:#171320;
---card2:#211C2D;
+--sidebar:#111827;
+
+--card:#161B2E;
+--card2:#1F2940;
 
 --text:#FFFFFF;
---muted:#8B90A7;
+--muted:#94A3B8;
 
 --purple:#7C3AED;
---purple2:#A855F7;
+--blue:#3B82F6;
 
 --green:#22C55E;
 --red:#EF4444;
@@ -47,8 +48,8 @@ body{
 background:
 linear-gradient(
 180deg,
-#0B0911,
-#141020
+#0B1020,
+#111827
 );
 
 font-family:'Plus Jakarta Sans',sans-serif;
@@ -71,7 +72,7 @@ position:fixed;
 left:0;
 top:0;
 
-background:var(--sidebar);
+background:#0F172A;
 
 border-right:1px solid var(--border);
 
@@ -137,7 +138,7 @@ text-align:left;
 
 .nav button:hover{
 
-background:#1E1A2A;
+background:#1E293B;
 
 color:white;
 
@@ -148,8 +149,8 @@ color:white;
 background:
 linear-gradient(
 135deg,
-var(--purple),
-var(--purple2)
+#7C3AED,
+#3B82F6
 );
 
 color:white;
@@ -180,12 +181,28 @@ align-items:center;
 
 margin-bottom:28px;
 
+padding:24px 28px;
+
+border-radius:28px;
+
+background:
+linear-gradient(
+135deg,
+#7C3AED,
+#3B82F6
+);
+
+box-shadow:
+0 10px 40px rgba(59,130,246,.18);
+
 }
 
 .title h2{
 
 font-size:38px;
 font-weight:800;
+
+color:white;
 
 }
 
@@ -195,13 +212,13 @@ margin-top:6px;
 
 font-size:13px;
 
-color:var(--muted);
+color:rgba(255,255,255,.8);
 
 }
 
 select{
 
-background:#1F1A2B;
+background:rgba(255,255,255,.12);
 
 border:none;
 
@@ -251,6 +268,8 @@ border-radius:30px;
 
 padding:28px;
 
+backdrop-filter:blur(10px);
+
 }
 
 .kpi-top{
@@ -286,11 +305,25 @@ color:white;
 }
 
 .mt{
-background:var(--purple);
+
+background:
+linear-gradient(
+135deg,
+#7C3AED,
+#3B82F6
+);
+
 }
 
 .gt{
-background:var(--red);
+
+background:
+linear-gradient(
+135deg,
+#2563EB,
+#60A5FA
+);
+
 }
 
 .kpi-big{
@@ -302,6 +335,16 @@ font-weight:800;
 line-height:1;
 
 margin-bottom:24px;
+
+background:
+linear-gradient(
+135deg,
+#FFFFFF,
+#A5B4FC
+);
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
 
 }
 
@@ -435,13 +478,15 @@ font-weight:700;
 }
 
 .cf{
-color:#A855F7;
+color:#A78BFA;
 font-weight:700;
 }
 
 canvas{
 max-height:340px;
 }
+
+/* RESPONSIVE */
 
 @media(max-width:1200px){
 
@@ -509,6 +554,8 @@ Top Selling SKU
 <!-- MAIN -->
 
 <div class="main">
+
+<!-- HEADER -->
 
 <div class="topbar">
 
@@ -645,7 +692,7 @@ Channel Breakdown
 
 </div>
 
-<!-- SERVICE LEVEL -->
+<!-- SERVICE -->
 
 <div class="card">
 
@@ -766,9 +813,7 @@ const KPI_BREAKDOWN =
 const TOP_LOSS_PRODUCT =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1801155860&single=true&output=csv";
 
-/* =========================
-GLOBAL
-========================= */
+/* GLOBAL */
 
 let channelData = [];
 let breakdownData = [];
@@ -777,9 +822,7 @@ let lossData = [];
 let barChart;
 let serviceChart;
 
-/* =========================
-UTIL
-========================= */
+/* UTIL */
 
 function num(v){
 
@@ -797,9 +840,7 @@ return num(v)
 
 }
 
-/* =========================
-NAVIGATION
-========================= */
+/* NAVIGATION */
 
 function showPage(page,btn){
 
@@ -819,9 +860,7 @@ document
 
 }
 
-/* =========================
-LOAD CSV
-========================= */
+/* LOAD CSV */
 
 async function loadCSV(url){
 
@@ -860,9 +899,7 @@ setupWeek();
 
 }
 
-/* =========================
-WEEK FILTER
-========================= */
+/* WEEK */
 
 function setupWeek(){
 
@@ -888,9 +925,7 @@ select.addEventListener(
 
 }
 
-/* =========================
-RENDER
-========================= */
+/* RENDER */
 
 function render(week){
 
@@ -954,26 +989,26 @@ num(gt["Case Fill"]).toFixed(2)+"%";
 
 }
 
-/* BREAKDOWN SORT */
+/* SORT */
 
 const sortedBreakdown =
 [...breakdown]
 
 .sort((a,b)=>{
 
-const channelA =
+const A =
 a["Channel Breakdown"] || '';
 
-const channelB =
+const B =
 b["Channel Breakdown"] || '';
 
-if(channelA.includes("MT") && channelB.includes("GT"))
+if(A.includes("MT") && B.includes("GT"))
 return -1;
 
-if(channelA.includes("GT") && channelB.includes("MT"))
+if(A.includes("GT") && B.includes("MT"))
 return 1;
 
-return channelA.localeCompare(channelB);
+return B.localeCompare(A);
 
 });
 
@@ -984,21 +1019,13 @@ sortedBreakdown.map(d=>`
 
 <tr>
 
-<td>
-${d["Channel Breakdown"]}
-</td>
+<td>${d["Channel Breakdown"]}</td>
 
-<td>
-${fmt(d["Order Quantity"])}
-</td>
+<td>${fmt(d["Order Quantity"])}</td>
 
-<td>
-${fmt(d["Delivery Quantity"])}
-</td>
+<td>${fmt(d["Delivery Quantity"])}</td>
 
-<td class="loss">
-${fmt(d["GAP"])}
-</td>
+<td class="loss">${fmt(d["GAP"])}</td>
 
 <td class="cf">
 ${num(d["Case Fill"]).toFixed(2)}%
@@ -1013,13 +1040,11 @@ ${num(d["Case Fill"]).toFixed(2)}%
 buildLossTable();
 buildTopTable();
 buildBarChart(channels);
-buildServiceLevel();
+buildServiceChart();
 
 }
 
-/* =========================
-LOSS TABLE
-========================= */
+/* LOSS */
 
 function buildLossTable(){
 
@@ -1103,9 +1128,7 @@ ${data[w]
 
 }
 
-/* =========================
-TOP TABLE
-========================= */
+/* TOP SELLING */
 
 function buildTopTable(){
 
@@ -1186,9 +1209,7 @@ ${data[w]
 
 }
 
-/* =========================
-BAR CHART
-========================= */
+/* BAR */
 
 function buildBarChart(data){
 
@@ -1220,7 +1241,7 @@ borderRadius:14,
 
 backgroundColor:[
 "#7C3AED",
-"#EF4444"
+"#3B82F6"
 ]
 
 }]
@@ -1258,11 +1279,9 @@ callback:v=>v+"%"
 
 }
 
-/* =========================
-SERVICE LEVEL TREND
-========================= */
+/* SERVICE LEVEL */
 
-function buildServiceLevel(){
+function buildServiceChart(){
 
 if(serviceChart)
 serviceChart.destroy();
@@ -1303,9 +1322,9 @@ label:"Service Level",
 
 data:avgData,
 
-borderColor:"#7C3AED",
+borderColor:"#60A5FA",
 
-backgroundColor:"rgba(124,58,237,.15)",
+backgroundColor:"rgba(96,165,250,.12)",
 
 fill:true,
 
