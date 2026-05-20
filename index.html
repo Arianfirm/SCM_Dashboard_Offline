@@ -6,11 +6,12 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>SCM Offline Dashboard</title>
+<title>SCM Executive Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <style>
 
@@ -63,7 +64,6 @@ display:flex;
 .sidebar{
 
 width:250px;
-
 height:100vh;
 
 position:fixed;
@@ -90,7 +90,6 @@ margin-bottom:40px;
 .logo h1{
 
 font-size:28px;
-
 font-weight:800;
 
 }
@@ -108,9 +107,7 @@ color:var(--muted);
 .nav{
 
 display:flex;
-
 flex-direction:column;
-
 gap:12px;
 
 }
@@ -128,7 +125,6 @@ border-radius:18px;
 color:var(--muted);
 
 font-size:14px;
-
 font-weight:600;
 
 cursor:pointer;
@@ -188,8 +184,7 @@ margin-bottom:28px;
 
 .title h2{
 
-font-size:34px;
-
+font-size:36px;
 font-weight:800;
 
 }
@@ -272,8 +267,7 @@ margin-bottom:20px;
 
 .kpi-title{
 
-font-size:20px;
-
+font-size:22px;
 font-weight:700;
 
 }
@@ -285,7 +279,6 @@ padding:8px 14px;
 border-radius:999px;
 
 font-size:12px;
-
 font-weight:700;
 
 color:white;
@@ -380,8 +373,7 @@ padding:28px;
 
 .card-title{
 
-font-size:18px;
-
+font-size:20px;
 font-weight:700;
 
 margin-bottom:22px;
@@ -389,6 +381,12 @@ margin-bottom:22px;
 }
 
 /* TABLE */
+
+.table-wrap{
+
+overflow:auto;
+
+}
 
 table{
 
@@ -410,115 +408,43 @@ color:var(--muted);
 
 border-bottom:1px solid var(--border);
 
+white-space:nowrap;
+
 }
 
 td{
 
-padding:18px 14px;
+padding:16px 14px;
 
 font-size:13px;
 
 border-bottom:1px solid rgba(255,255,255,.05);
 
-}
-
-/* SKU */
-
-.sku-grid{
-
-display:grid;
-
-grid-template-columns:1fr 1fr;
-
-gap:22px;
-
-}
-
-.sku-card{
-
-background:var(--card);
-
-border:1px solid var(--border);
-
-border-radius:26px;
-
-padding:24px;
-
-}
-
-.sku-name{
-
-font-size:15px;
-
-font-weight:700;
-
-line-height:1.5;
-
-margin-bottom:18px;
-
-}
-
-.sku-detail{
-
-display:grid;
-
-grid-template-columns:1fr 1fr;
-
-gap:14px;
-
-}
-
-.sku-box{
-
-background:var(--card2);
-
-padding:14px;
-
-border-radius:16px;
-
-}
-
-.sku-box small{
-
-font-size:11px;
-
-color:var(--muted);
-
-}
-
-.sku-box strong{
-
-display:block;
-
-margin-top:8px;
-
-font-size:18px;
+white-space:nowrap;
 
 }
 
 .loss{
 color:var(--red);
+font-weight:700;
 }
 
 .success{
 color:var(--green);
+font-weight:700;
 }
 
-.cf{
-color:#A855F7;
-}
+/* CHART */
 
 canvas{
-max-height:320px;
+max-height:340px;
 }
+
+/* MOBILE */
 
 @media(max-width:1200px){
 
 .grid{
-grid-template-columns:1fr;
-}
-
-.sku-grid{
 grid-template-columns:1fr;
 }
 
@@ -568,11 +494,11 @@ Overview
 </button>
 
 <button onclick="showPage('loss',this)">
-Trend SKU Loss
+Loss SKU Trend
 </button>
 
-<button onclick="showPage('best',this)">
-Trend SKU Laku
+<button onclick="showPage('top',this)">
+Top Selling SKU
 </button>
 
 </div>
@@ -582,6 +508,8 @@ Trend SKU Laku
 <!-- MAIN -->
 
 <div class="main">
+
+<!-- TOPBAR -->
 
 <div class="topbar">
 
@@ -601,6 +529,8 @@ Trend SKU Laku
 
 <div class="page active"
 id="overviewPage">
+
+<!-- KPI -->
 
 <div class="kpi-grid">
 
@@ -726,7 +656,7 @@ Overall Case Fill
 
 </div>
 
-<!-- TABLE -->
+<!-- BREAKDOWN -->
 
 <div class="card">
 
@@ -734,17 +664,19 @@ Overall Case Fill
 KPI Breakdown
 </div>
 
+<div class="table-wrap">
+
 <table>
 
 <thead>
 
 <tr>
 
-<th>Breakdown</th>
+<th>Channel</th>
 <th>Order</th>
 <th>Delivery</th>
 <th>Gap</th>
-<th>CF%</th>
+<th>Case Fill</th>
 
 </tr>
 
@@ -758,24 +690,58 @@ KPI Breakdown
 
 </div>
 
-<!-- LOSS -->
+</div>
+
+<!-- LOSS SKU -->
 
 <div class="page"
 id="lossPage">
 
-<div class="sku-grid"
-id="lossContainer">
+<div class="card">
+
+<div class="card-title">
+Loss SKU Trend
+</div>
+
+<div class="table-wrap">
+
+<table id="lossTable">
+
+<thead id="lossHead"></thead>
+
+<tbody id="lossBody"></tbody>
+
+</table>
+
+</div>
+
 </div>
 
 </div>
 
-<!-- BEST -->
+<!-- TOP SELLING -->
 
 <div class="page"
-id="bestPage">
+id="topPage">
 
-<div class="sku-grid"
-id="bestContainer">
+<div class="card">
+
+<div class="card-title">
+Top Selling SKU
+</div>
+
+<div class="table-wrap">
+
+<table id="topTable">
+
+<thead id="topHead"></thead>
+
+<tbody id="topBody"></tbody>
+
+</table>
+
+</div>
+
 </div>
 
 </div>
@@ -797,7 +763,9 @@ const KPI_BREAKDOWN =
 const TOP_LOSS_PRODUCT =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1801155860&single=true&output=csv";
 
-/* GLOBAL */
+/* =========================
+GLOBAL
+========================= */
 
 let channelData = [];
 let breakdownData = [];
@@ -806,7 +774,9 @@ let lossData = [];
 let barChart;
 let donutChart;
 
-/* NUMBER FORMAT */
+/* =========================
+UTIL
+========================= */
 
 function num(v){
 
@@ -824,45 +794,9 @@ return num(v)
 
 }
 
-/* CSV PARSER */
-
-function parseCSV(text){
-
-const lines =
-text.trim().split('\n');
-
-const headers =
-lines[0]
-.split(',')
-.map(h =>
-h.replace(/"/g,'').trim()
-);
-
-return lines.slice(1).map(line => {
-
-const values =
-line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
-
-const obj = {};
-
-headers.forEach((header,index)=>{
-
-obj[header] =
-values && values[index]
-? values[index]
-.replace(/^"|"$/g,'')
-.trim()
-: '';
-
-});
-
-return obj;
-
-});
-
-}
-
-/* NAVIGATION */
+/* =========================
+PAGE
+========================= */
 
 function showPage(page,btn){
 
@@ -876,38 +810,62 @@ document
 
 btn.classList.add("active");
 
-document.getElementById(page+"Page")
+document
+.getElementById(page+"Page")
 .classList.add("active");
 
 }
 
-/* LOAD DATA */
+/* =========================
+LOAD CSV
+========================= */
+
+async function loadCSV(url){
+
+return new Promise(resolve=>{
+
+Papa.parse(url,{
+
+download:true,
+header:true,
+skipEmptyLines:true,
+
+complete:(results)=>{
+
+resolve(results.data);
+
+}
+
+});
+
+});
+
+}
 
 async function loadData(){
 
-const [c1,c2,c3] = await Promise.all([
+channelData =
+await loadCSV(KPI_CHANNEL);
 
-fetch(KPI_CHANNEL).then(r=>r.text()),
-fetch(KPI_BREAKDOWN).then(r=>r.text()),
-fetch(TOP_LOSS_PRODUCT).then(r=>r.text())
+breakdownData =
+await loadCSV(KPI_BREAKDOWN);
 
-]);
-
-channelData = parseCSV(c1);
-breakdownData = parseCSV(c2);
-lossData = parseCSV(c3);
+lossData =
+await loadCSV(TOP_LOSS_PRODUCT);
 
 setupWeek();
 
 }
 
-/* WEEK FILTER */
+/* =========================
+WEEK FILTER
+========================= */
 
 function setupWeek(){
 
 const weeks =
 [...new Set(
-breakdownData.map(d=>d.Week)
+lossData.map(d=>d.Week)
 )];
 
 const select =
@@ -927,24 +885,28 @@ select.addEventListener(
 
 }
 
-/* RENDER */
+/* =========================
+RENDER
+========================= */
 
 function render(week){
 
 const channels =
 channelData.filter(
-d=>d.Week === week
+d=>d.Week===week
 );
 
 const breakdown =
 breakdownData.filter(
-d=>d.Week === week
+d=>d.Week===week
 );
 
 const losses =
 lossData.filter(
-d=>d.Week === week
+d=>d.Week===week
 );
+
+/* KPI */
 
 const mt =
 channels.find(d=>
@@ -955,8 +917,6 @@ const gt =
 channels.find(d=>
 (d.Channel || '').includes("GT")
 );
-
-/* MT */
 
 if(mt){
 
@@ -976,8 +936,6 @@ mtCF2.innerHTML =
 num(mt["Case Fill"]).toFixed(2)+"%";
 
 }
-
-/* GT */
 
 if(gt){
 
@@ -1005,13 +963,15 @@ breakdown.map(d=>`
 
 <tr>
 
-<td>${d["Channel"] || '-'}</td>
+<td>${d.Channel}</td>
 
 <td>${fmt(d["Order Quantity"])}</td>
 
 <td>${fmt(d["Delivery Quantity"])}</td>
 
-<td>${fmt(d["GAP"])}</td>
+<td class="loss">
+${fmt(d["GAP"])}
+</td>
 
 <td>
 ${num(d["Case Fill"]).toFixed(2)}%
@@ -1021,134 +981,170 @@ ${num(d["Case Fill"]).toFixed(2)}%
 
 `).join('');
 
-/* LOSS */
+/* LOSS TABLE */
 
-lossContainer.innerHTML =
-losses
+buildLossTable();
 
-.filter(d =>
-num(d["GAP"]) < 0
-)
+/* TOP TABLE */
 
-.sort((a,b)=>
-num(a["GAP"])
--
-num(b["GAP"])
-)
+buildTopTable();
 
-.slice(0,12)
-
-.map(d=>`
-
-<div class="sku-card">
-
-<div class="sku-name">
-${d["Product Name"] || '-'}
-</div>
-
-<div class="sku-detail">
-
-<div class="sku-box">
-<small>ORDER</small>
-<strong>
-${fmt(d["Order Quantity"])}
-</strong>
-</div>
-
-<div class="sku-box">
-<small>DELIVERY</small>
-<strong>
-${fmt(d["Delivery Quantity"])}
-</strong>
-</div>
-
-<div class="sku-box">
-<small>GAP</small>
-<strong class="loss">
-${fmt(d["GAP"])}
-</strong>
-</div>
-
-<div class="sku-box">
-<small>CASE FILL</small>
-<strong class="cf">
-${num(d["Case Fill"]).toFixed(1)}%
-</strong>
-</div>
-
-</div>
-
-</div>
-
-`).join('');
-
-/* BEST */
-
-bestContainer.innerHTML =
-losses
-
-.sort((a,b)=>
-num(b["Delivery Quantity"])
--
-num(a["Delivery Quantity"])
-)
-
-.slice(0,12)
-
-.map(d=>`
-
-<div class="sku-card">
-
-<div class="sku-name">
-${d["Product Name"] || '-'}
-</div>
-
-<div class="sku-detail">
-
-<div class="sku-box">
-<small>ORDER</small>
-<strong>
-${fmt(d["Order Quantity"])}
-</strong>
-</div>
-
-<div class="sku-box">
-<small>DELIVERY</small>
-<strong class="success">
-${fmt(d["Delivery Quantity"])}
-</strong>
-</div>
-
-<div class="sku-box">
-<small>GAP</small>
-<strong>
-${fmt(d["GAP"])}
-</strong>
-</div>
-
-<div class="sku-box">
-<small>CASE FILL</small>
-<strong class="cf">
-${num(d["Case Fill"]).toFixed(1)}%
-</strong>
-</div>
-
-</div>
-
-</div>
-
-`).join('');
+/* CHART */
 
 buildCharts(breakdown);
 
 }
 
-/* CHART */
+/* =========================
+LOSS MATRIX
+========================= */
+
+function buildLossTable(){
+
+const weeks =
+[...new Set(
+lossData.map(d=>d.Week)
+)];
+
+const grouped = {};
+
+lossData.forEach(d=>{
+
+if(num(d["GAP"]) >= 0)
+return;
+
+const sku =
+d["Product Name"];
+
+if(!grouped[sku])
+grouped[sku] = {};
+
+grouped[sku][d.Week] =
+num(d["GAP"]);
+
+});
+
+lossHead.innerHTML =
+
+`
+<tr>
+
+<th>SKU Name</th>
+
+${weeks.map(w=>
+`<th>${w}</th>`
+).join('')}
+
+</tr>
+`;
+
+lossBody.innerHTML =
+
+Object.keys(grouped)
+
+.map(sku=>`
+
+<tr>
+
+<td>${sku}</td>
+
+${weeks.map(w=>`
+
+<td class="loss">
+
+${grouped[sku][w]
+? fmt(grouped[sku][w])
+: '-'}
+
+</td>
+
+`).join('')}
+
+</tr>
+
+`).join('');
+
+}
+
+/* =========================
+TOP SELLING
+========================= */
+
+function buildTopTable(){
+
+const weeks =
+[...new Set(
+lossData.map(d=>d.Week)
+)];
+
+const grouped = {};
+
+lossData.forEach(d=>{
+
+const sku =
+d["Product Name"];
+
+if(!grouped[sku])
+grouped[sku] = {};
+
+grouped[sku][d.Week] =
+num(d["Delivery Quantity"]);
+
+});
+
+topHead.innerHTML =
+
+`
+<tr>
+
+<th>SKU Name</th>
+
+${weeks.map(w=>
+`<th>${w}</th>`
+).join('')}
+
+</tr>
+`;
+
+topBody.innerHTML =
+
+Object.keys(grouped)
+
+.map(sku=>`
+
+<tr>
+
+<td>${sku}</td>
+
+${weeks.map(w=>`
+
+<td class="success">
+
+${grouped[sku][w]
+? fmt(grouped[sku][w])
+: '-'}
+
+</td>
+
+`).join('')}
+
+</tr>
+
+`).join('');
+
+}
+
+/* =========================
+CHART
+========================= */
 
 function buildCharts(data){
 
-if(barChart) barChart.destroy();
-if(donutChart) donutChart.destroy();
+if(barChart)
+barChart.destroy();
+
+if(donutChart)
+donutChart.destroy();
 
 barChart =
 new Chart(
@@ -1162,9 +1158,7 @@ type:"bar",
 data:{
 
 labels:
-data.map(d=>
-d["Channel"]
-),
+data.map(d=>d.Channel),
 
 datasets:[{
 
@@ -1173,7 +1167,7 @@ data.map(d=>
 num(d["Case Fill"])
 ),
 
-borderRadius:14,
+borderRadius:12,
 
 backgroundColor:[
 "#EF4444",
@@ -1214,11 +1208,9 @@ callback:v=>v+"%"
 );
 
 const avg =
-data.length
-? data.reduce((a,b)=>
+data.reduce((a,b)=>
 a + num(b["Case Fill"])
-,0) / data.length
-: 0;
+,0) / data.length;
 
 donutChart =
 new Chart(
