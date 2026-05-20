@@ -34,7 +34,6 @@ SCM Case Fill Dashboard
     --redSoft:#FEE2E2;
 
     --green:#047857;
-    --orange:#B45309;
 
     --bg:#F7F5FC;
     --white:#FFFFFF;
@@ -182,7 +181,7 @@ header{
 
 .page{
 
-    max-width:1400px;
+    max-width:1600px;
 
     margin:auto;
 
@@ -190,15 +189,117 @@ header{
 
     display:grid;
 
-    grid-template-columns:1fr 320px;
+    grid-template-columns:260px 1fr 320px;
 
     gap:18px;
 
 }
 
-/* LEFT */
+/* LEFT SIDEBAR */
 
-.left{
+.left-sidebar{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+}
+
+.sidebar-card{
+
+    background:#fff;
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+}
+
+.sidebar-title{
+
+    padding:14px 16px;
+
+    background:#F8F5FF;
+
+    border-bottom:1px solid var(--border);
+
+    font-weight:700;
+
+    color:var(--purple);
+
+}
+
+.loss-item{
+
+    padding:14px 16px;
+
+    border-bottom:1px solid #F3F4F6;
+
+}
+
+.loss-item:last-child{
+    border-bottom:none;
+}
+
+.loss-name{
+
+    font-size:13px;
+
+    font-weight:700;
+
+    margin-bottom:8px;
+
+}
+
+.loss-gap{
+
+    color:var(--red);
+
+    font-size:22px;
+
+    font-family:var(--fontTitle);
+
+    font-weight:800;
+
+}
+
+.loss-bar{
+
+    margin-top:8px;
+
+    width:100%;
+
+    height:8px;
+
+    background:#F3F4F6;
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+}
+
+.loss-fill{
+
+    height:100%;
+
+    background:linear-gradient(
+        90deg,
+        #DC2626,
+        #F97316
+    );
+
+    border-radius:999px;
+
+}
+
+/* CENTER */
+
+.center{
 
     display:flex;
 
@@ -422,15 +523,9 @@ td{
 
 }
 
-tbody tr:hover{
+/* RIGHT SIDEBAR */
 
-    background:#FAFAFF;
-
-}
-
-/* SIDEBAR */
-
-.sidebar{
+.right-sidebar{
 
     display:flex;
 
@@ -555,7 +650,7 @@ tbody tr:hover{
 
 }
 
-@media(max-width:1000px){
+@media(max-width:1300px){
 
     .page{
 
@@ -607,11 +702,25 @@ tbody tr:hover{
 
 <div class="page">
 
-    <!-- LEFT -->
+    <!-- LEFT SIDEBAR -->
 
-    <div class="left">
+    <div class="left-sidebar">
 
-        <!-- CHANNEL CARD -->
+        <div class="sidebar-card">
+
+            <div class="sidebar-title">
+                Trend Loss SKU
+            </div>
+
+            <div id="lossSkuList"></div>
+
+        </div>
+
+    </div>
+
+    <!-- CENTER -->
+
+    <div class="center">
 
         <div class="cards">
 
@@ -728,7 +837,7 @@ tbody tr:hover{
 
         </div>
 
-        <!-- CHART -->
+        <!-- BAR -->
 
         <div class="chart-card">
 
@@ -737,7 +846,9 @@ tbody tr:hover{
             </div>
 
             <div class="chart-wrap">
+
                 <canvas id="barChart"></canvas>
+
             </div>
 
         </div>
@@ -767,9 +878,7 @@ tbody tr:hover{
 
                 </thead>
 
-                <tbody id="tableBody">
-
-                </tbody>
+                <tbody id="tableBody"></tbody>
 
             </table>
 
@@ -777,11 +886,9 @@ tbody tr:hover{
 
     </div>
 
-    <!-- SIDEBAR -->
+    <!-- RIGHT -->
 
-    <div class="sidebar">
-
-        <!-- DONUT -->
+    <div class="right-sidebar">
 
         <div class="side-card">
 
@@ -841,20 +948,6 @@ tbody tr:hover{
 
         </div>
 
-        <!-- LOSS -->
-
-        <div class="side-card">
-
-            <div class="side-header">
-                Trend Loss Product
-            </div>
-
-            <div class="side-content"
-                 id="lossProduct">
-            </div>
-
-        </div>
-
     </div>
 
 </div>
@@ -882,76 +975,6 @@ function fmt(n){
 
 }
 
-function parseCSV(text){
-
-    const rows =
-    text.trim().split("\n");
-
-    const result = [];
-
-    for(let i=1;i<rows.length;i++){
-
-        const cols =
-        rows[i]
-        .split(",");
-
-        if(cols.length >= 6){
-
-            const ch =
-            cols[1]
-            .replace(/"/g,'');
-
-            const parent =
-            ch.includes("[MT")
-            ? "MT"
-            : "GT";
-
-            result.push({
-
-                week:
-                cols[0]
-                .replace(/"/g,''),
-
-                channel:
-                ch,
-
-                parent,
-
-                order:
-                parseFloat(
-                    cols[2]
-                    .replace(/"/g,'')
-                ) || 0,
-
-                delivery:
-                parseFloat(
-                    cols[3]
-                    .replace(/"/g,'')
-                ) || 0,
-
-                gap:
-                parseFloat(
-                    cols[4]
-                    .replace(/"/g,'')
-                ) || 0,
-
-                cf:
-                parseFloat(
-                    cols[5]
-                    .replace(/"/g,'')
-                    .replace("%","")
-                ) || 0
-
-            });
-
-        }
-
-    }
-
-    return result;
-
-}
-
 async function loadData(){
 
     const res =
@@ -960,8 +983,51 @@ async function loadData(){
     const txt =
     await res.text();
 
-    DATA =
-    parseCSV(txt);
+    const rows =
+    txt.trim().split("\n");
+
+    for(let i=1;i<rows.length;i++){
+
+        const c =
+        rows[i].split(",");
+
+        if(c.length >= 6){
+
+            const channel =
+            c[1].replace(/"/g,'');
+
+            DATA.push({
+
+                week:
+                c[0].replace(/"/g,''),
+
+                channel,
+
+                parent:
+                channel.includes("[MT")
+                ? "MT"
+                : "GT",
+
+                order:
+                parseFloat(c[2]) || 0,
+
+                delivery:
+                parseFloat(c[3]) || 0,
+
+                gap:
+                parseFloat(c[4]) || 0,
+
+                cf:
+                parseFloat(
+                    c[5]
+                    .replace("%","")
+                ) || 0
+
+            });
+
+        }
+
+    }
 
     setupWeek();
 
@@ -982,9 +1048,7 @@ function setupWeek(){
     sel.innerHTML =
     weeks.map(w=>
 
-        `<option value="${w}">
-            ${w}
-        </option>`
+        `<option>${w}</option>`
 
     ).join('');
 
@@ -1016,25 +1080,16 @@ function render(week){
         d=>d.parent==="GT"
     );
 
-    const calc = arr=>{
+    function calc(arr){
 
         const ord =
-        arr.reduce(
-            (s,d)=>s+d.order,
-            0
-        );
+        arr.reduce((a,b)=>a+b.order,0);
 
         const del =
-        arr.reduce(
-            (s,d)=>s+d.delivery,
-            0
-        );
+        arr.reduce((a,b)=>a+b.delivery,0);
 
         const gap =
-        arr.reduce(
-            (s,d)=>s+d.gap,
-            0
-        );
+        arr.reduce((a,b)=>a+b.gap,0);
 
         const cf =
         ord
@@ -1048,7 +1103,7 @@ function render(week){
             cf
         };
 
-    };
+    }
 
     const mtv =
     calc(mt);
@@ -1061,74 +1116,60 @@ function render(week){
 
     /* KPI */
 
-    document.getElementById(
-        "mtCF"
-    ).textContent =
+    document.getElementById("mtCF")
+    .textContent =
     mtv.cf.toFixed(2)+"%";
 
-    document.getElementById(
-        "mtOrder"
-    ).textContent =
-    fmt(mtv.ord);
-
-    document.getElementById(
-        "mtDelivery"
-    ).textContent =
-    fmt(mtv.del);
-
-    document.getElementById(
-        "mtGap"
-    ).textContent =
-    fmt(mtv.gap);
-
-    document.getElementById(
-        "mtCount"
-    ).textContent =
-    mt.length;
-
-    document.getElementById(
-        "gtCF"
-    ).textContent =
+    document.getElementById("gtCF")
+    .textContent =
     gtv.cf.toFixed(2)+"%";
 
-    document.getElementById(
-        "gtOrder"
-    ).textContent =
+    document.getElementById("mtOrder")
+    .textContent =
+    fmt(mtv.ord);
+
+    document.getElementById("mtDelivery")
+    .textContent =
+    fmt(mtv.del);
+
+    document.getElementById("mtGap")
+    .textContent =
+    fmt(mtv.gap);
+
+    document.getElementById("mtCount")
+    .textContent =
+    mt.length;
+
+    document.getElementById("gtOrder")
+    .textContent =
     fmt(gtv.ord);
 
-    document.getElementById(
-        "gtDelivery"
-    ).textContent =
+    document.getElementById("gtDelivery")
+    .textContent =
     fmt(gtv.del);
 
-    document.getElementById(
-        "gtGap"
-    ).textContent =
+    document.getElementById("gtGap")
+    .textContent =
     fmt(gtv.gap);
 
-    document.getElementById(
-        "gtCount"
-    ).textContent =
+    document.getElementById("gtCount")
+    .textContent =
     gt.length;
 
-    document.getElementById(
-        "totalOrder"
-    ).textContent =
+    document.getElementById("totalOrder")
+    .textContent =
     fmt(total.ord);
 
-    document.getElementById(
-        "totalDelivery"
-    ).textContent =
+    document.getElementById("totalDelivery")
+    .textContent =
     fmt(total.del);
 
-    document.getElementById(
-        "overallCF"
-    ).textContent =
+    document.getElementById("overallCF")
+    .textContent =
     total.cf.toFixed(2)+"%";
 
-    document.getElementById(
-        "donutText"
-    ).textContent =
+    document.getElementById("donutText")
+    .textContent =
     total.cf.toFixed(1)+"%";
 
     /* TABLE */
@@ -1144,7 +1185,7 @@ function render(week){
 
             <td>
             ${d.channel
-              .replace(/\[.*?\]/,'')}
+            .replace(/\[.*?\]/,'')}
             </td>
 
             <td>${fmt(d.order)}</td>
@@ -1153,9 +1194,7 @@ function render(week){
 
             <td>${fmt(d.gap)}</td>
 
-            <td>
-            ${d.cf.toFixed(2)}%
-            </td>
+            <td>${d.cf.toFixed(2)}%</td>
 
         </tr>
 
@@ -1163,15 +1202,11 @@ function render(week){
 
     /* BREAKDOWN */
 
-    function buildBreakdown(
-        id,
-        arr
-    ){
+    function side(id,data){
 
-        document.getElementById(
-            id
-        ).innerHTML =
-        arr.map(d=>`
+        document.getElementById(id)
+        .innerHTML =
+        data.map(d=>`
 
             <div class="side-row">
 
@@ -1194,45 +1229,52 @@ function render(week){
 
     }
 
-    buildBreakdown(
-        "mtBreakdown",
-        mt
-    );
+    side("mtBreakdown",mt);
+    side("gtBreakdown",gt);
 
-    buildBreakdown(
-        "gtBreakdown",
-        gt
-    );
+    /* LOSS SKU */
 
-    /* LOSS */
-
-    const loss =
+    const topLoss =
     [...rows]
     .sort((a,b)=>
         b.gap-a.gap
     )
     .slice(0,5);
 
+    const maxGap =
+    topLoss[0]
+    ? topLoss[0].gap
+    : 1;
+
     document.getElementById(
-        "lossProduct"
+        "lossSkuList"
     ).innerHTML =
-    loss.map(d=>`
+    topLoss.map(d=>`
 
-        <div class="side-row">
+        <div class="loss-item">
 
-            <div class="side-name">
+            <div class="loss-name">
 
                 ${d.channel
                 .replace(/\[.*?\]/,'')}
 
             </div>
 
-            <div class="side-val"
-                 style="
-                 color:var(--red)
-                 ">
+            <div class="loss-gap">
 
                 ${fmt(d.gap)}
+
+            </div>
+
+            <div class="loss-bar">
+
+                <div class="loss-fill"
+                     style="
+                     width:${
+                        (d.gap/maxGap)*100
+                     }%
+                     ">
+                </div>
 
             </div>
 
@@ -1247,42 +1289,13 @@ function render(week){
 
 }
 
-function buildCharts(
-    rows,
-    totalCF
-){
+function buildCharts(rows,totalCF){
 
     if(barChart)
         barChart.destroy();
 
     if(donutChart)
         donutChart.destroy();
-
-    const labels =
-    rows.map(d=>
-
-        d.channel
-        .replace(/\[.*?\]/,'')
-
-    );
-
-    const values =
-    rows.map(d=>
-
-        d.cf
-
-    );
-
-    const colors =
-    rows.map(d=>
-
-        d.parent==="MT"
-        ? "#7C3AED"
-        : "#DC2626"
-
-    );
-
-    /* BAR */
 
     barChart =
     new Chart(
@@ -1297,13 +1310,27 @@ function buildCharts(
 
             data:{
 
-                labels,
+                labels:
+                rows.map(d=>
+
+                    d.channel
+                    .replace(/\[.*?\]/,'')
+
+                ),
 
                 datasets:[{
 
-                    data:values,
+                    data:
+                    rows.map(d=>d.cf),
 
-                    backgroundColor:colors,
+                    backgroundColor:
+                    rows.map(d=>
+
+                        d.parent==="MT"
+                        ? "#7C3AED"
+                        : "#DC2626"
+
+                    ),
 
                     borderRadius:8
 
@@ -1321,15 +1348,6 @@ function buildCharts(
 
                     legend:{
                         display:false
-                    },
-
-                    tooltip:{
-                        callbacks:{
-                            label:(ctx)=>
-
-                            ctx.parsed.y
-                            .toFixed(2)+"%"
-                        }
                     }
 
                 },
@@ -1356,8 +1374,6 @@ function buildCharts(
         }
 
     );
-
-    /* DONUT */
 
     donutChart =
     new Chart(
