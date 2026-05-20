@@ -548,8 +548,6 @@ td{
     color:var(--purple);
 }
 
-/* RESPONSIVE */
-
 @media(max-width:1200px){
 
     .grid{
@@ -559,16 +557,6 @@ td{
     }
 
     .kpi-grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-}
-
-@media(max-width:900px){
-
-    .layout{
 
         grid-template-columns:1fr;
 
@@ -668,51 +656,23 @@ td{
                     <div class="kpi-detail">
 
                         <div class="detail">
-
-                            <small>
-                                ORDER
-                            </small>
-
-                            <strong id="mtOrder">
-                                0
-                            </strong>
-
+                            <small>ORDER</small>
+                            <strong id="mtOrder">0</strong>
                         </div>
 
                         <div class="detail">
-
-                            <small>
-                                DELIVERY
-                            </small>
-
-                            <strong id="mtDelivery">
-                                0
-                            </strong>
-
+                            <small>DELIVERY</small>
+                            <strong id="mtDelivery">0</strong>
                         </div>
 
                         <div class="detail">
-
-                            <small>
-                                GAP
-                            </small>
-
-                            <strong id="mtGap">
-                                0
-                            </strong>
-
+                            <small>GAP</small>
+                            <strong id="mtGap">0</strong>
                         </div>
 
                         <div class="detail">
-
-                            <small>
-                                CASE FILL
-                            </small>
-
-                            <strong id="mtCF2">
-                                0%
-                            </strong>
-
+                            <small>CASE FILL</small>
+                            <strong id="mtCF2">0%</strong>
                         </div>
 
                     </div>
@@ -743,51 +703,23 @@ td{
                     <div class="kpi-detail">
 
                         <div class="detail">
-
-                            <small>
-                                ORDER
-                            </small>
-
-                            <strong id="gtOrder">
-                                0
-                            </strong>
-
+                            <small>ORDER</small>
+                            <strong id="gtOrder">0</strong>
                         </div>
 
                         <div class="detail">
-
-                            <small>
-                                DELIVERY
-                            </small>
-
-                            <strong id="gtDelivery">
-                                0
-                            </strong>
-
+                            <small>DELIVERY</small>
+                            <strong id="gtDelivery">0</strong>
                         </div>
 
                         <div class="detail">
-
-                            <small>
-                                GAP
-                            </small>
-
-                            <strong id="gtGap">
-                                0
-                            </strong>
-
+                            <small>GAP</small>
+                            <strong id="gtGap">0</strong>
                         </div>
 
                         <div class="detail">
-
-                            <small>
-                                CASE FILL
-                            </small>
-
-                            <strong id="gtCF2">
-                                0%
-                            </strong>
-
+                            <small>CASE FILL</small>
+                            <strong id="gtCF2">0%</strong>
                         </div>
 
                     </div>
@@ -857,13 +789,11 @@ td{
                     <thead>
 
                         <tr>
-
                             <th>Breakdown</th>
                             <th>Order</th>
                             <th>Delivery</th>
                             <th>Gap</th>
                             <th>Case Fill</th>
-
                         </tr>
 
                     </thead>
@@ -907,7 +837,7 @@ td{
 <script>
 
 /* =========================
-API
+API CSV GOOGLE SHEET
 ========================= */
 
 const KPI_CHANNEL =
@@ -916,8 +846,17 @@ const KPI_CHANNEL =
 const KPI_BREAKDOWN =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1343041753&single=true&output=csv";
 
-const LOSS_PRODUCT =
+const KPI_CATEGORY =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=875768436&single=true&output=csv";
+
+const TOP_LOSS_PRODUCT =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1801155860&single=true&output=csv";
+
+const KPI_REGION =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1045472937&single=true&output=csv";
+
+const KPI_REGION_BREAKDOWN =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=149373509&single=true&output=csv";
 
 /* =========================
 GLOBAL
@@ -1008,7 +947,10 @@ async function loadData(){
     const [
         c1,
         c2,
-        c3
+        c3,
+        c4,
+        c5,
+        c6
     ] = await Promise.all([
 
         fetch(KPI_CHANNEL)
@@ -1017,19 +959,23 @@ async function loadData(){
         fetch(KPI_BREAKDOWN)
         .then(r=>r.text()),
 
-        fetch(LOSS_PRODUCT)
+        fetch(KPI_CATEGORY)
+        .then(r=>r.text()),
+
+        fetch(TOP_LOSS_PRODUCT)
+        .then(r=>r.text()),
+
+        fetch(KPI_REGION)
+        .then(r=>r.text()),
+
+        fetch(KPI_REGION_BREAKDOWN)
         .then(r=>r.text())
 
     ]);
 
-    channelData =
-    parseCSV(c1);
-
-    breakdownData =
-    parseCSV(c2);
-
-    lossData =
-    parseCSV(c3);
+    channelData = parseCSV(c1);
+    breakdownData = parseCSV(c2);
+    lossData = parseCSV(c4);
 
     setupWeek();
 
@@ -1094,110 +1040,68 @@ function render(week){
         d=>d.Week===week
     );
 
-    /* MT */
-
     const mt =
     channels.find(d=>
         d.Channel.includes("MT")
     );
-
-    /* GT */
 
     const gt =
     channels.find(d=>
         d.Channel.includes("GT")
     );
 
-    /* MT KPI */
-
     if(mt){
 
-        document.getElementById(
-            "mtOrder"
-        ).innerHTML =
+        document.getElementById("mtOrder").innerHTML =
         fmt(mt["Order Quantity"]);
 
-        document.getElementById(
-            "mtDelivery"
-        ).innerHTML =
+        document.getElementById("mtDelivery").innerHTML =
         fmt(mt["Delivery Quantity"]);
 
-        document.getElementById(
-            "mtGap"
-        ).innerHTML =
+        document.getElementById("mtGap").innerHTML =
         fmt(mt["GAP"]);
 
-        document.getElementById(
-            "mtCF"
-        ).innerHTML =
-        Number(mt["Case Fill"])
-        .toFixed(2)+"%";
+        document.getElementById("mtCF").innerHTML =
+        Number(mt["Case Fill"]).toFixed(2)+"%";
 
-        document.getElementById(
-            "mtCF2"
-        ).innerHTML =
-        Number(mt["Case Fill"])
-        .toFixed(2)+"%";
+        document.getElementById("mtCF2").innerHTML =
+        Number(mt["Case Fill"]).toFixed(2)+"%";
 
     }
-
-    /* GT KPI */
 
     if(gt){
 
-        document.getElementById(
-            "gtOrder"
-        ).innerHTML =
+        document.getElementById("gtOrder").innerHTML =
         fmt(gt["Order Quantity"]);
 
-        document.getElementById(
-            "gtDelivery"
-        ).innerHTML =
+        document.getElementById("gtDelivery").innerHTML =
         fmt(gt["Delivery Quantity"]);
 
-        document.getElementById(
-            "gtGap"
-        ).innerHTML =
+        document.getElementById("gtGap").innerHTML =
         fmt(gt["GAP"]);
 
-        document.getElementById(
-            "gtCF"
-        ).innerHTML =
-        Number(gt["Case Fill"])
-        .toFixed(2)+"%";
+        document.getElementById("gtCF").innerHTML =
+        Number(gt["Case Fill"]).toFixed(2)+"%";
 
-        document.getElementById(
-            "gtCF2"
-        ).innerHTML =
-        Number(gt["Case Fill"])
-        .toFixed(2)+"%";
+        document.getElementById("gtCF2").innerHTML =
+        Number(gt["Case Fill"]).toFixed(2)+"%";
 
     }
-
-    /* OVERALL */
 
     const totalOrder =
     channels.reduce(
         (a,b)=>
-        a+Number(
-        b["Order Quantity"]
-        ),0
+        a+Number(b["Order Quantity"]),0
     );
 
     const totalDelivery =
     channels.reduce(
         (a,b)=>
-        a+Number(
-        b["Delivery Quantity"]
-        ),0
+        a+Number(b["Delivery Quantity"]),0
     );
 
     const overall =
-    (
-        totalDelivery
-        /
-        totalOrder
-    ) * 100;
+    (totalDelivery/totalOrder)*100;
 
     document.getElementById(
         "overallCF"
@@ -1213,120 +1117,68 @@ function render(week){
 
         <tr>
 
-            <td>
-                ${d["Channel Breakdown"]}
-            </td>
+            <td>${d["Channel Breakdown"]}</td>
+
+            <td>${fmt(d["Order Quantity"])}</td>
+
+            <td>${fmt(d["Delivery Quantity"])}</td>
+
+            <td>${fmt(d["GAP"])}</td>
 
             <td>
-                ${fmt(d["Order Quantity"])}
-            </td>
-
-            <td>
-                ${fmt(d["Delivery Quantity"])}
-            </td>
-
-            <td>
-                ${fmt(d["GAP"])}
-            </td>
-
-            <td>
-                ${Number(d["Case Fill"])
-                .toFixed(2)}%
+                ${Number(d["Case Fill"]).toFixed(2)}%
             </td>
 
         </tr>
 
     `).join('');
 
-    /* LOSS PAGE */
-
-    const lossTop =
-    [...losses]
-    .sort((a,b)=>
-
-        Number(b.GAP)
-        -
-        Number(a.GAP)
-
-    );
+    /* LOSS */
 
     document.getElementById(
         "lossContainer"
     ).innerHTML =
-    lossTop.map(d=>`
+    losses
+    .sort((a,b)=>
+        Number(b.GAP)-Number(a.GAP)
+    )
+    .slice(0,20)
+    .map(d=>`
 
         <div class="sku-card">
 
             <div class="sku-name">
-
                 ${d["Product Name"]}
-
             </div>
 
             <div class="sku-grid">
 
                 <div class="sku-box">
-
-                    <small>
-                        ORDER
-                    </small>
-
+                    <small>ORDER</small>
                     <strong>
-
-                        ${fmt(
-                            d["Order Quantity"]
-                        )}
-
+                        ${fmt(d["Order Quantity"])}
                     </strong>
-
                 </div>
 
                 <div class="sku-box">
-
-                    <small>
-                        DELIVERY
-                    </small>
-
+                    <small>DELIVERY</small>
                     <strong>
-
-                        ${fmt(
-                            d["Delivery Quantity"]
-                        )}
-
+                        ${fmt(d["Delivery Quantity"])}
                     </strong>
-
                 </div>
 
                 <div class="sku-box">
-
-                    <small>
-                        GAP
-                    </small>
-
+                    <small>GAP</small>
                     <strong class="loss">
-
-                        ${fmt(
-                            d["GAP"]
-                        )}
-
+                        ${fmt(d["GAP"])}
                     </strong>
-
                 </div>
 
                 <div class="sku-box">
-
-                    <small>
-                        CASE FILL
-                    </small>
-
+                    <small>CASE FILL</small>
                     <strong class="cf">
-
-                        ${Number(
-                            d["Case Fill"]
-                        ).toFixed(1)}%
-
+                        ${Number(d["Case Fill"]).toFixed(1)}%
                     </strong>
-
                 </div>
 
             </div>
@@ -1335,99 +1187,54 @@ function render(week){
 
     `).join('');
 
-    /* BEST PAGE */
-
-    const bestTop =
-    [...losses]
-    .sort((a,b)=>
-
-        Number(
-            b["Delivery Quantity"]
-        )
-        -
-        Number(
-            a["Delivery Quantity"]
-        )
-
-    );
+    /* BEST */
 
     document.getElementById(
         "bestContainer"
     ).innerHTML =
-    bestTop.map(d=>`
+    losses
+    .sort((a,b)=>
+        Number(b["Delivery Quantity"])
+        -
+        Number(a["Delivery Quantity"])
+    )
+    .slice(0,20)
+    .map(d=>`
 
         <div class="sku-card">
 
             <div class="sku-name">
-
                 ${d["Product Name"]}
-
             </div>
 
             <div class="sku-grid">
 
                 <div class="sku-box">
-
-                    <small>
-                        ORDER
-                    </small>
-
+                    <small>ORDER</small>
                     <strong>
-
-                        ${fmt(
-                            d["Order Quantity"]
-                        )}
-
+                        ${fmt(d["Order Quantity"])}
                     </strong>
-
                 </div>
 
                 <div class="sku-box">
-
-                    <small>
-                        DELIVERY
-                    </small>
-
+                    <small>DELIVERY</small>
                     <strong class="success">
-
-                        ${fmt(
-                            d["Delivery Quantity"]
-                        )}
-
+                        ${fmt(d["Delivery Quantity"])}
                     </strong>
-
                 </div>
 
                 <div class="sku-box">
-
-                    <small>
-                        GAP
-                    </small>
-
+                    <small>GAP</small>
                     <strong>
-
-                        ${fmt(
-                            d["GAP"]
-                        )}
-
+                        ${fmt(d["GAP"])}
                     </strong>
-
                 </div>
 
                 <div class="sku-box">
-
-                    <small>
-                        CASE FILL
-                    </small>
-
+                    <small>CASE FILL</small>
                     <strong class="cf">
-
-                        ${Number(
-                            d["Case Fill"]
-                        ).toFixed(1)}%
-
+                        ${Number(d["Case Fill"]).toFixed(1)}%
                     </strong>
-
                 </div>
 
             </div>
@@ -1462,17 +1269,13 @@ function buildCharts(data,overall){
 
     const values =
     data.map(
-        d=>Number(
-            d["Case Fill"]
-        )
+        d=>Number(d["Case Fill"])
     );
 
     barChart =
     new Chart(
 
-        document.getElementById(
-            "barChart"
-        ),
+        document.getElementById("barChart"),
 
         {
 
@@ -1506,25 +1309,20 @@ function buildCharts(data,overall){
                 responsive:true,
 
                 plugins:{
-
                     legend:{
                         display:false
                     }
-
                 },
 
                 scales:{
 
                     y:{
-
                         min:0,
-
                         max:110,
 
                         ticks:{
                             callback:v=>v+"%"
                         }
-
                     }
 
                 }
@@ -1576,11 +1374,9 @@ function buildCharts(data,overall){
                 cutout:"74%",
 
                 plugins:{
-
                     legend:{
                         display:false
                     }
-
                 }
 
             }
