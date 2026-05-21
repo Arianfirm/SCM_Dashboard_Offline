@@ -45,6 +45,8 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);displ
 .content{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px;}
 .page{display:none;flex-direction:column;gap:16px;}
 .page.active{display:flex;}
+
+/* KPI OVERVIEW */
 .kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .kpi-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:20px 22px;}
 .kpi-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
@@ -53,11 +55,13 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);displ
 .kpi-badge.mt{background:#EEEEFF;color:#534AB7;}
 .kpi-badge.gt{background:#E0F2FE;color:#0369A1;}
 .kpi-pct{font-size:44px;font-weight:700;letter-spacing:-1.5px;line-height:1;margin-bottom:16px;}
-.kpi-pct.mt{color:#7C79E0;} .kpi-pct.gt{color:#3B82F6;}
+.kpi-pct.mt{color:#7C79E0;}.kpi-pct.gt{color:#3B82F6;}
 .kpi-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .kpi-detail-item{background:#F9FAFB;border-radius:8px;padding:10px 12px;}
 .kdi-label{font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:.8px;text-transform:uppercase;}
 .kdi-val{font-size:16px;font-weight:700;color:var(--text);margin-top:4px;}
+
+/* CARDS */
 .chart-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;}
 .card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:20px 22px;}
 .card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
@@ -66,24 +70,33 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);displ
 .legend-row{display:flex;gap:14px;margin-bottom:10px;flex-wrap:wrap;}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
 .legend-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+
+/* TABLE */
 .table-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;min-width:360px;}
 th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.6px;text-transform:uppercase;border-bottom:1.5px solid var(--border);white-space:nowrap;background:#FAFAFA;}
 td{padding:11px 14px;font-size:12px;border-bottom:1px solid #F3F4F6;color:var(--text);white-space:nowrap;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:#FAFBFF;}
-.td-name{font-weight:600;} .td-loss{color:#EF4444;font-weight:600;} .td-win{color:#22C55E;font-weight:600;} .td-cf{color:#7C79E0;font-weight:600;}
+.td-name{font-weight:600;}
+.td-loss{color:#EF4444;font-weight:600;}
+.td-win{color:#22C55E;font-weight:600;}
+.td-cf{color:#7C79E0;font-weight:600;}
 .pill-mt{background:#EEEEFF;color:#534AB7;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:6px;}
 .pill-gt{background:#E0F2FE;color:#0369A1;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:6px;}
+
+/* PAGE HEADER */
 .page-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;}
 .page-title{font-size:15px;font-weight:700;color:var(--text);}
 .page-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-.region-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+
+/* REGION CARDS */
+.region-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
 .region-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
 .rc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
 .rc-name{font-size:13px;font-weight:700;color:var(--text);}
 .rc-cf{font-size:22px;font-weight:700;line-height:1;}
-.rc-cf.good{color:#22C55E;} .rc-cf.warn{color:#F59E0B;} .rc-cf.bad{color:#EF4444;}
+.rc-cf.good{color:#22C55E;}.rc-cf.warn{color:#F59E0B;}.rc-cf.bad{color:#EF4444;}
 .rc-bar-bg{background:#F3F4F6;border-radius:999px;height:5px;margin-bottom:12px;overflow:hidden;}
 .rc-bar-fill{height:5px;border-radius:999px;}
 .rc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;}
@@ -91,6 +104,7 @@ tr:hover td{background:#FAFBFF;}
 .rc-stat strong{display:block;font-size:12px;font-weight:700;color:var(--text);margin-top:2px;}
 .rc-badges{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap;}
 .empty-state{padding:32px;text-align:center;color:#9CA3AF;font-size:13px;}
+
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:99px;}
@@ -100,6 +114,7 @@ tr:hover td{background:#FAFBFF;}
 </head>
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
   <div class="sidebar-brand">
     <div class="brand-logo">
@@ -108,28 +123,44 @@ tr:hover td{background:#FAFBFF;}
       <div class="sync-dot"></div>
     </div>
   </div>
+
   <div class="sidebar-section">
     <div class="sidebar-label">Weekly</div>
     <div class="nav">
-      <button class="nav-item active" onclick="showPage('overview',this)"><span class="nav-icon">📊</span> KPI Weekly</button>
-      <button class="nav-item" onclick="showPage('region',this)"><span class="nav-icon" style="color:#E879A0">🗺️</span> By Region</button>
-      <button class="nav-item" onclick="showPage('loss',this)"><span class="nav-icon" style="color:#F59E0B">📉</span> Loss SKU Trend</button>
-      <button class="nav-item" onclick="showPage('top',this)"><span class="nav-icon" style="color:#22C55E">🏆</span> Top Selling SKU</button>
+      <button class="nav-item active" onclick="showPage('overview',this)">
+        <span class="nav-icon">📊</span> KPI Weekly
+      </button>
+      <button class="nav-item" onclick="showPage('region',this)">
+        <span class="nav-icon" style="color:#E879A0">🗺️</span> By Region
+      </button>
+      <button class="nav-item" onclick="showPage('loss',this)">
+        <span class="nav-icon" style="color:#F59E0B">📉</span> Loss SKU Trend
+      </button>
+      <button class="nav-item" onclick="showPage('top',this)">
+        <span class="nav-icon" style="color:#22C55E">🏆</span> Top Selling SKU
+      </button>
     </div>
   </div>
+
   <div class="sidebar-section">
     <div class="sidebar-label">Region by Channel</div>
     <div class="nav nav-sub">
-      <button class="nav-item" onclick="showPage('regionMT',this)"><span class="nav-icon" style="color:#7C79E0">▪</span> Region – MT</button>
-      <button class="nav-item" onclick="showPage('regionGT',this)"><span class="nav-icon" style="color:#60A5FA">▪</span> Region – GT</button>
+      <button class="nav-item" onclick="showPage('regionMT',this)">
+        <span class="nav-icon" style="color:#7C79E0">▪</span> Region – MT
+      </button>
+      <button class="nav-item" onclick="showPage('regionGT',this)">
+        <span class="nav-icon" style="color:#60A5FA">▪</span> Region – GT
+      </button>
     </div>
   </div>
+
   <div class="sidebar-footer">
     <div class="sync-info" id="syncInfo">Last sync: —
 Google Sheets Live CSV</div>
   </div>
 </div>
 
+<!-- MAIN -->
 <div class="main">
   <div class="topbar">
     <div class="topbar-left">
@@ -147,7 +178,7 @@ Google Sheets Live CSV</div>
 
   <div class="content">
 
-    <!-- OVERVIEW -->
+    <!-- ══ OVERVIEW ══ -->
     <div class="page active" id="overviewPage">
       <div class="kpi-row">
         <div class="kpi-card">
@@ -156,7 +187,7 @@ Google Sheets Live CSV</div>
           <div class="kpi-details">
             <div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val" id="mtOrder">—</div></div>
             <div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val" id="mtDelivery">—</div></div>
-            <div class="kpi-detail-item"><div class="kdi-label">Gap</div><div class="kdi-val" id="mtGap" style="color:#EF4444">—</div></div>
+            <div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" id="mtGap" style="color:#EF4444">—</div></div>
             <div class="kpi-detail-item"><div class="kdi-label">Case Fill</div><div class="kdi-val" id="mtCF2" style="color:#7C79E0">—</div></div>
           </div>
         </div>
@@ -166,11 +197,12 @@ Google Sheets Live CSV</div>
           <div class="kpi-details">
             <div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val" id="gtOrder">—</div></div>
             <div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val" id="gtDelivery">—</div></div>
-            <div class="kpi-detail-item"><div class="kdi-label">Gap</div><div class="kdi-val" id="gtGap" style="color:#EF4444">—</div></div>
+            <div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" id="gtGap" style="color:#EF4444">—</div></div>
             <div class="kpi-detail-item"><div class="kdi-label">Case Fill</div><div class="kdi-val" id="gtCF2" style="color:#3B82F6">—</div></div>
           </div>
         </div>
       </div>
+
       <div class="chart-row">
         <div class="card">
           <div class="card-head"><div><div class="card-title">Channel Breakdown</div><div class="card-sub">Case Fill % per channel</div></div></div>
@@ -186,51 +218,48 @@ Google Sheets Live CSV</div>
           <div style="position:relative;height:220px;"><canvas id="serviceChart"></canvas></div>
         </div>
       </div>
+
       <div class="card">
         <div class="card-head"><div><div class="card-title">GT / MT Breakdown</div><div class="card-sub" id="breakdownWkLabel">—</div></div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Breakdown</th><th>Order</th><th>Delivery</th><th>Gap</th><th>Case Fill</th></tr></thead>
+            <thead><tr><th>Breakdown</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill</th></tr></thead>
             <tbody id="tableBody"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- REGION ALL (MT+GT) -->
+    <!-- ══ REGION ALL ══ -->
     <div class="page" id="regionPage">
       <div class="page-header">
         <div>
           <div class="page-title">Breakdown by Region</div>
-          <div class="page-sub">Performa keseluruhan per wilayah — MT &amp; GT digabung</div>
+          <div class="page-sub">Performa keseluruhan per wilayah — semua channel</div>
         </div>
       </div>
       <div class="region-grid" id="regionGridAll"></div>
       <div class="card">
-        <div class="card-head"><div><div class="card-title">Trend Case Fill per Region</div><div class="card-sub">Semua week — MT &amp; GT gabungan</div></div></div>
+        <div class="card-head"><div><div class="card-title">Trend Case Fill per Region</div><div class="card-sub">Semua week</div></div></div>
         <div class="legend-row" id="regionTrendLegend"></div>
         <div style="position:relative;height:280px;"><canvas id="regionTrendChart"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-head"><div><div class="card-title">Case Fill per Region — MT vs GT</div><div class="card-sub" id="regionBarSubLabel">—</div></div></div>
-        <div class="legend-row">
-          <div class="legend-item"><div class="legend-sq" style="background:#7C79E0"></div>MT</div>
-          <div class="legend-item"><div class="legend-sq" style="background:#3B82F6"></div>GT</div>
-        </div>
+        <div class="card-head"><div><div class="card-title">Case Fill per Region</div><div class="card-sub" id="regionBarSubLabel">—</div></div></div>
         <div id="regionHBarWrap" style="position:relative;height:200px;"><canvas id="regionHBar"></canvas></div>
       </div>
       <div class="card">
         <div class="card-head"><div class="card-title">Detail Semua Region</div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Region</th><th>Channel</th><th>Order</th><th>Delivery</th><th>Gap</th><th>Case Fill</th></tr></thead>
+            <thead><tr><th>Region</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill</th></tr></thead>
             <tbody id="regionTableAll"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- REGION MT -->
+    <!-- ══ REGION MT ══ -->
     <div class="page" id="regionMTPage">
       <div class="page-header">
         <div><div class="page-title">Region — Modern Trade (MT)</div><div class="page-sub">Performa per wilayah khusus channel MT</div></div>
@@ -250,14 +279,14 @@ Google Sheets Live CSV</div>
         <div class="card-head"><div class="card-title">Detail Region — MT</div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Region</th><th>Order</th><th>Delivery</th><th>Gap</th><th>Case Fill</th></tr></thead>
+            <thead><tr><th>Region</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill</th></tr></thead>
             <tbody id="regionTableMT"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- REGION GT -->
+    <!-- ══ REGION GT ══ -->
     <div class="page" id="regionGTPage">
       <div class="page-header">
         <div><div class="page-title">Region — General Trade (GT)</div><div class="page-sub">Performa per wilayah khusus channel GT</div></div>
@@ -277,20 +306,20 @@ Google Sheets Live CSV</div>
         <div class="card-head"><div class="card-title">Detail Region — GT</div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Region</th><th>Order</th><th>Delivery</th><th>Gap</th><th>Case Fill</th></tr></thead>
+            <thead><tr><th>Region</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill</th></tr></thead>
             <tbody id="regionTableGT"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- LOSS -->
+    <!-- ══ LOSS SKU ══ -->
     <div class="page" id="lossPage">
       <div class="page-title">📉 Loss SKU Trend</div>
       <div class="card"><div class="table-wrap"><table><thead id="lossHead"></thead><tbody id="lossBody"></tbody></table></div></div>
     </div>
 
-    <!-- TOP -->
+    <!-- ══ TOP SKU ══ -->
     <div class="page" id="topPage">
       <div class="page-title">🏆 Top Selling SKU</div>
       <div class="card"><div class="table-wrap"><table><thead id="topHead"></thead><tbody id="topBody"></tbody></table></div></div>
@@ -300,201 +329,342 @@ Google Sheets Live CSV</div>
 </div>
 
 <script>
-const KPI_CHANNEL  ="https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=349702860&single=true&output=csv";
-const KPI_BREAKDOWN="https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1343041753&single=true&output=csv";
-const TOP_LOSS     ="https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1801155860&single=true&output=csv";
+/* ══ DATA SOURCES ══ */
+const URL_CHANNEL   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=349702860&single=true&output=csv";
+const URL_BREAKDOWN = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1343041753&single=true&output=csv";
+const URL_SKU       = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1801155860&single=true&output=csv";
+// KPI Region (Week, Region, Order Quantity, Delivery Quantity, GAP, Case Fill)
+const URL_REGION    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1045472937&single=true&output=csv";
+// KPI Region Breakdown (Week, Region, Channel, Order Quantity, Delivery Quantity, GAP, Case Fill)
+const URL_REGION_BD = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=149373509&single=true&output=csv";
 
-let chData=[],bdData=[],lossData=[],charts={},curWeek='';
-const MOCK_REGIONS=['Jawa','Sumatra','Kalimantan','Sulawesi','Nusa Tenggara','Bali'];
-const TREND_COLORS=['#7C79E0','#E879A0','#22C55E','#F59E0B','#3B82F6','#EF4444','#8B5CF6','#06B6D4'];
+/* ══ STATE ══ */
+let chData=[],bdData=[],skuData=[],rgData=[],rgBdData=[];
+let charts={}, curWeek='';
+const TREND_COLORS=['#7C79E0','#E879A0','#22C55E','#F59E0B','#3B82F6','#EF4444','#8B5CF6','#06B6D4','#10B981','#F97316'];
+
 const PAGE_META={
-  overview:  {icon:'📊',title:'KPI Weekly',           sub:'Ringkasan performa mingguan seluruh channel'},
-  region:    {icon:'🗺️',title:'By Region',             sub:'Performa keseluruhan per wilayah — MT & GT'},
-  regionMT:  {icon:'🟣',title:'Region — Modern Trade', sub:'Breakdown per wilayah khusus MT'},
-  regionGT:  {icon:'🔵',title:'Region — General Trade',sub:'Breakdown per wilayah khusus GT'},
-  loss:      {icon:'📉',title:'Loss SKU Trend',        sub:'SKU dengan gap negatif per minggu'},
-  top:       {icon:'🏆',title:'Top Selling SKU',       sub:'SKU dengan delivery tertinggi'},
+  overview: {icon:'📊',title:'KPI Weekly',           sub:'Ringkasan performa mingguan seluruh channel'},
+  region:   {icon:'🗺️',title:'By Region',             sub:'Performa keseluruhan per wilayah'},
+  regionMT: {icon:'🟣',title:'Region — Modern Trade', sub:'Breakdown per wilayah khusus MT'},
+  regionGT: {icon:'🔵',title:'Region — General Trade',sub:'Breakdown per wilayah khusus GT'},
+  loss:     {icon:'📉',title:'Loss SKU Trend',        sub:'SKU dengan loss per minggu'},
+  top:      {icon:'🏆',title:'Top Selling SKU',       sub:'SKU dengan delivery tertinggi'},
 };
 
-const num  = v=>parseFloat(String(v||0).replace(',','.'))||0;
-const fmt  = v=>num(v).toLocaleString('id-ID');
-const cfCls= v=>v>=95?'good':v>=85?'warn':'bad';
-const fill = (id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
-const dc   = k=>{if(charts[k]){charts[k].destroy();delete charts[k];}};
-const getRegion=(r,i)=>(r.Region||r.Wilayah||r.region||'').trim()||MOCK_REGIONS[i%MOCK_REGIONS.length];
+/* ══ HELPERS ══ */
+const num  = v => parseFloat(String(v||0).replace(',','.'))||0;
+const fmt  = v => num(v).toLocaleString('id-ID');
+const cfCls= v => v>=95?'good':v>=85?'warn':'bad';
+const fill = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+const dc   = k => { if(charts[k]){ charts[k].destroy(); delete charts[k]; }};
+const csv  = url => new Promise(r => Papa.parse(url,{download:true,header:true,skipEmptyLines:true,complete:res=>r(res.data)}));
 
+/* ══ NAV ══ */
 function showPage(page,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-  if(btn)btn.classList.add('active');
+  if(btn) btn.classList.add('active');
   document.getElementById(page+'Page').classList.add('active');
   const m=PAGE_META[page]||PAGE_META.overview;
-  fill('topbarIcon',m.icon);fill('topbarTitle',m.title);fill('topbarSub',m.sub);
+  fill('topbarIcon',m.icon); fill('topbarTitle',m.title); fill('topbarSub',m.sub);
 }
 
-const csv=url=>new Promise(r=>Papa.parse(url,{download:true,header:true,skipEmptyLines:true,complete:res=>r(res.data)}));
-
+/* ══ INIT ══ */
 async function init(){
   fill('syncInfo','Mengambil data...\nGoogle Sheets Live CSV');
-  [chData,bdData,lossData]=await Promise.all([csv(KPI_CHANNEL),csv(KPI_BREAKDOWN),csv(TOP_LOSS)]);
+  [chData,bdData,skuData,rgData,rgBdData] = await Promise.all([
+    csv(URL_CHANNEL), csv(URL_BREAKDOWN), csv(URL_SKU), csv(URL_REGION), csv(URL_REGION_BD)
+  ]);
+
   const weeks=[...new Set(chData.map(d=>d.Week))];
   const sel=document.getElementById('weekFilter');
   sel.innerHTML=weeks.map(w=>`<option value="${w}">${w}</option>`).join('');
-  curWeek=weeks[0];render(curWeek);
-  sel.addEventListener('change',()=>{curWeek=sel.value;render(sel.value);});
+  curWeek=weeks[0];
+  render(curWeek);
+  sel.addEventListener('change',()=>{ curWeek=sel.value; render(sel.value); });
+
   const now=new Date();
   fill('syncInfo',`Last sync: ${now.getDate()} ${now.toLocaleString('id',{month:'short'})} ${String(now.getHours()).padStart(2,'0')}.${String(now.getMinutes()).padStart(2,'0')}\nGoogle Sheets Live CSV`);
 }
 
+/* ══ MAIN RENDER ══ */
 function render(week){
   curWeek=week;
-  fill('weekBadgeText',week+' · latest');
-  fill('breakdownWkLabel',week);
+  fill('weekBadgeText', week+' · latest');
+  fill('breakdownWkLabel', week);
+
+  // Overview channel KPIs
   const ch=chData.filter(d=>d.Week===week);
+  const mt=ch.find(d=>(d.Channel||'').toUpperCase().includes('MT'));
+  const gt=ch.find(d=>(d.Channel||'').toUpperCase().includes('GT'));
+
+  if(mt){
+    fill('mtCF',      num(mt['Case Fill']).toFixed(1)+'%');
+    fill('mtCF2',     num(mt['Case Fill']).toFixed(2)+'%');
+    fill('mtOrder',   fmt(mt['Order Quantity']));
+    fill('mtDelivery',fmt(mt['Delivery Quantity']));
+    fill('mtGap',     fmt(mt['GAP']));
+  }
+  if(gt){
+    fill('gtCF',      num(gt['Case Fill']).toFixed(1)+'%');
+    fill('gtCF2',     num(gt['Case Fill']).toFixed(2)+'%');
+    fill('gtOrder',   fmt(gt['Order Quantity']));
+    fill('gtDelivery',fmt(gt['Delivery Quantity']));
+    fill('gtGap',     fmt(gt['GAP']));
+  }
+
+  // Breakdown table
   const bd=bdData.filter(d=>d.Week===week);
-  const mt=ch.find(d=>(d.Channel||'').includes('MT'));
-  const gt=ch.find(d=>(d.Channel||'').includes('GT'));
-  if(mt){fill('mtCF',num(mt['Case Fill']).toFixed(1)+'%');fill('mtCF2',num(mt['Case Fill']).toFixed(2)+'%');fill('mtOrder',fmt(mt['Order Quantity']));fill('mtDelivery',fmt(mt['Delivery Quantity']));fill('mtGap',fmt(mt['GAP']));}
-  if(gt){fill('gtCF',num(gt['Case Fill']).toFixed(1)+'%');fill('gtCF2',num(gt['Case Fill']).toFixed(2)+'%');fill('gtOrder',fmt(gt['Order Quantity']));fill('gtDelivery',fmt(gt['Delivery Quantity']));fill('gtGap',fmt(gt['GAP']));}
-  const sorted=[...bd].sort((a,b)=>{const A=a['Channel Breakdown']||'',B=b['Channel Breakdown']||'';if(A.includes('MT')&&B.includes('GT'))return -1;if(A.includes('GT')&&B.includes('MT'))return 1;return B.localeCompare(A);});
-  document.getElementById('tableBody').innerHTML=sorted.map(d=>{const isMT=(d['Channel Breakdown']||'').includes('MT');return`<tr><td class="td-name">${d['Channel Breakdown']||'-'}<span class="${isMT?'pill-mt':'pill-gt'}">${isMT?'MT':'GT'}</span></td><td>${fmt(d['Order Quantity'])}</td><td>${fmt(d['Delivery Quantity'])}</td><td class="td-loss">${fmt(d['GAP'])}</td><td class="td-cf">${num(d['Case Fill']).toFixed(2)}%</td></tr>`;}).join('');
-  buildBarChart(ch);buildSvcChart();buildLoss();buildTop();buildRegionAll(week);buildRegionCh('MT',week);buildRegionCh('GT',week);
+  const sorted=[...bd].sort((a,b)=>{
+    const A=a['Channel Breakdown']||'', B=b['Channel Breakdown']||'';
+    if(A.includes('MT')&&B.includes('GT')) return -1;
+    if(A.includes('GT')&&B.includes('MT')) return 1;
+    return B.localeCompare(A);
+  });
+  document.getElementById('tableBody').innerHTML=sorted.map(d=>{
+    const isMT=(d['Channel Breakdown']||'').toUpperCase().includes('MT');
+    return`<tr>
+      <td class="td-name">${d['Channel Breakdown']||'-'}<span class="${isMT?'pill-mt':'pill-gt'}">${isMT?'MT':'GT'}</span></td>
+      <td>${fmt(d['Order Quantity'])}</td>
+      <td>${fmt(d['Delivery Quantity'])}</td>
+      <td class="td-loss">${fmt(d['GAP'])}</td>
+      <td class="td-cf">${num(d['Case Fill']).toFixed(2)}%</td>
+    </tr>`;
+  }).join('');
+
+  buildBarChart(ch);
+  buildSvcChart();
+  buildSkuLoss();
+  buildSkuTop();
+  buildRegionAll(week);
+  buildRegionCh('MT', week);
+  buildRegionCh('GT', week);
 }
 
-/* ══ REGION ALL ══ */
+/* ══ REGION ALL — pakai URL_REGION ══ */
 function buildRegionAll(week){
-  const allWeeks=[...new Set(bdData.map(d=>d.Week))];
-  const bdWeek=bdData.filter(d=>d.Week===week);
+  const allWeeks=[...new Set(rgData.map(d=>d.Week))];
+  const rgWeek=rgData.filter(d=>d.Week===week);
 
-  /* Unique regions across all data */
-  const regionSet=new Set();
-  bdData.forEach((r,i)=>regionSet.add(getRegion(r,i)));
+  // Unique regions from full dataset
+  const regionSet=new Set(); rgData.forEach(d=>{ if(d.Region) regionSet.add(d.Region.trim()); });
   const regions=[...regionSet];
 
-  /* Aggregate per region for cards */
-  const cardMap={};
-  bdWeek.forEach((r,i)=>{
-    const rg=getRegion(r,i);
-    if(!cardMap[rg])cardMap[rg]={order:0,delivery:0,gap:0,mtCF:null,gtCF:null};
-    const isMT=(r['Channel Breakdown']||'').includes('MT');
-    cardMap[rg].order+=num(r['Order Quantity']);
-    cardMap[rg].delivery+=num(r['Delivery Quantity']);
-    cardMap[rg].gap+=num(r['GAP']);
-    if(isMT)cardMap[rg].mtCF=num(r['Case Fill']);
-    else cardMap[rg].gtCF=num(r['Case Fill']);
-  });
+  // Cards from URL_REGION (total per region, no channel split here)
+  document.getElementById('regionGridAll').innerHTML = rgWeek.length
+    ? rgWeek.map(d=>{
+        const cf=num(d['Case Fill']);
+        const cls=cfCls(cf);
+        const loss=num(d['GAP']);
+        return`<div class="region-card">
+          <div class="rc-top"><div class="rc-name">${d.Region||'-'}</div><div class="rc-cf ${cls}">${cf.toFixed(1)}%</div></div>
+          <div class="rc-bar-bg"><div class="rc-bar-fill" style="width:${Math.min(100,cf)}%;background:#7C79E0"></div></div>
+          <div class="rc-row">
+            <div class="rc-stat"><small>Order</small><strong>${fmt(d['Order Quantity'])}</strong></div>
+            <div class="rc-stat"><small>Delivery</small><strong>${fmt(d['Delivery Quantity'])}</strong></div>
+            <div class="rc-stat"><small>Loss</small><strong style="color:#EF4444">${fmt(loss)}</strong></div>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div class="empty-state">Tidak ada data region untuk minggu ini.</div>';
 
-  document.getElementById('regionGridAll').innerHTML=Object.entries(cardMap).map(([rg,d])=>{
-    const cf=d.order>0?(d.delivery/d.order*100):0;
-    const cls=cfCls(cf);
-    const badges=(d.mtCF!==null?`<span class="pill-mt">MT ${d.mtCF.toFixed(1)}%</span>`:'')+
-                 (d.gtCF!==null?`<span class="pill-gt">GT ${d.gtCF.toFixed(1)}%</span>`:'');
-    return`<div class="region-card"><div class="rc-top"><div class="rc-name">${rg}</div><div class="rc-cf ${cls}">${cf.toFixed(1)}%</div></div><div class="rc-bar-bg"><div class="rc-bar-fill" style="width:${Math.min(100,cf)}%;background:#7C79E0"></div></div><div class="rc-badges">${badges}</div><div class="rc-row"><div class="rc-stat"><small>Order</small><strong>${fmt(d.order)}</strong></div><div class="rc-stat"><small>Delivery</small><strong>${fmt(d.delivery)}</strong></div><div class="rc-stat"><small>Gap</small><strong style="color:#EF4444">${fmt(d.gap)}</strong></div></div></div>`;
-  }).join('')||'<div class="empty-state">Tidak ada data region.</div>';
-
-  /* Trend chart: gabungan per region per week */
+  // Trend line per region (from URL_REGION)
   const trendDS=regions.map((rg,ri)=>{
     const data=allWeeks.map(w=>{
-      let ord=0,del=0;
-      bdData.filter(d=>d.Week===w).forEach((r,i)=>{if(getRegion(r,i)===rg){ord+=num(r['Order Quantity']);del+=num(r['Delivery Quantity']);}});
-      return ord>0?parseFloat((del/ord*100).toFixed(2)):null;
+      const r=rgData.find(d=>d.Week===w&&(d.Region||'').trim()===rg);
+      return r ? parseFloat(num(r['Case Fill']).toFixed(2)) : null;
     });
-    return{label:rg,data,borderColor:TREND_COLORS[ri%TREND_COLORS.length],backgroundColor:'transparent',tension:.4,pointRadius:3,borderWidth:2};
+    return{label:rg,data,borderColor:TREND_COLORS[ri%TREND_COLORS.length],backgroundColor:'transparent',tension:.4,pointRadius:3,borderWidth:2,spanGaps:true};
   });
   dc('rTrend');
-  charts['rTrend']=new Chart(document.getElementById('regionTrendChart'),{type:'line',data:{labels:allWeeks,datasets:trendDS},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});
-  document.getElementById('regionTrendLegend').innerHTML=regions.map((rg,ri)=>`<div class="legend-item"><div class="legend-sq" style="background:${TREND_COLORS[ri%TREND_COLORS.length]}"></div>${rg}</div>`).join('');
+  charts['rTrend']=new Chart(document.getElementById('regionTrendChart'),{
+    type:'line',data:{labels:allWeeks,datasets:trendDS},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
+              x:{grid:{display:false},ticks:{font:{size:10}}}}}
+  });
+  document.getElementById('regionTrendLegend').innerHTML=regions.map((rg,ri)=>
+    `<div class="legend-item"><div class="legend-sq" style="background:${TREND_COLORS[ri%TREND_COLORS.length]}"></div>${rg}</div>`
+  ).join('');
 
-  /* Horizontal bar MT vs GT per region */
-  const hRegions=Object.keys(cardMap);
-  const hMT=hRegions.map(rg=>cardMap[rg].mtCF??0);
-  const hGT=hRegions.map(rg=>cardMap[rg].gtCF??0);
-  const hH=Math.max(200,hRegions.length*52+60);
+  // Horizontal bar: Case Fill per region for selected week
+  const hLabels=rgWeek.map(d=>d.Region||'-');
+  const hData=rgWeek.map(d=>parseFloat(num(d['Case Fill']).toFixed(2)));
+  const hH=Math.max(200,hLabels.length*48+60);
   document.getElementById('regionHBarWrap').style.height=hH+'px';
-  fill('regionBarSubLabel',week);
+  fill('regionBarSubLabel', week);
   dc('rHBar');
-  charts['rHBar']=new Chart(document.getElementById('regionHBar'),{type:'bar',data:{labels:hRegions,datasets:[{label:'MT',data:hMT,backgroundColor:'#7C79E0',borderRadius:4},{label:'GT',data:hGT,backgroundColor:'#3B82F6',borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+  charts['rHBar']=new Chart(document.getElementById('regionHBar'),{
+    type:'bar',
+    data:{labels:hLabels,datasets:[{label:'Case Fill %',data:hData,backgroundColor:'#7C79E0',borderRadius:4}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
+              y:{grid:{display:false},ticks:{font:{size:11}}}}}
+  });
 
-  /* Detail table */
-  document.getElementById('regionTableAll').innerHTML=bdWeek.map((d,i)=>{
-    const rg=getRegion(d,i);const isMT=(d['Channel Breakdown']||'').includes('MT');const cf=num(d['Case Fill']);const cls=cf>=95?'td-win':cf>=85?'td-cf':'td-loss';
-    return`<tr><td class="td-name">${rg}</td><td><span class="${isMT?'pill-mt':'pill-gt'}">${isMT?'MT':'GT'}</span></td><td>${fmt(d['Order Quantity'])}</td><td>${fmt(d['Delivery Quantity'])}</td><td class="td-loss">${fmt(d['GAP'])}</td><td class="${cls}">${cf.toFixed(2)}%</td></tr>`;
-  }).join('')||'<tr><td colspan="6" class="empty-state">Tidak ada data</td></tr>';
+  // Detail table
+  document.getElementById('regionTableAll').innerHTML = rgWeek.length
+    ? rgWeek.map(d=>{
+        const cf=num(d['Case Fill']);
+        const cls=cf>=95?'td-win':cf>=85?'td-cf':'td-loss';
+        return`<tr>
+          <td class="td-name">${d.Region||'-'}</td>
+          <td>${fmt(d['Order Quantity'])}</td>
+          <td>${fmt(d['Delivery Quantity'])}</td>
+          <td class="td-loss">${fmt(d['GAP'])}</td>
+          <td class="${cls}">${cf.toFixed(2)}%</td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="5" class="empty-state">Tidak ada data.</td></tr>';
 }
 
-/* ══ REGION MT / GT ══ */
-function buildRegionCh(ch,week){
-  const sfx=ch;
+/* ══ REGION MT / GT — pakai URL_REGION_BD ══ */
+function buildRegionCh(ch, week){
   const color=ch==='MT'?'#7C79E0':'#3B82F6';
-  const allWeeks=[...new Set(bdData.map(d=>d.Week))];
-  const rowsAll=bdData.filter(d=>(d['Channel Breakdown']||'').includes(ch));
+  const allWeeks=[...new Set(rgBdData.map(d=>d.Week))];
+
+  // Filter by channel — kolom bisa bernama "Channel" atau "Channel Breakdown"
+  const rowsAll=rgBdData.filter(d=>{
+    const ch_col=(d.Channel||d['Channel Breakdown']||'').toUpperCase();
+    return ch_col.includes(ch);
+  });
   const rowsWeek=rowsAll.filter(d=>d.Week===week);
 
-  const regionSet=new Set();
-  rowsAll.forEach((r,i)=>regionSet.add(getRegion(r,i)));
+  // Unique regions
+  const regionSet=new Set(); rowsAll.forEach(d=>{ if(d.Region) regionSet.add(d.Region.trim()); });
   const regions=[...regionSet];
 
-  /* Cards */
-  document.getElementById('regionGrid'+sfx).innerHTML=rowsWeek.map((d,i)=>{
-    const rg=getRegion(d,i);const cf=num(d['Case Fill']);const cls=cfCls(cf);
-    return`<div class="region-card"><div class="rc-top"><div class="rc-name">${rg}</div><div class="rc-cf ${cls}">${cf.toFixed(1)}%</div></div><div class="rc-bar-bg"><div class="rc-bar-fill" style="width:${Math.min(100,cf)}%;background:${color}"></div></div><div class="rc-row"><div class="rc-stat"><small>Order</small><strong>${fmt(d['Order Quantity'])}</strong></div><div class="rc-stat"><small>Delivery</small><strong>${fmt(d['Delivery Quantity'])}</strong></div><div class="rc-stat"><small>Gap</small><strong style="color:#EF4444">${fmt(d['GAP'])}</strong></div></div></div>`;
-  }).join('')||`<div class="empty-state">Tidak ada data ${ch} untuk ${week}.</div>`;
+  // Cards
+  document.getElementById('regionGrid'+ch).innerHTML = rowsWeek.length
+    ? rowsWeek.map(d=>{
+        const cf=num(d['Case Fill']);
+        const cls=cfCls(cf);
+        return`<div class="region-card">
+          <div class="rc-top"><div class="rc-name">${d.Region||'-'}</div><div class="rc-cf ${cls}">${cf.toFixed(1)}%</div></div>
+          <div class="rc-bar-bg"><div class="rc-bar-fill" style="width:${Math.min(100,cf)}%;background:${color}"></div></div>
+          <div class="rc-row">
+            <div class="rc-stat"><small>Order</small><strong>${fmt(d['Order Quantity'])}</strong></div>
+            <div class="rc-stat"><small>Delivery</small><strong>${fmt(d['Delivery Quantity'])}</strong></div>
+            <div class="rc-stat"><small>Loss</small><strong style="color:#EF4444">${fmt(d['GAP'])}</strong></div>
+          </div>
+        </div>`;
+      }).join('')
+    : `<div class="empty-state">Tidak ada data ${ch} untuk ${week}.</div>`;
 
-  /* Trend */
+  // Trend
   const trendDS=regions.map((rg,ri)=>{
     const data=allWeeks.map(w=>{
-      const r=rowsAll.find((row,i2)=>row.Week===w&&getRegion(row,i2)===rg);
-      return r?parseFloat(num(r['Case Fill']).toFixed(2)):null;
+      const r=rowsAll.find(d=>d.Week===w&&(d.Region||'').trim()===rg);
+      return r ? parseFloat(num(r['Case Fill']).toFixed(2)) : null;
     });
-    return{label:rg,data,borderColor:TREND_COLORS[ri%TREND_COLORS.length],backgroundColor:'transparent',tension:.4,pointRadius:3,borderWidth:2};
+    return{label:rg,data,borderColor:TREND_COLORS[ri%TREND_COLORS.length],backgroundColor:'transparent',tension:.4,pointRadius:3,borderWidth:2,spanGaps:true};
   });
-  dc('rTrend'+sfx);
-  charts['rTrend'+sfx]=new Chart(document.getElementById('regionTrend'+sfx),{type:'line',data:{labels:allWeeks,datasets:trendDS},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});
-  document.getElementById('regionTrendLegend'+sfx).innerHTML=regions.map((rg,ri)=>`<div class="legend-item"><div class="legend-sq" style="background:${TREND_COLORS[ri%TREND_COLORS.length]}"></div>${rg}</div>`).join('');
+  dc('rTrend'+ch);
+  charts['rTrend'+ch]=new Chart(document.getElementById('regionTrend'+ch),{
+    type:'line',data:{labels:allWeeks,datasets:trendDS},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
+              x:{grid:{display:false},ticks:{font:{size:10}}}}}
+  });
+  document.getElementById('regionTrendLegend'+ch).innerHTML=regions.map((rg,ri)=>
+    `<div class="legend-item"><div class="legend-sq" style="background:${TREND_COLORS[ri%TREND_COLORS.length]}"></div>${rg}</div>`
+  ).join('');
 
-  /* Horizontal bar */
-  const hLabels=rowsWeek.map((d,i)=>getRegion(d,i));
+  // Horizontal bar
+  const hLabels=rowsWeek.map(d=>d.Region||'-');
   const hData=rowsWeek.map(d=>parseFloat(num(d['Case Fill']).toFixed(2)));
   const hH=Math.max(180,hLabels.length*48+60);
-  document.getElementById('regionHBar'+sfx+'Wrap').style.height=hH+'px';
-  fill('regionBar'+sfx+'Sub',week);
-  dc('rHBar'+sfx);
-  charts['rHBar'+sfx]=new Chart(document.getElementById('regionHBar'+sfx),{type:'bar',data:{labels:hLabels,datasets:[{label:ch+' Case Fill %',data:hData,backgroundColor:color,borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+  document.getElementById('regionHBar'+ch+'Wrap').style.height=hH+'px';
+  fill('regionBar'+ch+'Sub', week);
+  dc('rHBar'+ch);
+  charts['rHBar'+ch]=new Chart(document.getElementById('regionHBar'+ch),{
+    type:'bar',
+    data:{labels:hLabels,datasets:[{label:ch+' Case Fill %',data:hData,backgroundColor:color,borderRadius:4}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
+              y:{grid:{display:false},ticks:{font:{size:11}}}}}
+  });
 
-  /* Table */
-  document.getElementById('regionTable'+sfx).innerHTML=rowsWeek.map((d,i)=>{const rg=getRegion(d,i);const cf=num(d['Case Fill']);const cls=cf>=95?'td-win':cf>=85?'td-cf':'td-loss';return`<tr><td class="td-name">${rg}</td><td>${fmt(d['Order Quantity'])}</td><td>${fmt(d['Delivery Quantity'])}</td><td class="td-loss">${fmt(d['GAP'])}</td><td class="${cls}">${cf.toFixed(2)}%</td></tr>`;}).join('')||`<tr><td colspan="5" class="empty-state">Tidak ada data ${ch}.</td></tr>`;
+  // Detail table
+  document.getElementById('regionTable'+ch).innerHTML = rowsWeek.length
+    ? rowsWeek.map(d=>{
+        const cf=num(d['Case Fill']);
+        const cls=cf>=95?'td-win':cf>=85?'td-cf':'td-loss';
+        return`<tr>
+          <td class="td-name">${d.Region||'-'}</td>
+          <td>${fmt(d['Order Quantity'])}</td>
+          <td>${fmt(d['Delivery Quantity'])}</td>
+          <td class="td-loss">${fmt(d['GAP'])}</td>
+          <td class="${cls}">${cf.toFixed(2)}%</td>
+        </tr>`;
+      }).join('')
+    : `<tr><td colspan="5" class="empty-state">Tidak ada data ${ch}.</td></tr>`;
 }
 
 /* ══ OVERVIEW CHARTS ══ */
 function buildBarChart(data){
   dc('bar');
-  charts['bar']=new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:data.map(d=>d.Channel||'-'),datasets:[{data:data.map(d=>num(d['Case Fill'])),backgroundColor:['#7C79E0','#3B82F6'],borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});
+  charts['bar']=new Chart(document.getElementById('barChart'),{
+    type:'bar',
+    data:{labels:data.map(d=>d.Channel||'-'),datasets:[{data:data.map(d=>num(d['Case Fill'])),backgroundColor:['#7C79E0','#3B82F6'],borderRadius:8,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#F3F4F6'}},
+              x:{grid:{display:false},ticks:{font:{size:11}}}}}
+  });
 }
 
 function buildSvcChart(){
   dc('svc');
   const weeks=[...new Set(chData.map(d=>d.Week))];
-  const avg=weeks.map(w=>{const r=chData.filter(d=>d.Week===w);return r.length?parseFloat((r.reduce((a,b)=>a+num(b['Case Fill']),0)/r.length).toFixed(2)):0;});
-  charts['svc']=new Chart(document.getElementById('serviceChart'),{type:'line',data:{labels:weeks,datasets:[{data:avg,borderColor:'#E879A0',backgroundColor:'rgba(232,121,160,.08)',fill:true,tension:.4,pointRadius:4,pointBackgroundColor:'#E879A0',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});
+  const avg=weeks.map(w=>{
+    const r=chData.filter(d=>d.Week===w);
+    return r.length ? parseFloat((r.reduce((a,b)=>a+num(b['Case Fill']),0)/r.length).toFixed(2)) : 0;
+  });
+  charts['svc']=new Chart(document.getElementById('serviceChart'),{
+    type:'line',
+    data:{labels:weeks,datasets:[{data:avg,borderColor:'#E879A0',backgroundColor:'rgba(232,121,160,.08)',fill:true,tension:.4,pointRadius:4,pointBackgroundColor:'#E879A0',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#F3F4F6'}},
+              x:{grid:{display:false},ticks:{font:{size:11}}}}}
+  });
 }
 
-/* ══ LOSS / TOP ══ */
-function buildLoss(){
-  const weeks=[...new Set(lossData.map(d=>d.Week))];
+/* ══ SKU LOSS ══ */
+function buildSkuLoss(){
+  const weeks=[...new Set(skuData.map(d=>d.Week))];
   const g={};
-  lossData.forEach(d=>{if(num(d['GAP'])>=0)return;const s=d['Product Name']||'Unknown';if(!g[s])g[s]={};g[s][d.Week]=num(d['GAP']);});
-  const sorted=Object.entries(g).sort((a,b)=>Object.values(a[1]).reduce((x,y)=>x+y,0)-Object.values(b[1]).reduce((x,y)=>x+y,0));
+  skuData.forEach(d=>{
+    if(num(d['GAP'])>=0) return;
+    const s=d['Product Name']||'Unknown';
+    if(!g[s]) g[s]={};
+    g[s][d.Week]=num(d['GAP']);
+  });
+  const sorted=Object.entries(g).sort((a,b)=>
+    Object.values(a[1]).reduce((x,y)=>x+y,0) - Object.values(b[1]).reduce((x,y)=>x+y,0)
+  );
   document.getElementById('lossHead').innerHTML=`<tr><th>SKU Name</th>${weeks.map(w=>`<th>${w}</th>`).join('')}</tr>`;
-  document.getElementById('lossBody').innerHTML=sorted.map(([s,d])=>`<tr><td class="td-name">${s}</td>${weeks.map(w=>`<td class="td-loss">${d[w]?fmt(d[w]):'-'}</td>`).join('')}</tr>`).join('');
+  document.getElementById('lossBody').innerHTML=sorted.map(([s,d])=>
+    `<tr><td class="td-name">${s}</td>${weeks.map(w=>`<td class="td-loss">${d[w]?fmt(d[w]):'-'}</td>`).join('')}</tr>`
+  ).join('');
 }
 
-function buildTop(){
-  const weeks=[...new Set(lossData.map(d=>d.Week))];
+/* ══ SKU TOP ══ */
+function buildSkuTop(){
+  const weeks=[...new Set(skuData.map(d=>d.Week))];
   const g={};
-  lossData.forEach(d=>{const s=d['Product Name']||'Unknown';if(!g[s])g[s]={};g[s][d.Week]=num(d['Delivery Quantity']);});
-  const sorted=Object.entries(g).sort((a,b)=>Object.values(b[1]).reduce((x,y)=>x+y,0)-Object.values(a[1]).reduce((x,y)=>x+y,0));
+  skuData.forEach(d=>{
+    const s=d['Product Name']||'Unknown';
+    if(!g[s]) g[s]={};
+    g[s][d.Week]=num(d['Delivery Quantity']);
+  });
+  const sorted=Object.entries(g).sort((a,b)=>
+    Object.values(b[1]).reduce((x,y)=>x+y,0) - Object.values(a[1]).reduce((x,y)=>x+y,0)
+  );
   document.getElementById('topHead').innerHTML=`<tr><th>SKU Name</th>${weeks.map(w=>`<th>${w}</th>`).join('')}</tr>`;
-  document.getElementById('topBody').innerHTML=sorted.map(([s,d])=>`<tr><td class="td-name">${s}</td>${weeks.map(w=>`<td class="td-win">${d[w]?fmt(d[w]):'-'}</td>`).join('')}</tr>`).join('');
+  document.getElementById('topBody').innerHTML=sorted.map(([s,d])=>
+    `<tr><td class="td-name">${s}</td>${weeks.map(w=>`<td class="td-win">${d[w]?fmt(d[w]):'-'}</td>`).join('')}</tr>`
+  ).join('');
 }
 
 init();
