@@ -349,6 +349,55 @@ function showPage(page,btn){
   fill('topbarIcon',m.icon); fill('topbarTitle',m.title); fill('topbarSub',m.sub);
 }
 
+/* ══ PLUGIN: label % langsung di ujung bar horizontal (selalu muncul tanpa klik) ══ */
+const hBarLabelPlugin={
+  id:'hBarLabel',
+  afterDatasetsDraw(chart){
+    const ctx=chart.ctx;
+    ctx.save();
+    ctx.font='bold 11px Inter,sans-serif';
+    ctx.textBaseline='middle';
+    ctx.textAlign='left';
+    chart.data.datasets.forEach((ds,di)=>{
+      const meta=chart.getDatasetMeta(di);
+      if(meta.hidden) return;
+      meta.data.forEach((bar,i)=>{
+        const val=ds.data[i];
+        if(val==null||val===0) return;
+        const x=bar.x+6;
+        const y=bar.y;
+        // warna label sesuai nilai
+        ctx.fillStyle=val>=95?'#22C55E':val>=85?'#F59E0B':'#EF4444';
+        ctx.fillText(val.toFixed(1)+'%', x, y);
+      });
+    });
+    ctx.restore();
+  }
+};
+
+/* ══ PLUGIN: label % di atas bar vertikal ══ */
+const vBarLabelPlugin={
+  id:'vBarLabel',
+  afterDatasetsDraw(chart){
+    const ctx=chart.ctx;
+    ctx.save();
+    ctx.font='bold 12px Inter,sans-serif';
+    ctx.textAlign='center';
+    ctx.textBaseline='bottom';
+    chart.data.datasets.forEach((ds,di)=>{
+      const meta=chart.getDatasetMeta(di);
+      if(meta.hidden) return;
+      meta.data.forEach((bar,i)=>{
+        const val=ds.data[i];
+        if(val==null||val===0) return;
+        ctx.fillStyle=val>=95?'#22C55E':val>=85?'#F59E0B':'#EF4444';
+        ctx.fillText(val.toFixed(1)+'%', bar.x, bar.y-4);
+      });
+    });
+    ctx.restore();
+  }
+};
+
 /* ══ INIT ══ */
 async function init(){
   fill('syncInfo','Mengambil data...\nGoogle Sheets Live CSV');
@@ -500,27 +549,18 @@ function buildRegionAll(week){
   fill('regionBarSubLabel', week);
   dc('rHBar');
   charts['rHBar']=new Chart(document.getElementById('regionHBar'),{
-    type:'bar',data:{labels:hLabels,datasets:[{data:hData,backgroundColor:'#7C79E0',borderRadius:4}]},
+    type:'bar',
+    plugins:[hBarLabelPlugin],
+    data:{labels:hLabels,datasets:[{data:hData,backgroundColor:'#7C79E0',borderRadius:4}]},
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      animation:false,
       plugins:{legend:{display:false}},
+      layout:{padding:{right:52}},
       scales:{
         x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
         y:{grid:{display:false},ticks:{font:{size:11}}}
-      },
-      animation:{onComplete:function(){
-        const chart=this; const ctx=chart.ctx; ctx.save();
-        ctx.font='bold 11px Inter,sans-serif'; ctx.textBaseline='middle';
-        chart.data.datasets.forEach((ds,di)=>{
-          chart.getDatasetMeta(di).data.forEach((bar,i)=>{
-            const val=ds.data[i]; if(val==null) return;
-            const x=bar.x+5; const y=bar.y;
-            ctx.fillStyle='#1A1A2E'; ctx.textAlign='left';
-            ctx.fillText(val.toFixed(1)+'%', x, y);
-          });
-        });
-        ctx.restore();
-      }}
+      }
     }
   });
 
@@ -633,27 +673,18 @@ function buildRegionCh(ch, week){
   fill('regionBar'+ch+'Sub', week);
   dc('rHBar'+ch);
   charts['rHBar'+ch]=new Chart(document.getElementById('regionHBar'+ch),{
-    type:'bar',data:{labels:hLabels,datasets:[{data:hData,backgroundColor:color,borderRadius:4}]},
+    type:'bar',
+    plugins:[hBarLabelPlugin],
+    data:{labels:hLabels,datasets:[{data:hData,backgroundColor:color,borderRadius:4}]},
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      animation:false,
       plugins:{legend:{display:false}},
+      layout:{padding:{right:52}},
       scales:{
         x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
         y:{grid:{display:false},ticks:{font:{size:11}}}
-      },
-      animation:{onComplete:function(){
-        const chart=this; const ctx=chart.ctx; ctx.save();
-        ctx.font='bold 11px Inter,sans-serif'; ctx.textBaseline='middle';
-        chart.data.datasets.forEach((ds,di)=>{
-          chart.getDatasetMeta(di).data.forEach((bar,i)=>{
-            const val=ds.data[i]; if(val==null) return;
-            const x=bar.x+5; const y=bar.y;
-            ctx.fillStyle='#1A1A2E'; ctx.textAlign='left';
-            ctx.fillText(val.toFixed(1)+'%', x, y);
-          });
-        });
-        ctx.restore();
-      }}
+      }
     }
   });
 
@@ -682,35 +713,17 @@ function buildBarChart(data){
   dc('bar');
   charts['bar']=new Chart(document.getElementById('barChart'),{
     type:'bar',
+    plugins:[vBarLabelPlugin],
     data:{labels:data.map(d=>d.Channel||'-'),datasets:[{data:data.map(d=>num(d['Case Fill'])),backgroundColor:['#7C79E0','#3B82F6'],borderRadius:8,borderSkipped:false}]},
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        datalabels:{display:false}
-      },
+      animation:false,
+      plugins:{legend:{display:false}},
+      layout:{padding:{top:24}},
       scales:{
-        y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#F3F4F6'}},
+        y:{min:0,max:115,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#F3F4F6'}},
         x:{grid:{display:false},ticks:{font:{size:11}}}
-      },
-      animation:{onComplete:function(){
-        const chart=this;
-        const ctx=chart.ctx;
-        ctx.save();
-        ctx.font='bold 13px Inter,sans-serif';
-        ctx.textAlign='center';
-        ctx.textBaseline='bottom';
-        chart.data.datasets.forEach((ds,di)=>{
-          const meta=chart.getDatasetMeta(di);
-          meta.data.forEach((bar,i)=>{
-            const val=ds.data[i];
-            if(val==null) return;
-            ctx.fillStyle='#1A1A2E';
-            ctx.fillText(val.toFixed(1)+'%', bar.x, bar.y-4);
-          });
-        });
-        ctx.restore();
-      }}
+      }
     }
   });
 }
