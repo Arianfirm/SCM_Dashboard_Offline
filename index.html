@@ -349,26 +349,34 @@ function showPage(page,btn){
   fill('topbarIcon',m.icon); fill('topbarTitle',m.title); fill('topbarSub',m.sub);
 }
 
-/* ══ PLUGIN: label % langsung di ujung bar horizontal (selalu muncul tanpa klik) ══ */
+/* ══ PLUGIN: label % + qty di ujung bar horizontal ══ */
 const hBarLabelPlugin={
   id:'hBarLabel',
   afterDatasetsDraw(chart){
     const ctx=chart.ctx;
     ctx.save();
-    ctx.font='bold 11px Inter,sans-serif';
     ctx.textBaseline='middle';
     ctx.textAlign='left';
     chart.data.datasets.forEach((ds,di)=>{
       const meta=chart.getDatasetMeta(di);
       if(meta.hidden) return;
+      const extra=ds.extra||[];
       meta.data.forEach((bar,i)=>{
         const val=ds.data[i];
         if(val==null||val===0) return;
-        const x=bar.x+6;
+        const x=bar.x+8;
         const y=bar.y;
-        // warna label sesuai nilai
-        ctx.fillStyle=val>=95?'#22C55E':val>=85?'#F59E0B':'#EF4444';
-        ctx.fillText(val.toFixed(1)+'%', x, y);
+        const pctColor=val>=95?'#22C55E':val>=85?'#F59E0B':'#EF4444';
+        // Qty label (abu-abu, lebih kecil)
+        if(extra[i]!=null){
+          ctx.font='500 10px Inter,sans-serif';
+          ctx.fillStyle='#6B7280';
+          ctx.fillText(extra[i].toLocaleString('id-ID'), x, y-7);
+        }
+        // % label (bold, warna sesuai nilai)
+        ctx.font='bold 11px Inter,sans-serif';
+        ctx.fillStyle=pctColor;
+        ctx.fillText(val.toFixed(1)+'%', x, y+6);
       });
     });
     ctx.restore();
@@ -544,19 +552,20 @@ function buildRegionAll(week){
     const d=aggWeek[rg];
     return d.order>0?parseFloat((d.delivery/d.order*100).toFixed(2)):0;
   });
-  const hH=Math.max(200,hLabels.length*44+60);
+  const hQty=regions.map(rg=>aggWeek[rg].delivery);
+  const hH=Math.max(200,hLabels.length*56+60);
   document.getElementById('regionHBarWrap').style.height=hH+'px';
   fill('regionBarSubLabel', week);
   dc('rHBar');
   charts['rHBar']=new Chart(document.getElementById('regionHBar'),{
     type:'bar',
     plugins:[hBarLabelPlugin],
-    data:{labels:hLabels,datasets:[{data:hData,backgroundColor:'#7C79E0',borderRadius:4}]},
+    data:{labels:hLabels,datasets:[{data:hData,extra:hQty,backgroundColor:'#7C79E0',borderRadius:4,barThickness:28}]},
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
       animation:false,
       plugins:{legend:{display:false}},
-      layout:{padding:{right:52}},
+      layout:{padding:{right:80}},
       scales:{
         x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
         y:{grid:{display:false},ticks:{font:{size:11}}}
@@ -668,14 +677,15 @@ function buildRegionCh(ch, week){
     const d=aggWeek[rg];
     return d.order>0?parseFloat((d.delivery/d.order*100).toFixed(2)):0;
   });
-  const hH=Math.max(180,hLabels.length*44+60);
+  const hQty=regions.map(rg=>aggWeek[rg].delivery);
+  const hH=Math.max(180,hLabels.length*56+60);
   document.getElementById('regionHBar'+ch+'Wrap').style.height=hH+'px';
   fill('regionBar'+ch+'Sub', week);
   dc('rHBar'+ch);
   charts['rHBar'+ch]=new Chart(document.getElementById('regionHBar'+ch),{
     type:'bar',
     plugins:[hBarLabelPlugin],
-    data:{labels:hLabels,datasets:[{data:hData,backgroundColor:color,borderRadius:4}]},
+    data:{labels:hLabels,datasets:[{data:hData,extra:hQty,backgroundColor:color,borderRadius:4,barThickness:28}]},
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
       animation:false,
