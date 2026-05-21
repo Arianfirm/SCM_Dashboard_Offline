@@ -134,6 +134,16 @@ tr:hover td{background:#FAFBFF;}
       <button class="nav-item" onclick="showPage('regionGT',this)"><span class="nav-icon" style="color:#60A5FA">▪</span> Region – GT</button>
     </div>
   </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Channel Trend</div>
+    <div class="nav">
+      <button class="nav-item" onclick="showPage('channelTrend',this)"><span class="nav-icon" style="color:#E879A0">📈</span> Channel Trend</button>
+    </div>
+    <div class="nav nav-sub">
+      <button class="nav-item" onclick="showPage('channelTrendMT',this)"><span class="nav-icon" style="color:#7C79E0">▪</span> Trend – MT</button>
+      <button class="nav-item" onclick="showPage('channelTrendGT',this)"><span class="nav-icon" style="color:#60A5FA">▪</span> Trend – GT</button>
+    </div>
+  </div>
   <div class="sidebar-footer">
     <div class="sync-info" id="syncInfo">Last sync: —
 Google Sheets Live CSV</div>
@@ -294,6 +304,105 @@ Google Sheets Live CSV</div>
       <div class="card"><div class="table-wrap"><table><thead id="lossHead"></thead><tbody id="lossBody"></tbody></table></div></div>
     </div>
 
+    <!-- CHANNEL TREND ALL -->
+    <div class="page" id="channelTrendPage">
+      <div class="page-header">
+        <div><div class="page-title">Channel Trend — MT &amp; GT</div><div class="page-sub">Trend Case Fill &amp; Delivery per week untuk semua channel</div></div>
+      </div>
+      <!-- KPI mini row -->
+      <div class="kpi-row" id="chTrendKpiRow"></div>
+      <!-- Trend line MT vs GT -->
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Trend Case Fill — MT vs GT</div><div class="card-sub">Weekly Case Fill %</div></div></div>
+        <div class="legend-row">
+          <div class="legend-item"><div class="legend-sq" style="background:#7C79E0"></div>MT</div>
+          <div class="legend-item"><div class="legend-sq" style="background:#3B82F6"></div>GT</div>
+        </div>
+        <div style="position:relative;height:260px;"><canvas id="chTrendLine"></canvas></div>
+      </div>
+      <!-- Delivery qty trend -->
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Trend Delivery Qty — MT vs GT</div><div class="card-sub">Weekly total delivery</div></div></div>
+        <div class="legend-row">
+          <div class="legend-item"><div class="legend-sq" style="background:#7C79E0"></div>MT</div>
+          <div class="legend-item"><div class="legend-sq" style="background:#3B82F6"></div>GT</div>
+        </div>
+        <div style="position:relative;height:260px;"><canvas id="chTrendDelivery"></canvas></div>
+      </div>
+      <!-- Hbar MT per week -->
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Case Fill per Week — MT</div><div class="card-sub">Horizontal bar · % &amp; Delivery Qty</div></div></div>
+        <div class="legend-row"><div class="legend-item"><div class="legend-sq" style="background:#7C79E0"></div>MT Case Fill %</div></div>
+        <div id="chHBarMTAllWrap" style="position:relative;height:200px;"><canvas id="chHBarMTAll"></canvas></div>
+      </div>
+      <!-- Hbar GT per week -->
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Case Fill per Week — GT</div><div class="card-sub">Horizontal bar · % &amp; Delivery Qty</div></div></div>
+        <div class="legend-row"><div class="legend-item"><div class="legend-sq" style="background:#3B82F6"></div>GT Case Fill %</div></div>
+        <div id="chHBarGTAllWrap" style="position:relative;height:200px;"><canvas id="chHBarGTAll"></canvas></div>
+      </div>
+      <!-- Detail table -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Detail Semua Week — MT &amp; GT</div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Week</th><th>Channel</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill %</th></tr></thead>
+            <tbody id="chTrendTableAll"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHANNEL TREND MT -->
+    <div class="page" id="channelTrendMTPage">
+      <div class="page-header">
+        <div><div class="page-title">Channel Trend — Modern Trade (MT)</div><div class="page-sub">Trend weekly khusus MT</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Trend Case Fill — MT</div><div class="card-sub">Weekly Case Fill %</div></div></div>
+        <div class="legend-row"><div class="legend-item"><div class="legend-sq" style="background:#7C79E0"></div>MT</div></div>
+        <div style="position:relative;height:260px;"><canvas id="chTrendLineMT"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Case Fill per Week — MT</div><div class="card-sub">% &amp; Delivery Qty per bar</div></div></div>
+        <div id="chHBarMTWrap" style="position:relative;height:200px;"><canvas id="chHBarMT"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Detail Week — MT</div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Week</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill %</th></tr></thead>
+            <tbody id="chTrendTableMT"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHANNEL TREND GT -->
+    <div class="page" id="channelTrendGTPage">
+      <div class="page-header">
+        <div><div class="page-title">Channel Trend — General Trade (GT)</div><div class="page-sub">Trend weekly khusus GT</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Trend Case Fill — GT</div><div class="card-sub">Weekly Case Fill %</div></div></div>
+        <div class="legend-row"><div class="legend-item"><div class="legend-sq" style="background:#3B82F6"></div>GT</div></div>
+        <div style="position:relative;height:260px;"><canvas id="chTrendLineGT"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Case Fill per Week — GT</div><div class="card-sub">% &amp; Delivery Qty per bar</div></div></div>
+        <div id="chHBarGTWrap" style="position:relative;height:200px;"><canvas id="chHBarGT"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Detail Week — GT</div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Week</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill %</th></tr></thead>
+            <tbody id="chTrendTableGT"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- TOP SKU -->
     <div class="page" id="topPage">
       <div class="page-title">🏆 Top Selling SKU</div>
@@ -318,12 +427,15 @@ let chData=[],bdData=[],skuData=[],rgData=[],rgBdData=[];
 let charts={}, curWeek='';
 const TREND_COLORS=['#7C79E0','#E879A0','#22C55E','#F59E0B','#3B82F6','#EF4444','#8B5CF6','#06B6D4','#10B981','#F97316'];
 const PAGE_META={
-  overview: {icon:'📊',title:'KPI Weekly',           sub:'Ringkasan performa mingguan seluruh channel'},
-  region:   {icon:'🗺️',title:'By Region',             sub:'Total semua channel per wilayah'},
-  regionMT: {icon:'🟣',title:'Region — Modern Trade', sub:'Hanya order channel MT per wilayah'},
-  regionGT: {icon:'🔵',title:'Region — General Trade',sub:'Hanya order channel GT per wilayah'},
-  loss:     {icon:'📉',title:'Loss SKU Trend',        sub:'SKU dengan loss per minggu'},
-  top:      {icon:'🏆',title:'Top Selling SKU',       sub:'SKU dengan delivery tertinggi'},
+  overview:       {icon:'📊',title:'KPI Weekly',              sub:'Ringkasan performa mingguan seluruh channel'},
+  region:         {icon:'🗺️',title:'By Region',                sub:'Total semua channel per wilayah'},
+  regionMT:       {icon:'🟣',title:'Region — Modern Trade',    sub:'Hanya order channel MT per wilayah'},
+  regionGT:       {icon:'🔵',title:'Region — General Trade',   sub:'Hanya order channel GT per wilayah'},
+  channelTrend:   {icon:'📈',title:'Channel Trend — MT & GT',  sub:'Trend weekly Case Fill & Delivery semua channel'},
+  channelTrendMT: {icon:'🟣',title:'Channel Trend — MT',       sub:'Trend weekly khusus Modern Trade'},
+  channelTrendGT: {icon:'🔵',title:'Channel Trend — GT',       sub:'Trend weekly khusus General Trade'},
+  loss:           {icon:'📉',title:'Loss SKU Trend',           sub:'SKU dengan loss per minggu'},
+  top:            {icon:'🏆',title:'Top Selling SKU',          sub:'SKU dengan delivery tertinggi'},
 };
 
 /* ══ HELPERS ══ */
@@ -481,6 +593,7 @@ function render(week){
   buildRegionAll(week);
   buildRegionCh('MT', week);
   buildRegionCh('GT', week);
+  buildChannelTrend();
 }
 
 /* ══ REGION ALL
@@ -780,6 +893,164 @@ function buildSkuTop(){
   const sorted=Object.entries(g).sort((a,b)=>Object.values(b[1]).reduce((x,y)=>x+y,0)-Object.values(a[1]).reduce((x,y)=>x+y,0));
   document.getElementById('topHead').innerHTML=`<tr><th>SKU Name</th>${weeks.map(w=>`<th>${w}</th>`).join('')}</tr>`;
   document.getElementById('topBody').innerHTML=sorted.map(([s,d])=>`<tr><td class="td-name">${s}</td>${weeks.map(w=>`<td class="td-win">${d[w]?fmt(d[w]):'-'}</td>`).join('')}</tr>`).join('');
+}
+
+/* ══ CHANNEL TREND ══ */
+function buildChannelTrend(){
+  const allWeeks=[...new Set(chData.map(d=>d.Week))].sort();
+
+  // Aggregate MT & GT per week from chData
+  const mtRows=allWeeks.map(w=>chData.find(d=>d.Week===w&&getChannel(d).includes('MT'))||null);
+  const gtRows=allWeeks.map(w=>chData.find(d=>d.Week===w&&getChannel(d).includes('GT'))||null);
+
+  const mtCF  =mtRows.map(r=>r?parseFloat(num(r['Case Fill']).toFixed(2)):null);
+  const gtCF  =gtRows.map(r=>r?parseFloat(num(r['Case Fill']).toFixed(2)):null);
+  const mtDel =mtRows.map(r=>r?num(r['Delivery Quantity']):null);
+  const gtDel =gtRows.map(r=>r?num(r['Delivery Quantity']):null);
+  const mtOrd =mtRows.map(r=>r?num(r['Order Quantity']):null);
+  const gtOrd =gtRows.map(r=>r?num(r['Order Quantity']):null);
+  const mtLoss=mtRows.map(r=>r?num(r['GAP']):null);
+  const gtLoss=gtRows.map(r=>r?num(r['GAP']):null);
+
+  /* ── KPI mini cards ── */
+  const latestMT=mtRows.filter(Boolean).slice(-1)[0];
+  const latestGT=gtRows.filter(Boolean).slice(-1)[0];
+  document.getElementById('chTrendKpiRow').innerHTML=`
+    <div class="kpi-card">
+      <div class="kpi-head"><span class="kpi-label">Modern Trade — Latest</span><span class="kpi-badge mt">MT</span></div>
+      <div class="kpi-pct mt">${latestMT?num(latestMT['Case Fill']).toFixed(1)+'%':'—'}</div>
+      <div class="kpi-details">
+        <div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val">${latestMT?fmt(latestMT['Order Quantity']):'—'}</div></div>
+        <div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val">${latestMT?fmt(latestMT['Delivery Quantity']):'—'}</div></div>
+        <div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" style="color:#EF4444">${latestMT?fmt(latestMT['GAP']):'—'}</div></div>
+        <div class="kpi-detail-item"><div class="kdi-label">Case Fill</div><div class="kdi-val" style="color:#7C79E0">${latestMT?num(latestMT['Case Fill']).toFixed(2)+'%':'—'}</div></div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-head"><span class="kpi-label">General Trade — Latest</span><span class="kpi-badge gt">GT</span></div>
+      <div class="kpi-pct gt">${latestGT?num(latestGT['Case Fill']).toFixed(1)+'%':'—'}</div>
+      <div class="kpi-details">
+        <div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val">${latestGT?fmt(latestGT['Order Quantity']):'—'}</div></div>
+        <div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val">${latestGT?fmt(latestGT['Delivery Quantity']):'—'}</div></div>
+        <div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" style="color:#EF4444">${latestGT?fmt(latestGT['GAP']):'—'}</div></div>
+        <div class="kpi-detail-item"><div class="kdi-label">Case Fill</div><div class="kdi-val" style="color:#3B82F6">${latestGT?num(latestGT['Case Fill']).toFixed(2)+'%':'—'}</div></div>
+      </div>
+    </div>`;
+
+  /* ── Trend CF line MT vs GT ── */
+  dc('chTrendLine');
+  charts['chTrendLine']=new Chart(document.getElementById('chTrendLine'),{
+    type:'line',
+    data:{labels:allWeeks,datasets:[
+      {label:'MT',data:mtCF,borderColor:'#7C79E0',backgroundColor:'rgba(124,121,224,.08)',fill:true,tension:.4,pointRadius:5,pointBackgroundColor:'#7C79E0',borderWidth:2.5,spanGaps:true},
+      {label:'GT',data:gtCF,borderColor:'#3B82F6',backgroundColor:'rgba(59,130,246,.06)',fill:true,tension:.4,pointRadius:5,pointBackgroundColor:'#3B82F6',borderWidth:2.5,spanGaps:true},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1)}%`}}},
+      scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}
+  });
+
+  /* ── Trend Delivery qty line MT vs GT ── */
+  dc('chTrendDelivery');
+  charts['chTrendDelivery']=new Chart(document.getElementById('chTrendDelivery'),{
+    type:'line',
+    data:{labels:allWeeks,datasets:[
+      {label:'MT',data:mtDel,borderColor:'#7C79E0',backgroundColor:'rgba(124,121,224,.08)',fill:false,tension:.4,pointRadius:5,pointBackgroundColor:'#7C79E0',borderWidth:2.5,spanGaps:true},
+      {label:'GT',data:gtDel,borderColor:'#3B82F6',backgroundColor:'rgba(59,130,246,.06)',fill:false,tension:.4,pointRadius:5,pointBackgroundColor:'#3B82F6',borderWidth:2.5,spanGaps:true},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y?.toLocaleString('id-ID')}`}}},
+      scales:{y:{ticks:{callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v,font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}
+  });
+
+  /* helper: build hbar for a channel in channelTrend ALL view */
+  function makeChHBar(canvasId, wrapId, cfArr, delArr, color){
+    const hH=Math.max(180,allWeeks.length*56+60);
+    document.getElementById(wrapId).style.height=hH+'px';
+    dc(canvasId);
+    charts[canvasId]=new Chart(document.getElementById(canvasId),{
+      type:'bar',
+      plugins:[hBarLabelPlugin],
+      data:{labels:allWeeks,datasets:[{data:cfArr,extra:delArr,backgroundColor:color,borderRadius:4,barThickness:28}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,
+        plugins:{legend:{display:false}},layout:{padding:{right:80}},
+        scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
+                y:{grid:{display:false},ticks:{font:{size:11}}}}}
+    });
+  }
+
+  makeChHBar('chHBarMTAll','chHBarMTAllWrap',mtCF,mtDel,'#7C79E0');
+  makeChHBar('chHBarGTAll','chHBarGTAllWrap',gtCF,gtDel,'#3B82F6');
+
+  /* ── Detail table ALL ── */
+  const rowsAll=[];
+  allWeeks.forEach(w=>{
+    const mr=mtRows[allWeeks.indexOf(w)];
+    const gr=gtRows[allWeeks.indexOf(w)];
+    if(mr) rowsAll.push({week:w,ch:'MT',row:mr,color:'#7C79E0'});
+    if(gr) rowsAll.push({week:w,ch:'GT',row:gr,color:'#3B82F6'});
+  });
+  document.getElementById('chTrendTableAll').innerHTML=rowsAll.map(({week,ch,row,color})=>{
+    const cf=num(row['Case Fill']);
+    const pctColor=cf>=95?'#22C55E':cf>=85?'#F59E0B':'#EF4444';
+    return`<tr>
+      <td class="td-name">${week}</td>
+      <td><span class="${ch==='MT'?'pill-mt':'pill-gt'}">${ch}</span></td>
+      <td>${fmt(row['Order Quantity'])}</td>
+      <td>${fmt(row['Delivery Quantity'])}</td>
+      <td class="td-loss">${fmt(row['GAP'])}</td>
+      <td><div class="cf-bar-wrap">
+        <div class="cf-bar-bg"><div class="cf-bar-fill" style="width:${Math.min(100,cf)}%;background:${color}"></div></div>
+        <span class="cf-bar-pct" style="color:${pctColor}">${cf.toFixed(1)}%</span>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  /* ── Build per-channel pages (MT / GT) ── */
+  ['MT','GT'].forEach(ch=>{
+    const isM=ch==='MT';
+    const color=isM?'#7C79E0':'#3B82F6';
+    const cfArr=isM?mtCF:gtCF;
+    const delArr=isM?mtDel:gtDel;
+    const rows=isM?mtRows:gtRows;
+
+    /* Trend line */
+    dc('chTrendLine'+ch);
+    charts['chTrendLine'+ch]=new Chart(document.getElementById('chTrendLine'+ch),{
+      type:'line',
+      data:{labels:allWeeks,datasets:[{label:ch,data:cfArr,borderColor:color,backgroundColor:color.replace(')',',0.08)').replace('rgb','rgba'),fill:true,tension:.4,pointRadius:5,pointBackgroundColor:color,borderWidth:2.5,spanGaps:true}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ch}: ${ctx.parsed.y?.toFixed(1)}%`}}},
+        scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}
+    });
+
+    /* Hbar */
+    const hH2=Math.max(180,allWeeks.length*56+60);
+    document.getElementById('chHBar'+ch+'Wrap').style.height=hH2+'px';
+    dc('chHBar'+ch);
+    charts['chHBar'+ch]=new Chart(document.getElementById('chHBar'+ch),{
+      type:'bar',plugins:[hBarLabelPlugin],
+      data:{labels:allWeeks,datasets:[{data:cfArr,extra:delArr,backgroundColor:color,borderRadius:4,barThickness:28}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,
+        plugins:{legend:{display:false}},layout:{padding:{right:80}},
+        scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
+                y:{grid:{display:false},ticks:{font:{size:11}}}}}
+    });
+
+    /* Table */
+    document.getElementById('chTrendTable'+ch).innerHTML=allWeeks.map((w,i)=>{
+      const r=rows[i]; if(!r) return'';
+      const cf=num(r['Case Fill']);
+      const pctColor=cf>=95?'#22C55E':cf>=85?'#F59E0B':'#EF4444';
+      return`<tr>
+        <td class="td-name">${w}</td>
+        <td>${fmt(r['Order Quantity'])}</td>
+        <td>${fmt(r['Delivery Quantity'])}</td>
+        <td class="td-loss">${fmt(r['GAP'])}</td>
+        <td><div class="cf-bar-wrap">
+          <div class="cf-bar-bg"><div class="cf-bar-fill" style="width:${Math.min(100,cf)}%;background:${color}"></div></div>
+          <span class="cf-bar-pct" style="color:${pctColor}">${cf.toFixed(1)}%</span>
+        </div></td>
+      </tr>`;
+    }).join('');
+  });
 }
 
 init();
