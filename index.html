@@ -114,7 +114,7 @@ tr:hover td{background:#FAFBFF;}
   <div class="sidebar-brand">
     <div class="brand-logo">
       <div class="brand-avatar">SC</div>
-      <div><div class="brand-name">Scarlett SCM</div><div class="brand-sub">Supply Chain Dashboard</div></div>
+      <div><div class="brand-name">Scarlett SCM</div><div class="brand-sub">Supply Chain Dashboard — Offline</div></div>
       <div class="sync-dot"></div>
     </div>
   </div>
@@ -501,9 +501,27 @@ function buildRegionAll(week){
   dc('rHBar');
   charts['rHBar']=new Chart(document.getElementById('regionHBar'),{
     type:'bar',data:{labels:hLabels,datasets:[{data:hData,backgroundColor:'#7C79E0',borderRadius:4}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
-              y:{grid:{display:false},ticks:{font:{size:11}}}}}
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
+        y:{grid:{display:false},ticks:{font:{size:11}}}
+      },
+      animation:{onComplete:function(){
+        const chart=this; const ctx=chart.ctx; ctx.save();
+        ctx.font='bold 11px Inter,sans-serif'; ctx.textBaseline='middle';
+        chart.data.datasets.forEach((ds,di)=>{
+          chart.getDatasetMeta(di).data.forEach((bar,i)=>{
+            const val=ds.data[i]; if(val==null) return;
+            const x=bar.x+5; const y=bar.y;
+            ctx.fillStyle='#1A1A2E'; ctx.textAlign='left';
+            ctx.fillText(val.toFixed(1)+'%', x, y);
+          });
+        });
+        ctx.restore();
+      }}
+    }
   });
 
   // Detail table
@@ -616,9 +634,27 @@ function buildRegionCh(ch, week){
   dc('rHBar'+ch);
   charts['rHBar'+ch]=new Chart(document.getElementById('regionHBar'+ch),{
     type:'bar',data:{labels:hLabels,datasets:[{data:hData,backgroundColor:color,borderRadius:4}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
-              y:{grid:{display:false},ticks:{font:{size:11}}}}}
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},
+        y:{grid:{display:false},ticks:{font:{size:11}}}
+      },
+      animation:{onComplete:function(){
+        const chart=this; const ctx=chart.ctx; ctx.save();
+        ctx.font='bold 11px Inter,sans-serif'; ctx.textBaseline='middle';
+        chart.data.datasets.forEach((ds,di)=>{
+          chart.getDatasetMeta(di).data.forEach((bar,i)=>{
+            const val=ds.data[i]; if(val==null) return;
+            const x=bar.x+5; const y=bar.y;
+            ctx.fillStyle='#1A1A2E'; ctx.textAlign='left';
+            ctx.fillText(val.toFixed(1)+'%', x, y);
+          });
+        });
+        ctx.restore();
+      }}
+    }
   });
 
   // Detail table
@@ -647,9 +683,35 @@ function buildBarChart(data){
   charts['bar']=new Chart(document.getElementById('barChart'),{
     type:'bar',
     data:{labels:data.map(d=>d.Channel||'-'),datasets:[{data:data.map(d=>num(d['Case Fill'])),backgroundColor:['#7C79E0','#3B82F6'],borderRadius:8,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#F3F4F6'}},
-              x:{grid:{display:false},ticks:{font:{size:11}}}}}
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        datalabels:{display:false}
+      },
+      scales:{
+        y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#F3F4F6'}},
+        x:{grid:{display:false},ticks:{font:{size:11}}}
+      },
+      animation:{onComplete:function(){
+        const chart=this;
+        const ctx=chart.ctx;
+        ctx.save();
+        ctx.font='bold 13px Inter,sans-serif';
+        ctx.textAlign='center';
+        ctx.textBaseline='bottom';
+        chart.data.datasets.forEach((ds,di)=>{
+          const meta=chart.getDatasetMeta(di);
+          meta.data.forEach((bar,i)=>{
+            const val=ds.data[i];
+            if(val==null) return;
+            ctx.fillStyle='#1A1A2E';
+            ctx.fillText(val.toFixed(1)+'%', bar.x, bar.y-4);
+          });
+        });
+        ctx.restore();
+      }}
+    }
   });
 }
 
