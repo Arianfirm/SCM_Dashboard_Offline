@@ -94,6 +94,13 @@ tr:hover td{background:#FAFBFF;}
 .rc-stat small{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
 .rc-stat strong{display:block;font-size:12px;font-weight:700;color:var(--text);margin-top:2px;}
 .empty-state{padding:32px;text-align:center;color:#9CA3AF;font-size:13px;}
+/* Progress bar in table */
+.cf-bar-wrap{display:flex;align-items:center;gap:8px;}
+.cf-bar-bg{flex:1;background:#F3F4F6;border-radius:999px;height:6px;overflow:hidden;min-width:60px;}
+.cf-bar-fill{height:6px;border-radius:999px;transition:width .3s ease;}
+.cf-bar-pct{font-size:11px;font-weight:700;white-space:nowrap;min-width:38px;text-align:right;}
+/* topbar brand strip */
+.topbar-brand{font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1px;text-transform:uppercase;border-right:1px solid var(--border);padding-right:14px;margin-right:4px;white-space:nowrap;}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:99px;}
@@ -136,6 +143,7 @@ Google Sheets Live CSV</div>
 <div class="main">
   <div class="topbar">
     <div class="topbar-left">
+      <span class="topbar-brand">SCM Dashboard Offline</span>
       <span class="topbar-icon" id="topbarIcon">📊</span>
       <div>
         <div class="topbar-title" id="topbarTitle">KPI Weekly</div>
@@ -193,7 +201,7 @@ Google Sheets Live CSV</div>
         <div class="card-head"><div><div class="card-title">GT / MT Breakdown</div><div class="card-sub" id="breakdownWkLabel">—</div></div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Breakdown</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill</th></tr></thead>
+            <thead><tr><th>Breakdown</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill %</th></tr></thead>
             <tbody id="tableBody"></tbody>
           </table>
         </div>
@@ -219,7 +227,7 @@ Google Sheets Live CSV</div>
         <div class="card-head"><div class="card-title">Detail Semua Region</div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Region</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill</th></tr></thead>
+            <thead><tr><th>Region</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill %</th></tr></thead>
             <tbody id="regionTableAll"></tbody>
           </table>
         </div>
@@ -246,7 +254,7 @@ Google Sheets Live CSV</div>
         <div class="card-head"><div class="card-title">Detail Region — MT</div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Region</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill</th></tr></thead>
+            <thead><tr><th>Region</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill %</th></tr></thead>
             <tbody id="regionTableMT"></tbody>
           </table>
         </div>
@@ -273,7 +281,7 @@ Google Sheets Live CSV</div>
         <div class="card-head"><div class="card-title">Detail Region — GT</div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Region</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill</th></tr></thead>
+            <thead><tr><th>Region</th><th>Order</th><th>Delivery</th><th>Loss</th><th>Case Fill %</th></tr></thead>
             <tbody id="regionTableGT"></tbody>
           </table>
         </div>
@@ -394,12 +402,18 @@ function render(week){
   });
   document.getElementById('tableBody').innerHTML=sorted.map(d=>{
     const isMT=(d['Channel Breakdown']||'').toUpperCase().includes('MT');
+    const cf=num(d['Case Fill']);
+    const barColor=isMT?'#7C79E0':'#3B82F6';
+    const pctColor=cf>=95?'#22C55E':cf>=85?'#F59E0B':'#EF4444';
     return`<tr>
       <td class="td-name">${d['Channel Breakdown']||'-'}<span class="${isMT?'pill-mt':'pill-gt'}">${isMT?'MT':'GT'}</span></td>
       <td>${fmt(d['Order Quantity'])}</td>
       <td>${fmt(d['Delivery Quantity'])}</td>
       <td class="td-loss">${fmt(d['GAP'])}</td>
-      <td class="td-cf">${num(d['Case Fill']).toFixed(2)}%</td>
+      <td><div class="cf-bar-wrap">
+        <div class="cf-bar-bg"><div class="cf-bar-fill" style="width:${Math.min(100,cf)}%;background:${barColor}"></div></div>
+        <span class="cf-bar-pct" style="color:${pctColor}">${cf.toFixed(1)}%</span>
+      </div></td>
     </tr>`;
   }).join('');
 
@@ -497,13 +511,16 @@ function buildRegionAll(week){
     ? regions.map(rg=>{
         const d=aggWeek[rg];
         const cf=d.order>0?(d.delivery/d.order*100):0;
-        const cls=cf>=95?'td-win':cf>=85?'td-cf':'td-loss';
+        const pctColor=cf>=95?'#22C55E':cf>=85?'#F59E0B':'#EF4444';
         return`<tr>
           <td class="td-name">${rg}</td>
           <td>${fmt(d.order)}</td>
           <td>${fmt(d.delivery)}</td>
           <td class="td-loss">${fmt(d.gap)}</td>
-          <td class="${cls}">${cf.toFixed(2)}%</td>
+          <td><div class="cf-bar-wrap">
+            <div class="cf-bar-bg"><div class="cf-bar-fill" style="width:${Math.min(100,cf)}%;background:#7C79E0"></div></div>
+            <span class="cf-bar-pct" style="color:${pctColor}">${cf.toFixed(1)}%</span>
+          </div></td>
         </tr>`;
       }).join('')
     : '<tr><td colspan="5" class="empty-state">Tidak ada data.</td></tr>';
@@ -609,13 +626,16 @@ function buildRegionCh(ch, week){
     ? regions.map(rg=>{
         const d=aggWeek[rg];
         const cf=d.order>0?(d.delivery/d.order*100):0;
-        const cls=cf>=95?'td-win':cf>=85?'td-cf':'td-loss';
+        const pctColor=cf>=95?'#22C55E':cf>=85?'#F59E0B':'#EF4444';
         return`<tr>
           <td class="td-name">${rg}</td>
           <td>${fmt(d.order)}</td>
           <td>${fmt(d.delivery)}</td>
           <td class="td-loss">${fmt(d.gap)}</td>
-          <td class="${cls}">${cf.toFixed(2)}%</td>
+          <td><div class="cf-bar-wrap">
+            <div class="cf-bar-bg"><div class="cf-bar-fill" style="width:${Math.min(100,cf)}%;background:${color}"></div></div>
+            <span class="cf-bar-pct" style="color:${pctColor}">${cf.toFixed(1)}%</span>
+          </div></td>
         </tr>`;
       }).join('')
     : `<tr><td colspan="5" class="empty-state">Tidak ada data ${ch}.</td></tr>`;
