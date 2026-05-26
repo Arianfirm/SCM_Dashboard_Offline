@@ -223,6 +223,15 @@ Google Sheets Live CSV</div>
           </table>
         </div>
       </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Trend Weekly MT / GT</div><div class="card-sub">Order, Delivery, Loss, dan Case Fill per week untuk MT &amp; GT</div></div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Week</th><th>Channel</th><th>Order Qty</th><th>Delivery Qty</th><th>Loss</th><th>Case Fill %</th></tr></thead>
+            <tbody id="overviewTrendTableAll"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- REGION ALL -->
@@ -501,6 +510,7 @@ const PAGE_META={
 const num  = v => parseFloat(String(v||0).replace(',','.'))||0;
 const fmt  = v => num(v).toLocaleString('id-ID');
 const cfCls= v => v>=95?'good':v>=85?'warn':'bad';
+const sortWeeks = arr => [...new Set(arr)].sort((a,b)=> (parseInt(a)||0) - (parseInt(b)||0));
 const fill = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
 const dc   = k => { if(charts[k]){ charts[k].destroy(); delete charts[k]; }};
 const csv  = url => new Promise(r=>Papa.parse(url,{download:true,header:true,skipEmptyLines:true,complete:res=>r(res.data)}));
@@ -594,10 +604,11 @@ async function init(){
     csv(URL_CHANNEL), csv(URL_BREAKDOWN), csv(URL_SKU), csv(URL_REGION), csv(URL_REGION_BD)
   ]);
 
-  const weeks=[...new Set(chData.map(d=>d.Week))];
+  const weeks=sortWeeks(chData.map(d=>d.Week));
   const sel=document.getElementById('weekFilter');
   sel.innerHTML=weeks.map(w=>`<option value="${w}">${w}</option>`).join('');
-  curWeek=weeks[0];
+  curWeek=weeks[weeks.length-1]||'';
+  sel.value=curWeek;
   render(curWeek);
   sel.addEventListener('change',()=>{ curWeek=sel.value; render(sel.value); });
 
@@ -661,6 +672,7 @@ function render(week){
 
   buildBarChart(ch);
   buildSvcChart();
+  buildOverviewTrendTable();
   buildSkuLoss();
   buildSkuTop();
   buildRegionAll(week);
@@ -928,7 +940,7 @@ function buildBarChart(data){
 
 function buildSvcChart(){
   dc('svc');
-  const weeks=[...new Set(chData.map(d=>d.Week))];
+  const weeks=sortWeeks(chData.map(d=>d.Week));
   const avg=weeks.map(w=>{
     const r=chData.filter(d=>d.Week===w);
     return r.length?parseFloat((r.reduce((a,b)=>a+num(b['Case Fill']),0)/r.length).toFixed(2)):0;
@@ -940,6 +952,32 @@ function buildSvcChart(){
       scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#F3F4F6'}},
               x:{grid:{display:false},ticks:{font:{size:11}}}}}
   });
+}
+
+function buildOverviewTrendTable(){
+  const allWeeks = sortWeeks(chData.map(d=>d.Week));
+  const rows=[];
+  allWeeks.forEach(w=>{
+    const mt=chData.find(d=>d.Week===w && getChannel(d).includes('MT'))||null;
+    const gt=chData.find(d=>d.Week===w && getChannel(d).includes('GT'))||null;
+    if(mt) rows.push({week:w,channel:'MT',order:num(mt['Order Quantity']),delivery:num(mt['Delivery Quantity']),loss:num(mt['GAP']),cf:num(mt['Case Fill']),color:'#7C79E0'});
+    if(gt) rows.push({week:w,channel:'GT',order:num(gt['Order Quantity']),delivery:num(gt['Delivery Quantity']),loss:num(gt['GAP']),cf:num(gt['Case Fill']),color:'#3B82F6'});
+  });
+
+  document.getElementById('overviewTrendTableAll').innerHTML = rows.map(r=>{
+    const pctColor=r.cf>=95?'#22C55E':r.cf>=85?'#F59E0B':'#EF4444';
+    return `<tr>
+      <td class="td-name">${r.week}</td>
+      <td><span class="${r.channel==='MT'?'pill-mt':'pill-gt'}">${r.channel}</span></td>
+      <td>${fmt(r.order)}</td>
+      <td>${fmt(r.delivery)}</td>
+      <td class="td-loss">${fmt(r.loss)}</td>
+      <td><div class="cf-bar-wrap">
+        <div class="cf-bar-bg"><div class="cf-bar-fill" style="width:${Math.min(100,r.cf)}%;background:${r.color}"></div></div>
+        <span class="cf-bar-pct" style="color:${pctColor}">${r.cf.toFixed(1)}%</span>
+      </div></td>
+    </tr>`;
+  }).join('');
 }
 
 /* ══ SKU TABLES ══ */
@@ -972,7 +1010,7 @@ function buildSkuTop(){
 
 /* ══ CHANNEL TREND ══ */
 function buildChannelTrend(){
-  const allWeeks=[...new Set(chData.map(d=>d.Week))].sort();
+  const allWeeks=sortWeeks(chData.map(d=>d.Week));
 
   // Aggregate MT & GT per week from chData
   const mtRows=allWeeks.map(w=>chData.find(d=>d.Week===w&&getChannel(d).includes('MT'))||null);
@@ -1137,7 +1175,7 @@ function buildChannelTrend(){
 function buildSubChannelTrend(ch, week){
   const color   = ch==='MT' ? '#7C79E0' : '#3B82F6';
   const sfx     = ch;
-  const allWeeks= [...new Set(bdData.map(d=>d.Week))].sort();
+  const allWeeks= sortWeeks(bdData.map(d=>d.Week));
 
   // Filter rows untuk channel ini
   const rows = bdData.filter(d=>(d['Channel Breakdown']||'').toUpperCase().includes('['+ch+'-'));
