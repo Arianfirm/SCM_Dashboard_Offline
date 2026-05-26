@@ -935,47 +935,205 @@ function buildSvcChart(){
   });
 }
 
-function getCustomerName(row){
-  return ((row.Customer||row['Customer Name']||row['Customer_Name']||row.Client||row['Client Name']||row['Buyer']||'')+'').trim();
-}
+function buildOverviewSubChannelTrend(){
 
-function buildOverviewSubChannelTrend(week){
-  const rows = bdData.filter(d=>(d['Channel Breakdown']||'').trim());
-  const hasCustomer = rows.some(r=>getCustomerName(r));
-  const cols = ['Channel Breakdown', ...(hasCustomer?['Customer']:[]), 'Channel', 'Order Quantity', 'Delivery Quantity', 'GAP', 'Week', 'Case Fill'];
+  const rows = bdData.filter(d => (d['Channel Breakdown'] || '').trim());
 
-  document.getElementById('breakdownWkLabel').textContent = 'Semua Week';
-  document.getElementById('subChannelTrendHead').innerHTML = `<tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>`;
+  const weeks = [...new Set(rows.map(d => d.Week))]
+    .sort((a,b) => {
+      const wa = parseInt(String(a).replace(/\D/g,'')) || 0;
+      const wb = parseInt(String(b).replace(/\D/g,'')) || 0;
+      return wa - wb;
+    });
 
-  const sorted = [...rows].sort((a,b)=>{
-    const weekA = parseInt(a.Week)||0;
-    const weekB = parseInt(b.Week)||0;
-    if(weekA!==weekB) return weekA-weekB;
-    const aCh = getChannel(a).includes('GT') ? 0 : 1;
-    const bCh = getChannel(b).includes('GT') ? 0 : 1;
-    if(aCh!==bCh) return aCh-bCh;
-    return String(a['Channel Breakdown']||'').localeCompare(String(b['Channel Breakdown']||''));
+  // ===== GROUP DATA =====
+
+  const grouped = {};
+
+  rows.forEach(d => {
+
+    const subCh = d['Channel Breakdown'] || '-';
+
+    if (!grouped[subCh]) {
+      grouped[subCh] = {};
+    }
+
+    grouped[subCh][d.Week] = {
+      order: num(d['Order Quantity']),
+      delivery: num(d['Delivery Quantity']),
+      gap: num(d['GAP']),
+      cf: num(d['Case Fill'])
+    };
+
   });
 
-  document.getElementById('subChannelTrendBody').innerHTML = sorted.map(d=>{
-    const channel = getChannel(d).includes('GT') ? 'GT' : 'MT';
-    const cf = num(d['Case Fill']);
-    const pctColor = cf>=95?'#22C55E':cf>=85?'#F59E0B':'#EF4444';
-    const customer = getCustomerName(d);
-    return `<tr>
-      <td class="td-name">${d['Channel Breakdown']||'-'}</td>
-      ${hasCustomer?`<td>${customer||'-'}</td>`:''}
-      <td><span class="${channel==='MT'?'pill-mt':'pill-gt'}">${channel}</span></td>
-      <td>${fmt(d['Order Quantity'])}</td>
-      <td>${fmt(d['Delivery Quantity'])}</td>
-      <td class="td-loss">${fmt(d['GAP'])}</td>
-      <td>${d.Week||'-'}</td>
-      <td><div class="cf-bar-wrap">
-        <div class="cf-bar-bg"><div class="cf-bar-fill" style="width:${Math.min(100,cf)}%;background:${channel==='MT'?'#7C79E0':'#3B82F6'}"></div></div>
-        <span class="cf-bar-pct" style="color:${pctColor}">${cf.toFixed(1)}%</span>
-      </div></td>
-    </tr>`;
+  // ===== HEADER =====
+
+  let headHTML = `
+    <tr>
+      <th style="min-width:260px">
+        Sub Channel
+      </th>
+  `;
+
+  // ORDER
+  weeks.forEach(w => {
+    headHTML += `
+      <th>
+        ${w}<br>Order
+      </th>
+    `;
+  });
+
+  // DELIVERY
+  weeks.forEach(w => {
+    headHTML += `
+      <th>
+        ${w}<br>Delivery
+      </th>
+    `;
+  });
+
+  // LOSS
+  weeks.forEach(w => {
+    headHTML += `
+      <th>
+        ${w}<br>Loss
+      </th>
+    `;
+  });
+
+  // CASE FILL
+  weeks.forEach(w => {
+    headHTML += `
+      <th>
+        CF<br>${w}
+      </th>
+    `;
+  });
+
+  headHTML += `</tr>`;
+
+  document.getElementById('subChannelTrendHead').innerHTML = headHTML;
+
+  // ===== BODY =====
+
+  const sortedSubChannel = Object.keys(grouped).sort((a,b) => {
+
+    const getNumber = (txt) => {
+      const match = txt.match(/\[(?:GT|MT)-(\d+)\]/);
+      return match ? parseInt(match[1]) : 999;
+    };
+
+    return getNumber(a) - getNumber(b);
+
+  });
+
+  const bodyHTML = sortedSubChannel.map(subCh => {
+
+    let row = `
+      <tr>
+
+        <td class="td-name">
+          ${subCh}
+        </td>
+    `;
+
+    // ===== ORDER =====
+
+    weeks.forEach(w => {
+
+      const data = grouped[subCh][w];
+
+      row += `
+        <td>
+          ${data ? fmt(data.order) : '-'}
+        </td>
+      `;
+    });
+
+    // ===== DELIVERY =====
+
+    weeks.forEach(w => {
+
+      const data = grouped[subCh][w];
+
+      row += `
+        <td>
+          ${data ? fmt(data.delivery) : '-'}
+        </td>
+      `;
+    });
+
+    // ===== LOSS =====
+
+    weeks.forEach(w => {
+
+      const data = grouped[subCh][w];
+
+      row += `
+        <td class="td-loss">
+          ${data ? fmt(data.gap) : '-'}
+        </td>
+      `;
+    });
+
+    // ===== CASE FILL =====
+
+    weeks.forEach(w => {
+
+      const data = grouped[subCh][w];
+
+      const cf = data ? data.cf : 0;
+
+      const color =
+        cf >= 95
+          ? '#22C55E'
+          : cf >= 85
+          ? '#F59E0B'
+          : '#EF4444';
+
+      row += `
+        <td>
+
+          <div class="cf-bar-wrap">
+
+            <div class="cf-bar-bg">
+
+              <div
+                class="cf-bar-fill"
+                style="
+                  width:${Math.min(100, cf)}%;
+                  background:${color};
+                "
+              ></div>
+
+            </div>
+
+            <span
+              class="cf-bar-pct"
+              style="
+                color:${color};
+                font-weight:700;
+              "
+            >
+              ${data ? cf.toFixed(1) + '%' : '-'}
+            </span>
+
+          </div>
+
+        </td>
+      `;
+    });
+
+    row += `</tr>`;
+
+    return row;
+
   }).join('');
+
+  document.getElementById('subChannelTrendBody').innerHTML = bodyHTML;
+
 }
 
 function buildOverviewTrendTable(){
