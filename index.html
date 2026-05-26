@@ -72,8 +72,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);displ
 .filter-item label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
 .filter-item select,
 .filter-item input{border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--text);background:#fff;outline:none;}
-.loss-sku-layout{display:grid;grid-template-columns:1.45fr 1fr;gap:18px;}
-@media(max-width:1120px){.loss-sku-layout{grid-template-columns:1fr;} }
+.loss-sku-layout{display:flex;flex-direction:column;gap:18px;}
 .sub-channel-trend-sections{display:flex;flex-direction:column;gap:18px;}
 .sub-channel-block{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px;}
 .sub-channel-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px;}
@@ -342,19 +341,14 @@ Google Sheets Live CSV</div>
           <input id="lossSkuSearch" type="search" placeholder="Cari nama SKU..." />
         </div>
       </div>
-      <div class="card">
-        <div class="card-head"><div><div class="card-title">Trend Loss Week ke Week — Top SKU</div><div class="card-sub">Top 10 SKU loss terbesar — nyambung per minggu</div></div></div>
-        <div class="legend-row" id="lossSkuTrendLegend"></div>
-        <div style="position:relative;height:300px;"><canvas id="lossSkuTrendChart"></canvas></div>
-      </div>
       <div class="loss-sku-layout">
-        <div class="card">
-          <div class="card-head"><div><div class="card-title">Loss Trend per SKU</div><div class="card-sub">GAP negatif ditampilkan per minggu</div></div></div>
-          <div class="table-wrap"><table><thead id="lossHead"></thead><tbody id="lossBody"></tbody></table></div>
-        </div>
         <div class="card">
           <div class="card-head"><div><div class="card-title">Top 10 SKU Loss</div><div class="card-sub">Loss terbesar per SKU dalam week terpilih</div></div></div>
           <div style="position:relative;height:420px;"><canvas id="lossSkuTopChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div><div class="card-title">Loss Trend per SKU</div><div class="card-sub">GAP negatif ditampilkan per minggu</div></div></div>
+          <div class="table-wrap"><table><thead id="lossHead"></thead><tbody id="lossBody"></tbody></table></div>
         </div>
       </div>
     </div>
@@ -1186,49 +1180,6 @@ function buildSkuLoss(){
       }
     }
   });
-
-  // Trend line chart: top 10 loss SKUs across ALL weeks
-  const top10 = [...Object.values(skuMap)]
-    .sort((a,b) => {
-      const aVal = activeWeek === 'all' ? a.total : (a.weeks[activeWeek] || 0);
-      const bVal = activeWeek === 'all' ? b.total : (b.weeks[activeWeek] || 0);
-      return aVal - bVal;
-    })
-    .slice(0, 10);
-
-  const trendDatasets = top10.map((item, i) => ({
-    label: item.sku.length > 22 ? item.sku.slice(0,22)+'…' : item.sku,
-    data: weeks.map(w => item.weeks[w] != null ? Math.abs(item.weeks[w]) : null),
-    borderColor: TREND_COLORS[i % TREND_COLORS.length],
-    backgroundColor: 'transparent',
-    tension: 0.35,
-    pointRadius: 5,
-    pointHoverRadius: 7,
-    borderWidth: 2.5,
-    spanGaps: true
-  }));
-
-  dc('lossSkuTrendChart');
-  charts['lossSkuTrendChart'] = new Chart(document.getElementById('lossSkuTrendChart'), {
-    type: 'line',
-    data: { labels: weeks, datasets: trendDatasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: -${fmt(ctx.parsed.y)}` } }
-      },
-      scales: {
-        y: { beginAtZero: true, ticks: { callback: v => fmt(v), font: { size: 10 } }, grid: { color: '#F3F4F6' } },
-        x: { grid: { display: false }, ticks: { font: { size: 11 } } }
-      }
-    }
-  });
-
-  document.getElementById('lossSkuTrendLegend').innerHTML = top10.map((item, i) => {
-    const short = item.sku.length > 26 ? item.sku.slice(0,26)+'…' : item.sku;
-    return `<div class="legend-item"><div class="legend-sq" style="background:${TREND_COLORS[i%TREND_COLORS.length]}"></div>${short}</div>`;
-  }).join('');
 }
 
 function buildSkuTop(){
