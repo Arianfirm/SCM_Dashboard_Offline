@@ -215,20 +215,20 @@ Google Sheets Live CSV</div>
         </div>
       </div>
       <div class="card">
-        <div class="card-head"><div><div class="card-title">GT / MT Breakdown</div><div class="card-sub" id="breakdownWkLabel">—</div></div></div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Breakdown &amp; Case Fill</th><th>Order</th><th>Delivery</th><th>Loss</th></tr></thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="card">
         <div class="card-head"><div><div class="card-title">Trend Weekly MT / GT</div><div class="card-sub">Order, Delivery, Loss, dan Case Fill per week untuk MT &amp; GT</div></div></div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Week</th><th>Channel</th><th>Order Qty</th><th>Delivery Qty</th><th>Loss</th><th>Case Fill %</th></tr></thead>
             <tbody id="overviewTrendTableAll"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">GT / MT Breakdown</div><div class="card-sub" id="breakdownWkLabel">—</div></div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Breakdown &amp; Case Fill</th><th>Order</th><th>Delivery</th><th>Loss</th></tr></thead>
+            <tbody id="tableBody"></tbody>
           </table>
         </div>
       </div>
@@ -964,6 +964,13 @@ function buildOverviewTrendTable(){
     if(gt) rows.push({week:w,channel:'GT',order:num(gt['Order Quantity']),delivery:num(gt['Delivery Quantity']),loss:num(gt['GAP']),cf:num(gt['Case Fill']),color:'#3B82F6'});
   });
 
+  rows.sort((a,b)=>{
+    const weekA=parseInt(a.week)||0;
+    const weekB=parseInt(b.week)||0;
+    if(weekA!==weekB) return weekA-weekB;
+    if(a.channel===b.channel) return 0;
+    return a.channel==='GT' ? -1 : 1;
+  });
   document.getElementById('overviewTrendTableAll').innerHTML = rows.map(r=>{
     const pctColor=r.cf>=95?'#22C55E':r.cf>=85?'#F59E0B':'#EF4444';
     return `<tr>
