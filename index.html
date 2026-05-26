@@ -67,6 +67,13 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);displ
 .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
 .legend-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
 .table-wrap{overflow-x:auto;}
+.filter-row{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:16px;align-items:flex-end;}
+.filter-item{display:flex;flex-direction:column;gap:6px;min-width:200px;}
+.filter-item label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+.filter-item select,
+.filter-item input{border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--text);background:#fff;outline:none;}
+.loss-sku-layout{display:grid;grid-template-columns:1.45fr 1fr;gap:18px;}
+@media(max-width:1120px){.loss-sku-layout{grid-template-columns:1fr;} }
 .sub-channel-trend-sections{display:flex;flex-direction:column;gap:18px;}
 .sub-channel-block{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px;}
 .sub-channel-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px;}
@@ -78,6 +85,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);displ
 .th-delivery{background:rgba(59,130,246,0.14);}
 .th-loss{background:rgba(245,158,11,0.14);}
 .th-cf{background:rgba(34,197,94,0.14);}
+.th-selected{background:rgba(251,191,36,0.18);}
 table{width:100%;border-collapse:collapse;min-width:360px;}
 th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.6px;text-transform:uppercase;border-bottom:1.5px solid var(--border);white-space:nowrap;background:#FAFAFA;}
 td{padding:11px 14px;font-size:12px;border-bottom:1px solid #F3F4F6;color:var(--text);white-space:nowrap;}
@@ -323,7 +331,27 @@ Google Sheets Live CSV</div>
     <!-- LOSS SKU -->
     <div class="page" id="lossPage">
       <div class="page-title">📉 Loss SKU Trend</div>
-      <div class="card"><div class="table-wrap"><table><thead id="lossHead"></thead><tbody id="lossBody"></tbody></table></div></div>
+      <div class="page-sub">Trend loss per SKU per week dan Top 10 loss</div>
+      <div class="filter-row">
+        <div class="filter-item">
+          <label for="lossWeekFilter">Filter Week</label>
+          <select id="lossWeekFilter"></select>
+        </div>
+        <div class="filter-item">
+          <label for="lossSkuSearch">Cari SKU</label>
+          <input id="lossSkuSearch" type="search" placeholder="Cari nama SKU..." />
+        </div>
+      </div>
+      <div class="loss-sku-layout">
+        <div class="card">
+          <div class="card-head"><div><div class="card-title">Loss Trend per SKU</div><div class="card-sub">GAP negatif ditampilkan per minggu</div></div></div>
+          <div class="table-wrap"><table><thead id="lossHead"></thead><tbody id="lossBody"></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div><div class="card-title">Top 10 SKU Loss</div><div class="card-sub">Loss terbesar per SKU dalam week terpilih</div></div></div>
+          <div style="position:relative;height:420px;"><canvas id="lossSkuTopChart"></canvas></div>
+        </div>
+      </div>
     </div>
 
     <!-- CHANNEL TREND ALL -->
@@ -1080,17 +1108,79 @@ function buildOverviewTrendTable(){
 
 /* ══ SKU TABLES ══ */
 function buildSkuLoss(){
-  const weeks=[...new Set(skuData.map(d=>d.Week))];
-  const g={};
+  const weeks = sortWeeks([...new Set(skuData.map(d=>d.Week))]);
+  const select = document.getElementById('lossWeekFilter');
+  const search = document.getElementById('lossSkuSearch');
+
+  if(select && !select.dataset.init){
+    select.innerHTML = `<option value="all">All Weeks</option>${weeks.map(w=>`<option value="${w}">${w}</option>`).join('')}`;
+    select.value = 'all';
+    select.addEventListener('change', buildSkuLoss);
+    if(search){
+      search.addEventListener('input', buildSkuLoss);
+    }
+    select.dataset.init = '1';
+  }
+
+  const activeWeek = select?.value || 'all';
+  const query = search?.value.trim().toLowerCase() || '';
+
+  const skuMap = {};
   skuData.forEach(d=>{
-    if(num(d['GAP'])>=0) return;
-    const s=d['Product Name']||'Unknown';
-    if(!g[s]) g[s]={};
-    g[s][d.Week]=num(d['GAP']);
+    const loss = num(d['GAP']);
+    if(loss >= 0) return;
+    const sku = (d['Product Name'] || 'Unknown').trim();
+    const week = d.Week || 'Unknown';
+    if(!skuMap[sku]) skuMap[sku] = {sku, weeks:{}, total:0};
+    skuMap[sku].weeks[week] = (skuMap[sku].weeks[week] || 0) + loss;
+    skuMap[sku].total += loss;
   });
-  const sorted=Object.entries(g).sort((a,b)=>Object.values(a[1]).reduce((x,y)=>x+y,0)-Object.values(b[1]).reduce((x,y)=>x+y,0));
-  document.getElementById('lossHead').innerHTML=`<tr><th>SKU Name</th>${weeks.map(w=>`<th>${w}</th>`).join('')}</tr>`;
-  document.getElementById('lossBody').innerHTML=sorted.map(([s,d])=>`<tr><td class="td-name">${s}</td>${weeks.map(w=>`<td class="td-loss">${d[w]?fmt(d[w]):'-'}</td>`).join('')}</tr>`).join('');
+
+  const skuList = Object.values(skuMap).filter(item => {
+    if(query && !item.sku.toLowerCase().includes(query)) return false;
+    if(activeWeek !== 'all' && !item.weeks[activeWeek]) return false;
+    return true;
+  });
+
+  const header = `<tr><th>SKU Name</th>${weeks.map(w=>`<th${activeWeek===w?' class="th-selected"':''}>${w}</th>`).join('')}<th>Total</th></tr>`;
+  document.getElementById('lossHead').innerHTML = header;
+
+  const rows = skuList.sort((a,b) => {
+    const aValue = activeWeek === 'all' ? a.total : (a.weeks[activeWeek] || 0);
+    const bValue = activeWeek === 'all' ? b.total : (b.weeks[activeWeek] || 0);
+    return aValue - bValue;
+  }).map(item => {
+    const total = activeWeek === 'all' ? item.total : (item.weeks[activeWeek] || 0);
+    return `<tr><td class="td-name">${item.sku}</td>${weeks.map(w=>{
+      const value = item.weeks[w];
+      return `<td class="td-loss">${value != null ? fmt(value) : '-'}</td>`;
+    }).join('')}<td class="td-loss">${fmt(total)}</td></tr>`;
+  }).join('');
+
+  document.getElementById('lossBody').innerHTML = rows || `<tr><td class="td-name" colspan="${weeks.length + 2}">Tidak ada SKU loss sesuai filter.</td></tr>`;
+
+  const chartData = skuList
+    .map(item => ({sku:item.sku, value: activeWeek === 'all' ? item.total : (item.weeks[activeWeek] || 0)}))
+    .sort((a,b) => a.value - b.value)
+    .slice(0, 10);
+
+  dc('lossSkuTopChart');
+  charts['lossSkuTopChart'] = new Chart(document.getElementById('lossSkuTopChart'),{
+    type:'bar',
+    data:{
+      labels: chartData.map(i => i.sku.length > 24 ? i.sku.slice(0,24) + '…' : i.sku),
+      datasets:[{data: chartData.map(i => Math.abs(i.value)), backgroundColor: chartData.map(()=>'#EF4444'), borderColor:'#B91C1C', borderWidth:1, borderRadius:6}]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      indexAxis:'y',
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>`Loss: -${fmt(ctx.parsed.x)}`}}},
+      scales:{
+        x:{beginAtZero:true, ticks:{callback:v=>fmt(v)}},
+        y:{ticks:{font:{size:11}}, grid:{display:false}}
+      }
+    }
+  });
 }
 
 function buildSkuTop(){
