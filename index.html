@@ -224,11 +224,11 @@ Google Sheets Live CSV</div>
         </div>
       </div>
       <div class="card">
-        <div class="card-head"><div><div class="card-title">GT / MT Breakdown</div><div class="card-sub" id="breakdownWkLabel">—</div></div></div>
+        <div class="card-head"><div><div class="card-title">Channel Trend Weekly — Sub Channel</div><div class="card-sub" id="breakdownWkLabel">—</div></div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Breakdown &amp; Case Fill</th><th>Order</th><th>Delivery</th><th>Loss</th></tr></thead>
-            <tbody id="tableBody"></tbody>
+            <thead id="subChannelTrendHead"></thead>
+            <tbody id="subChannelTrendBody"></tbody>
           </table>
         </div>
       </div>
@@ -672,6 +672,7 @@ function render(week){
 
   buildBarChart(ch);
   buildSvcChart();
+  buildOverviewSubChannelTrend(week);
   buildOverviewTrendTable();
   buildSkuLoss();
   buildSkuTop();
@@ -952,6 +953,45 @@ function buildSvcChart(){
       scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#F3F4F6'}},
               x:{grid:{display:false},ticks:{font:{size:11}}}}}
   });
+}
+
+function getCustomerName(row){
+  return ((row.Customer||row['Customer Name']||row['Customer_Name']||row.Client||row['Client Name']||row['Buyer']||'')+'').trim();
+}
+
+function buildOverviewSubChannelTrend(week){
+  const rows = bdData.filter(d=>d.Week===week && (d['Channel Breakdown']||'').trim());
+  const hasCustomer = rows.some(r=>getCustomerName(r));
+  const cols = ['Channel Breakdown', ...(hasCustomer?['Customer']:[]), 'Channel', 'Order Quantity', 'Delivery Quantity', 'GAP', 'Case Fill'];
+
+  document.getElementById('breakdownWkLabel').textContent = week;
+  document.getElementById('subChannelTrendHead').innerHTML = `<tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>`;
+
+  const sorted = [...rows].sort((a,b)=>{
+    const aCh = getChannel(a).includes('GT') ? 0 : 1;
+    const bCh = getChannel(b).includes('GT') ? 0 : 1;
+    if(aCh!==bCh) return aCh-bCh;
+    return String(a['Channel Breakdown']||'').localeCompare(String(b['Channel Breakdown']||''));
+  });
+
+  document.getElementById('subChannelTrendBody').innerHTML = sorted.map(d=>{
+    const channel = getChannel(d).includes('GT') ? 'GT' : 'MT';
+    const cf = num(d['Case Fill']);
+    const pctColor = cf>=95?'#22C55E':cf>=85?'#F59E0B':'#EF4444';
+    const customer = getCustomerName(d);
+    return `<tr>
+      <td class="td-name">${d['Channel Breakdown']||'-'}</td>
+      ${hasCustomer?`<td>${customer||'-'}</td>`:''}
+      <td><span class="${channel==='MT'?'pill-mt':'pill-gt'}">${channel}</span></td>
+      <td>${fmt(d['Order Quantity'])}</td>
+      <td>${fmt(d['Delivery Quantity'])}</td>
+      <td class="td-loss">${fmt(d['GAP'])}</td>
+      <td><div class="cf-bar-wrap">
+        <div class="cf-bar-bg"><div class="cf-bar-fill" style="width:${Math.min(100,cf)}%;background:${channel==='MT'?'#7C79E0':'#3B82F6'}"></div></div>
+        <span class="cf-bar-pct" style="color:${pctColor}">${cf.toFixed(1)}%</span>
+      </div></td>
+    </tr>`;
+  }).join('');
 }
 
 function buildOverviewTrendTable(){
