@@ -1152,7 +1152,7 @@ function buildSkuLoss(){
     });
   });
   
-  const summaryRow = `<tr style="background:#FEF2F2;font-weight:700;border-top:2px solid #EF4444;"><td class="td-name" style="color:#991B1B;">Total Loss / Week</td>${weeks.map(w=>`<td class="td-loss" style="background:rgba(239,68,68,0.12);">${fmt(weeklyTotals[w] || 0)}</td>`).join('')}<td class="td-loss" style="background:rgba(239,68,68,0.12);">${fmt(Object.values(weeklyTotals).reduce((a,b)=>a+b,0))}</td></tr>`;
+  const summaryRow = `<tr style="background:#F3F0FF;font-weight:700;border-top:2px solid #7C79E0;"><td class="td-name" style="color:#5B21B6;font-weight:700;">Total Loss / Week</td>${weeks.map(w=>`<td class="td-loss" style="background:rgba(124,121,224,0.15);font-weight:700;color:#5B21B6;">${fmt(weeklyTotals[w] || 0)}</td>`).join('')}<td class="td-loss" style="background:rgba(124,121,224,0.15);font-weight:700;color:#5B21B6;">${fmt(Object.values(weeklyTotals).reduce((a,b)=>a+b,0))}</td></tr>`;
   
   document.getElementById('lossHead').innerHTML = header;
 
