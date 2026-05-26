@@ -940,14 +940,17 @@ function getCustomerName(row){
 }
 
 function buildOverviewSubChannelTrend(week){
-  const rows = bdData.filter(d=>d.Week===week && (d['Channel Breakdown']||'').trim());
+  const rows = bdData.filter(d=>(d['Channel Breakdown']||'').trim());
   const hasCustomer = rows.some(r=>getCustomerName(r));
-  const cols = ['Channel Breakdown', ...(hasCustomer?['Customer']:[]), 'Channel', 'Order Quantity', 'Delivery Quantity', 'GAP', 'Case Fill'];
+  const cols = ['Channel Breakdown', ...(hasCustomer?['Customer']:[]), 'Channel', 'Order Quantity', 'Delivery Quantity', 'GAP', 'Week', 'Case Fill'];
 
-  document.getElementById('breakdownWkLabel').textContent = week;
+  document.getElementById('breakdownWkLabel').textContent = 'Semua Week';
   document.getElementById('subChannelTrendHead').innerHTML = `<tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>`;
 
   const sorted = [...rows].sort((a,b)=>{
+    const weekA = parseInt(a.Week)||0;
+    const weekB = parseInt(b.Week)||0;
+    if(weekA!==weekB) return weekA-weekB;
     const aCh = getChannel(a).includes('GT') ? 0 : 1;
     const bCh = getChannel(b).includes('GT') ? 0 : 1;
     if(aCh!==bCh) return aCh-bCh;
@@ -966,6 +969,7 @@ function buildOverviewSubChannelTrend(week){
       <td>${fmt(d['Order Quantity'])}</td>
       <td>${fmt(d['Delivery Quantity'])}</td>
       <td class="td-loss">${fmt(d['GAP'])}</td>
+      <td>${d.Week||'-'}</td>
       <td><div class="cf-bar-wrap">
         <div class="cf-bar-bg"><div class="cf-bar-fill" style="width:${Math.min(100,cf)}%;background:${channel==='MT'?'#7C79E0':'#3B82F6'}"></div></div>
         <span class="cf-bar-pct" style="color:${pctColor}">${cf.toFixed(1)}%</span>
