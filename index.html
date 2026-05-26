@@ -67,6 +67,10 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);displ
 .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
 .legend-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
 .table-wrap{overflow-x:auto;}
+.sub-channel-trend-sections{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.sub-channel-block{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px;}
+.sub-channel-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px;}
+@media(max-width:1140px){.sub-channel-trend-sections{grid-template-columns:1fr;}}
 table{width:100%;border-collapse:collapse;min-width:360px;}
 th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.6px;text-transform:uppercase;border-bottom:1.5px solid var(--border);white-space:nowrap;background:#FAFAFA;}
 td{padding:11px 14px;font-size:12px;border-bottom:1px solid #F3F4F6;color:var(--text);white-space:nowrap;}
@@ -225,12 +229,7 @@ Google Sheets Live CSV</div>
       </div>
       <div class="card">
         <div class="card-head"><div><div class="card-title">Channel Trend Weekly — Sub Channel</div><div class="card-sub" id="breakdownWkLabel">—</div></div></div>
-        <div class="table-wrap">
-          <table>
-            <thead id="subChannelTrendHead"></thead>
-            <tbody id="subChannelTrendBody"></tbody>
-          </table>
-        </div>
+        <div id="subChannelTrendWrap" class="sub-channel-trend-sections"></div>
       </div>
     </div>
 
@@ -946,194 +945,97 @@ function buildOverviewSubChannelTrend(){
       return wa - wb;
     });
 
-  // ===== GROUP DATA =====
-
   const grouped = {};
-
   rows.forEach(d => {
-
     const subCh = d['Channel Breakdown'] || '-';
-
-    if (!grouped[subCh]) {
-      grouped[subCh] = {};
-    }
-
+    if (!grouped[subCh]) grouped[subCh] = {};
     grouped[subCh][d.Week] = {
       order: num(d['Order Quantity']),
       delivery: num(d['Delivery Quantity']),
       gap: num(d['GAP']),
       cf: num(d['Case Fill'])
     };
-
   });
 
-  // ===== HEADER =====
+  const getNumber = txt => {
+    const match = txt.match(/\[(?:GT|MT)-(\d+)\]/);
+    return match ? parseInt(match[1]) : 999;
+  };
 
-  let headHTML = `
-    <tr>
-      <th style="min-width:260px">
-        Sub Channel
-      </th>
-  `;
+  const sortedSubChannel = Object.keys(grouped).sort((a,b) => getNumber(a) - getNumber(b));
+  const mtSubChannels = sortedSubChannel.filter(sc => sc.toUpperCase().includes('[MT-'));
+  const gtSubChannels = sortedSubChannel.filter(sc => sc.toUpperCase().includes('[GT-'));
 
-  // ORDER
-  weeks.forEach(w => {
-    headHTML += `
-      <th>
-        ${w}<br>Order
-      </th>
-    `;
-  });
-
-  // DELIVERY
-  weeks.forEach(w => {
-    headHTML += `
-      <th>
-        ${w}<br>Delivery
-      </th>
-    `;
-  });
-
-  // LOSS
-  weeks.forEach(w => {
-    headHTML += `
-      <th>
-        ${w}<br>Loss
-      </th>
-    `;
-  });
-
-  // CASE FILL
-  weeks.forEach(w => {
-    headHTML += `
-      <th>
-        CF<br>${w}
-      </th>
-    `;
-  });
-
-  headHTML += `</tr>`;
-
-  document.getElementById('subChannelTrendHead').innerHTML = headHTML;
-
-  // ===== BODY =====
-
-  const sortedSubChannel = Object.keys(grouped).sort((a,b) => {
-
-    const getNumber = (txt) => {
-      const match = txt.match(/\[(?:GT|MT)-(\d+)\]/);
-      return match ? parseInt(match[1]) : 999;
-    };
-
-    return getNumber(a) - getNumber(b);
-
-  });
-
-  const bodyHTML = sortedSubChannel.map(subCh => {
-
-    let row = `
-      <tr>
-
-        <td class="td-name">
-          ${subCh}
-        </td>
-    `;
-
-    // ===== ORDER =====
-
-    weeks.forEach(w => {
-
-      const data = grouped[subCh][w];
-
-      row += `
-        <td>
-          ${data ? fmt(data.order) : '-'}
-        </td>
+  const buildTable = (title, list) => {
+    if (!list.length) {
+      return `
+        <div class="sub-channel-block">
+          <div class="sub-channel-title">${title}</div>
+          <div class="empty-state">Tidak ada data ${title}.</div>
+        </div>
       `;
-    });
+    }
 
-    // ===== DELIVERY =====
+    let table = `
+      <div class="sub-channel-block">
+        <div class="sub-channel-title">${title}</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="min-width:220px">Sub Channel</th>
+    `;
 
-    weeks.forEach(w => {
+    weeks.forEach(w => { table += `<th>${w}<br>Order</th>`; });
+    weeks.forEach(w => { table += `<th>${w}<br>Delivery</th>`; });
+    weeks.forEach(w => { table += `<th>${w}<br>Loss</th>`; });
+    weeks.forEach(w => { table += `<th>CF<br>${w}</th>`; });
 
-      const data = grouped[subCh][w];
+    table += `</tr></thead><tbody>`;
 
-      row += `
-        <td>
-          ${data ? fmt(data.delivery) : '-'}
-        </td>
-      `;
-    });
+    list.forEach(subCh => {
+      table += `<tr><td class="td-name">${subCh}</td>`;
 
-    // ===== LOSS =====
-
-    weeks.forEach(w => {
-
-      const data = grouped[subCh][w];
-
-      row += `
-        <td class="td-loss">
-          ${data ? fmt(data.gap) : '-'}
-        </td>
-      `;
-    });
-
-    // ===== CASE FILL =====
-
-    weeks.forEach(w => {
-
-      const data = grouped[subCh][w];
-
-      const cf = data ? data.cf : 0;
-
-      const color =
-        cf >= 95
-          ? '#22C55E'
-          : cf >= 85
-          ? '#F59E0B'
-          : '#EF4444';
-
-      row += `
-        <td>
-
-          <div class="cf-bar-wrap">
-
-            <div class="cf-bar-bg">
-
-              <div
-                class="cf-bar-fill"
-                style="
-                  width:${Math.min(100, cf)}%;
-                  background:${color};
-                "
-              ></div>
-
+      weeks.forEach(w => {
+        const data = grouped[subCh][w];
+        table += `<td>${data ? fmt(data.order) : '-'}</td>`;
+      });
+      weeks.forEach(w => {
+        const data = grouped[subCh][w];
+        table += `<td>${data ? fmt(data.delivery) : '-'}</td>`;
+      });
+      weeks.forEach(w => {
+        const data = grouped[subCh][w];
+        table += `<td class="td-loss">${data ? fmt(data.gap) : '-'}</td>`;
+      });
+      weeks.forEach(w => {
+        const data = grouped[subCh][w];
+        const cf = data ? data.cf : null;
+        const color = cf === null ? '#9CA3AF' : cf >= 95 ? '#22C55E' : cf >= 85 ? '#F59E0B' : '#EF4444';
+        const pctText = cf === null ? '-' : cf.toFixed(1) + '%';
+        table += `
+          <td>
+            <div class="cf-bar-wrap">
+              <div class="cf-bar-bg">
+                <div class="cf-bar-fill" style="width:${cf === null ? 0 : Math.min(100, cf)}%;background:${color}"></div>
+              </div>
+              <span class="cf-bar-pct" style="color:${color};font-weight:700">${pctText}</span>
             </div>
+          </td>
+        `;
+      });
 
-            <span
-              class="cf-bar-pct"
-              style="
-                color:${color};
-                font-weight:700;
-              "
-            >
-              ${data ? cf.toFixed(1) + '%' : '-'}
-            </span>
-
-          </div>
-
-        </td>
-      `;
+      table += `</tr>`;
     });
 
-    row += `</tr>`;
+    table += `</tbody></table></div></div>`;
+    return table;
+  };
 
-    return row;
-
-  }).join('');
-
-  document.getElementById('subChannelTrendBody').innerHTML = bodyHTML;
-
+  document.getElementById('subChannelTrendWrap').innerHTML = `
+    ${buildTable('Modern Trade Sub Channel', mtSubChannels)}
+    ${buildTable('General Trade Sub Channel', gtSubChannels)}
+  `;
 }
 
 function buildOverviewTrendTable(){
