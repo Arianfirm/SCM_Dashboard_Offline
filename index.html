@@ -1142,6 +1142,18 @@ function buildSkuLoss(){
   });
 
   const header = `<tr><th>SKU Name</th>${weeks.map(w=>`<th${activeWeek===w?' class="th-selected"':''}>${w}</th>`).join('')}<th>Total</th></tr>`;
+  
+  const weeklyTotals = {};
+  Object.values(skuMap).forEach(item => {
+    weeks.forEach(w => {
+      if(item.weeks[w] != null){
+        weeklyTotals[w] = (weeklyTotals[w] || 0) + item.weeks[w];
+      }
+    });
+  });
+  
+  const summaryRow = `<tr style="background:#FEF2F2;font-weight:700;border-top:2px solid #EF4444;"><td class="td-name" style="color:#991B1B;">Total Loss / Week</td>${weeks.map(w=>`<td class="td-loss" style="background:rgba(239,68,68,0.12);">${fmt(weeklyTotals[w] || 0)}</td>`).join('')}<td class="td-loss" style="background:rgba(239,68,68,0.12);">${fmt(Object.values(weeklyTotals).reduce((a,b)=>a+b,0))}</td></tr>`;
+  
   document.getElementById('lossHead').innerHTML = header;
 
   const rows = skuList.sort((a,b) => {
@@ -1156,7 +1168,8 @@ function buildSkuLoss(){
     }).join('')}<td class="td-loss">${fmt(total)}</td></tr>`;
   }).join('');
 
-  document.getElementById('lossBody').innerHTML = rows || `<tr><td class="td-name" colspan="${weeks.length + 2}">Tidak ada SKU loss sesuai filter.</td></tr>`;
+  const allRowsHtml = summaryRow + rows;
+  document.getElementById('lossBody').innerHTML = allRowsHtml || `<tr><td class="td-name" colspan="${weeks.length + 2}">Tidak ada SKU loss sesuai filter.</td></tr>`;
 
   const chartData = skuList
     .map(item => ({sku:item.sku, value: activeWeek === 'all' ? item.total : (item.weeks[activeWeek] || 0)}))
