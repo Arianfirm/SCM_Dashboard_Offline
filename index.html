@@ -548,7 +548,10 @@ const PAGE_META={
 const num  = v => parseFloat(String(v||0).replace(',','.'))||0;
 const fmt  = v => num(v).toLocaleString('id-ID');
 const cfCls= v => v>=95?'good':v>=85?'warn':'bad';
-const sortWeeks = arr => [...new Set(arr)].sort((a,b)=> (parseInt(a)||0) - (parseInt(b)||0));
+const sortWeeks = arr => [...new Set(arr)].sort((a,b)=>{
+  const key = s => (String(s).match(/\d+/g)||[]).map(n=>n.padStart(4,'0')).join('');
+  return key(a)<key(b)?-1:key(a)>key(b)?1:0;
+});
 const fill = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
 const dc   = k => { if(charts[k]){ charts[k].destroy(); delete charts[k]; }};
 const csv  = url => new Promise(r=>Papa.parse(url,{download:true,header:true,skipEmptyLines:true,complete:res=>r(res.data)}));
