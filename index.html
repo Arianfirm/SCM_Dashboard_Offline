@@ -409,7 +409,7 @@ tr:hover td{background:#FAFBFF;}
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
             <div>
               <div class="card-title">Loss Tree — Level 1</div>
-              <div class="card-sub">Total GAP per root cause · <span id="ltL1Sub">—</span></div>
+              <div class="card-sub">Total Loss per root cause · <span id="ltL1Sub">—</span></div>
             </div>
             <!-- week chips inline -->
             <div class="wk-chips" id="ltOverviewChips" style="margin-bottom:0;justify-content:flex-end;"></div>
@@ -429,7 +429,7 @@ tr:hover td{background:#FAFBFF;}
         <div class="card">
           <div style="margin-bottom:14px;">
             <div class="card-title">Loss Tree — Level 2</div>
-            <div class="card-sub">Sub-kategori GAP · <span id="ltL2Sub">—</span> · sort by loss</div>
+            <div class="card-sub">Sub-kategori Loss · <span id="ltL2Sub">—</span> · sort by loss</div>
           </div>
           <div id="ltL2List"></div>
 
@@ -460,7 +460,7 @@ tr:hover td{background:#FAFBFF;}
                 <th>Product Name</th>
                 <th>Loss Level 1</th>
                 <th>Loss Level 2</th>
-                <th style="text-align:right">GAP</th>
+                <th style="text-align:right">Loss</th>
                 <th style="text-align:right">% of Week</th>
               </tr>
             </thead>
@@ -472,11 +472,11 @@ tr:hover td{background:#FAFBFF;}
 
     <!-- ══ LOSS TREE L1 TREND ══ -->
     <div class="page" id="lossTreeL1Page">
-      <div class="page-header"><div><div class="page-title">📈 Loss Tree — Level 1 Trend</div><div class="page-sub">Pergerakan GAP per kategori root cause setiap week</div></div></div>
+      <div class="page-header"><div><div class="page-title">📈 Loss Tree — Level 1 Trend</div><div class="page-sub">Pergerakan Loss per kategori root cause setiap week</div></div></div>
 
       <!-- Trend line chart all L1 -->
       <div class="card">
-        <div class="card-head"><div><div class="card-title">Trend GAP — Level 1 (semua week)</div><div class="card-sub">Line chart per kategori</div></div></div>
+        <div class="card-head"><div><div class="card-title">Trend Loss — Level 1 (semua week)</div><div class="card-sub">Line chart per kategori</div></div></div>
         <div class="legend-row" id="ltL1LineLegend"></div>
         <div style="position:relative;height:280px;"><canvas id="ltL1LineChart" role="img" aria-label="L1 trend line">L1 line</canvas></div>
       </div>
@@ -493,7 +493,7 @@ tr:hover td{background:#FAFBFF;}
         <div class="card-head"><div class="card-title">Detail Level 1 — Semua Week</div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Week</th><th>Loss Level 1</th><th>Order</th><th>Delivery</th><th style="text-align:right">GAP</th><th style="text-align:right">% of Week</th></tr></thead>
+            <thead><tr><th>Week</th><th>Loss Level 1</th><th>Order</th><th>Delivery</th><th style="text-align:right">Loss</th><th style="text-align:right">% of Week</th></tr></thead>
             <tbody id="ltL1TableBody"></tbody>
           </table>
         </div>
@@ -515,7 +515,7 @@ tr:hover td{background:#FAFBFF;}
 
       <!-- L2 bar chart -->
       <div class="card">
-        <div class="card-head"><div><div class="card-title">GAP per Level 2</div><div class="card-sub" id="ltL2ChartSub">—</div></div></div>
+        <div class="card-head"><div><div class="card-title">Loss per Level 2</div><div class="card-sub" id="ltL2ChartSub">—</div></div></div>
         <div id="ltL2BarWrap" style="position:relative;height:220px;"><canvas id="ltL2BarChart" role="img" aria-label="L2 bar chart">L2 bar</canvas></div>
       </div>
 
@@ -530,7 +530,7 @@ tr:hover td{background:#FAFBFF;}
         <div class="card-head"><div><div class="card-title">Detail Level 2 + SKU</div><div class="card-sub" id="ltL2TableSub">—</div></div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>#</th><th>Product Name</th><th>Loss Level 1</th><th>Loss Level 2</th><th>Order</th><th>Delivery</th><th style="text-align:right">GAP (Loss)</th><th style="text-align:right">% Kontribusi vs Total Loss Week</th></tr></thead>
+            <thead><tr><th>#</th><th>Product Name</th><th>Loss Level 1</th><th>Loss Level 2</th><th>Order</th><th>Delivery</th><th style="text-align:right">Loss</th><th style="text-align:right">% Kontribusi vs Total Loss Week</th></tr></thead>
             <tbody id="ltL2TableBody"></tbody>
           </table>
         </div>
@@ -649,8 +649,8 @@ const PAGE_META = {
   regionGT:      {icon:'🔵', title:'Region — General Trade',          sub:'Hanya channel GT per wilayah'},
   loss:          {icon:'📉', title:'Loss SKU Trend',                  sub:'SKU dengan loss per minggu'},
   top:           {icon:'🏆', title:'Top Selling SKU',                 sub:'Produk dengan delivery tertinggi per week'},
-  lossTree:      {icon:'🌿', title:'Loss Tree Overview',              sub:'GAP by root cause · Level 1 & Level 2'},
-  lossTreeL1:    {icon:'📈', title:'Loss Tree — Level 1 Trend',       sub:'Pergerakan GAP per kategori root cause'},
+  lossTree:      {icon:'🌿', title:'Loss Tree Overview',              sub:'Loss by root cause · Level 1 & Level 2'},
+  lossTreeL1:    {icon:'📈', title:'Loss Tree — Level 1 Trend',       sub:'Pergerakan Loss per kategori root cause'},
   lossTreeL2:    {icon:'🔍', title:'Loss Tree — Level 2 + SKU',       sub:'Detail sub-kategori dan produk dengan loss terbesar'},
   channelTrend:  {icon:'📈', title:'Channel Trend — MT & GT',         sub:'Trend CF & Delivery semua channel'},
   channelTrendMT:{icon:'🟣', title:'Channel Trend — MT',              sub:'Trend weekly khusus Modern Trade'},
@@ -799,7 +799,7 @@ function renderLossTreeOverview(filterWeek){
   const catClass = cat => cat.includes('Supply')?'supply':cat.includes('Rejection')?'reject':'transport';
   const kpiHtml =
     `<div class="lt-kpi-card total">
-      <div class="lt-kpi-lbl">Total Loss (GAP)</div>
+      <div class="lt-kpi-lbl">Total Loss</div>
       <div class="lt-kpi-val total">${fmt(totalLoss)}</div>
       <div class="lt-kpi-sub neutral">${weekLabel} · semua kategori</div>
     </div>`
@@ -1163,7 +1163,7 @@ function renderLossTreeL2(){
                 ? Math.abs(skuSorted[ctx.dataIndex]?.[1]?.gap / totalLossFiltered * 100)
                 : 0;
               return [
-                `GAP (Loss)  : −${fmt(absVal)}`,
+                `Loss: −${fmt(absVal)}`,
                 `% Kontribusi: ${pct.toFixed(1)}% dari total loss week`,
                 `Formula     : ${fmt(absVal)} ÷ ${fmt(Math.abs(totalLossFiltered))} × 100`
               ];
