@@ -1208,7 +1208,7 @@ function buildSkuTop(){
     const s=d['Product Name']||'Unknown';
     if(!g[s]) g[s]={total:0};
     const dq=num(d['Delivery Quantity']);
-    g[s][d.Week]=dq;
+    g[s][d.Week]=(g[s][d.Week]||0)+dq;
     g[s].total+=dq;
   });
   const sorted=Object.entries(g).sort((a,b)=>b[1].total-a[1].total);
@@ -1216,7 +1216,7 @@ function buildSkuTop(){
   const top10=sorted.slice(0,10);
   
   document.getElementById('topHead').innerHTML=`<tr><th>SKU Name</th>${weeks.map(w=>`<th>${w}</th>`).join('')}<th>Total</th></tr>`;
-  document.getElementById('topBody').innerHTML=top20.map(([s,d])=>`<tr><td class="td-name">${s}</td>${weeks.map(w=>`<td class="td-win">${d[w]?fmt(d[w]):'-'}</td>`).join('')}<td class="td-win" style="font-weight:600;background:rgba(124,121,224,0.08)">${fmt(d.total)}</td></tr>`).join('');
+  document.getElementById('topBody').innerHTML=top20.map(([s,d])=>`<tr><td class="td-name">${s}</td>${weeks.map(w=>`<td class="td-win">${d[w]!=null?fmt(d[w]):'-'}</td>`).join('')}<td class="td-win" style="font-weight:600;background:rgba(124,121,224,0.08)">${fmt(d.total)}</td></tr>`).join('');
   
   dc('topSkuChart');
   charts['topSkuChart']=new Chart(document.getElementById('topSkuChart'),{
