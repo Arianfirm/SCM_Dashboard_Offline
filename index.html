@@ -530,7 +530,7 @@ tr:hover td{background:#FAFBFF;}
         <div class="card-head"><div><div class="card-title">Detail Level 2 + SKU</div><div class="card-sub" id="ltL2TableSub">—</div></div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>#</th><th>Product Name</th><th>Loss Level 1</th><th>Loss Level 2</th><th>Order</th><th>Delivery</th><th style="text-align:right">GAP</th><th style="text-align:right">% of Total Loss</th></tr></thead>
+            <thead><tr><th>#</th><th>Product Name</th><th>Loss Level 1</th><th>Loss Level 2</th><th>Order</th><th>Delivery</th><th style="text-align:right">GAP (Loss)</th><th style="text-align:right">% Kontribusi vs Total Loss Week</th></tr></thead>
             <tbody id="ltL2TableBody"></tbody>
           </table>
         </div>
@@ -1048,8 +1048,8 @@ function renderLossTreeL2(){
 
   const weekLabel = filterWeek==='all'?'Semua week':filterWeek;
   fill('ltL2ChartSub', weekLabel);
-  fill('ltSkuChartSub', `${weekLabel}${filterL1?' · '+filterL1:''}`);
-  fill('ltL2TableSub', `${weekLabel} · ${data.length} rows`);
+  fill('ltSkuChartSub', `${weekLabel}${filterL1?' · '+filterL1:''} · % = GAP SKU ÷ Total Loss Week`);
+  fill('ltL2TableSub', `${weekLabel} · ${data.length} rows · % dihitung dari total GAP week`);
 
   // Aggregate L2
   const l2Agg = {};
@@ -1162,7 +1162,11 @@ function renderLossTreeL2(){
               const pct    = totalLossFiltered !== 0
                 ? Math.abs(skuSorted[ctx.dataIndex]?.[1]?.gap / totalLossFiltered * 100)
                 : 0;
-              return `Loss: −${fmt(absVal)}  |  ${pct.toFixed(1)}% of total`;
+              return [
+                `GAP (Loss)  : −${fmt(absVal)}`,
+                `% Kontribusi: ${pct.toFixed(1)}% dari total loss week`,
+                `Formula     : ${fmt(absVal)} ÷ ${fmt(Math.abs(totalLossFiltered))} × 100`
+              ];
             }
           }}
         },
