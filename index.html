@@ -944,8 +944,8 @@ function renderLossTreeOverview(filterWeek){
       options:{ responsive:true, maintainAspectRatio:false,
         plugins:{ legend:{ display:false }},
         scales:{
-          x:{ ticks:{ font:{size:10}, color:'#9CA3AF'}, grid:{display:false}},
-          y:{ ticks:{ font:{size:10}, color:'#9CA3AF'}, grid:{color:'#F3F4F6'}}
+          x:{ title:{display:true,text:'Week',font:{size:10,weight:'600'},color:'#6B7280'}, ticks:{ font:{size:10}, color:'#9CA3AF'}, grid:{display:false}},
+          y:{ title:{display:true,text:'Loss Quantity',font:{size:10,weight:'600'},color:'#6B7280'}, ticks:{ font:{size:10}, color:'#9CA3AF'}, grid:{color:'#F3F4F6'}}
         }}
     });
   }
@@ -992,7 +992,7 @@ function renderLossTreeL1(){
       }))},
       options:{ responsive:true, maintainAspectRatio:false,
         plugins:{ legend:{ display:false }},
-        scales:{ x:{ ticks:{ font:{size:10}}, grid:{color:'#F3F4F6'}}, y:{ ticks:{ font:{size:10}}, grid:{color:'#F3F4F6'}}}}
+        scales:{ x:{ title:{display:true,text:'Week',font:{size:10,weight:'600'},color:'#6B7280'}, ticks:{ font:{size:10}}, grid:{color:'#F3F4F6'}}, y:{ title:{display:true,text:'Loss Quantity',font:{size:10,weight:'600'},color:'#6B7280'}, ticks:{ font:{size:10}}, grid:{color:'#F3F4F6'}}}}
     });
   }
   fill('ltL1LineLegend', cats.map(cat=>`<div class="legend-item"><div class="legend-sq" style="background:${l1Hex(cat)}"></div>${cat}</div>`).join(''));
@@ -1017,8 +1017,8 @@ function renderLossTreeL1(){
       options:{ responsive:true, maintainAspectRatio:false,
         plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:ctx=>`${ctx.dataset.label}: ${ctx.raw}%` }}},
         scales:{
-          x:{ stacked:true, ticks:{ font:{size:10}}, grid:{display:false}},
-          y:{ stacked:true, max:100, ticks:{ callback:v=>v+'%', font:{size:10}}, grid:{color:'#F3F4F6'}}
+          x:{ stacked:true, title:{display:true,text:'Week',font:{size:10,weight:'600'},color:'#6B7280'}, ticks:{ font:{size:10}}, grid:{display:false}},
+          y:{ stacked:true, max:100, title:{display:true,text:'% Contribution',font:{size:10,weight:'600'},color:'#6B7280'}, ticks:{ callback:v=>v+'%', font:{size:10}}, grid:{color:'#F3F4F6'}}
         }}
     });
   }
@@ -1088,7 +1088,7 @@ function renderLossTreeL2(){
       data:{ labels:l2Labels, datasets:[{ data:l2Vals, backgroundColor:l2Labels.map(l=>l2Hex(l)), borderRadius:4 }]},
       options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
         plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:ctx=>`Loss: -${fmt(ctx.parsed.x)}`}}},
-        scales:{ x:{ beginAtZero:true, ticks:{ callback:v=>fmt(v), font:{size:10}}, grid:{color:'#F3F4F6'}}, y:{ ticks:{ font:{size:11}}, grid:{display:false}}}}
+        scales:{ x:{ beginAtZero:true, title:{display:true,text:'Loss Quantity',font:{size:10,weight:'600'},color:'#6B7280'}, ticks:{ callback:v=>fmt(v), font:{size:10}}, grid:{color:'#F3F4F6'}}, y:{ title:{display:true,text:'Level 2',font:{size:10,weight:'600'},color:'#6B7280'}, ticks:{ font:{size:11}}, grid:{display:false}}}}
     });
   }
 
@@ -1311,7 +1311,7 @@ function buildSkuLoss(){
   fill('lossBody',sumRow+rows2);
   const chartData=skuList.map(item=>({sku:item.sku,value:aw==='all'?item.total:(item.weeks[aw]||0)})).sort((a,b)=>a.value-b.value).slice(0,10);
   dc('lossSkuTopChart');
-  charts['lossSkuTopChart']=new Chart(document.getElementById('lossSkuTopChart'),{type:'bar',data:{labels:chartData.map(i=>i.sku.length>40?i.sku.slice(0,40)+'…':i.sku),datasets:[{data:chartData.map(i=>Math.abs(i.value)),backgroundColor:'#EF4444',borderColor:'#B91C1C',borderWidth:1,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Loss: -${fmt(ctx.parsed.x)}`}}},scales:{x:{beginAtZero:true,ticks:{callback:v=>fmt(v)}},y:{ticks:{font:{size:12}},grid:{display:false}}},layout:{padding:{left:10}}}});
+  charts['lossSkuTopChart']=new Chart(document.getElementById('lossSkuTopChart'),{type:'bar',data:{labels:chartData.map(i=>i.sku.length>40?i.sku.slice(0,40)+'…':i.sku),datasets:[{data:chartData.map(i=>Math.abs(i.value)),backgroundColor:'#EF4444',borderColor:'#B91C1C',borderWidth:1,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Loss: -${fmt(ctx.parsed.x)}`}}},scales:{x:{beginAtZero:true,title:{display:true,text:'Loss Quantity',font:{size:10,weight:'600'},color:'#6B7280'},ticks:{callback:v=>fmt(v)}},y:{title:{display:true,text:'SKU Name',font:{size:10,weight:'600'},color:'#6B7280'},ticks:{font:{size:12}},grid:{display:false}}},layout:{padding:{left:10}}}});
 }
 function buildSkuTop(filterWeek){
   activeTopWeek=filterWeek||'all';
@@ -1393,11 +1393,11 @@ function buildSubChannelTrend(ch,week){
   const cfOf=(sc,w)=>{const a=agg[sc]&&agg[sc][w];return a&&a.order>0?parseFloat((a.delivery/a.order*100).toFixed(2)):null;};
   fill('subCh'+sfx+'Cards',subChs.map(sc=>{const d=agg[sc]&&agg[sc][week]||{order:0,delivery:0,gap:0};const cf=d.order>0?(d.delivery/d.order*100):0;const cls=cfCls(cf);const label=sc.replace(/^\[.+?\]\s*/,'');const tag=sc.match(/^\[.+?\]/)?.[0]||sc;return`<div class="region-card"><div class="rc-top"><div style="font-size:11px;font-weight:700;color:var(--text);line-height:1.3">${tag}<br><span style="font-weight:500;color:var(--muted)">${label}</span></div><div class="rc-cf ${cls}">${cf.toFixed(1)}%</div></div><div class="rc-bar-bg"><div class="rc-bar-fill" style="width:${Math.min(100,cf)}%;background:${color}"></div></div><div class="rc-row"><div class="rc-stat"><small>Order</small><strong>${fmt(d.order)}</strong></div><div class="rc-stat"><small>Delivery</small><strong>${fmt(d.delivery)}</strong></div><div class="rc-stat"><small>Loss</small><strong style="color:#EF4444">${fmt(d.gap)}</strong></div></div></div>`;}).join('')||`<div class="empty-state">Tidak ada sub-channel ${ch}.</div>`);
   const tDS=subChs.map((sc,ri)=>({label:sc,data:allWeeks.map(w=>cfOf(sc,w)),borderColor:COLORS[ri%COLORS.length],backgroundColor:'transparent',tension:.4,pointRadius:4,borderWidth:2,spanGaps:true}));
-  dc('subCh'+sfx+'TrendLine');charts['subCh'+sfx+'TrendLine']=new Chart(document.getElementById('subCh'+sfx+'TrendLine'),{type:'line',data:{labels:allWeeks,datasets:tDS},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});
+  dc('subCh'+sfx+'TrendLine');charts['subCh'+sfx+'TrendLine']=new Chart(document.getElementById('subCh'+sfx+'TrendLine'),{type:'line',data:{labels:allWeeks,datasets:tDS},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,title:{display:true,text:'Case Fill %',font:{size:10,weight:'600'},color:'#6B7280'},ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{title:{display:true,text:'Week',font:{size:10,weight:'600'},color:'#6B7280'},grid:{display:false},ticks:{font:{size:11}}}}}});
   fill('subCh'+sfx+'TrendLegend',subChs.map((sc,ri)=>{const short=sc.replace(/^\[.+?\]\s*/,'').substring(0,22);return`<div class="legend-item"><div class="legend-sq" style="background:${COLORS[ri%COLORS.length]}"></div>${short}</div>`;}).join(''));
   const hLbl=subChs.map(sc=>sc.replace(/^\[.+?\]\s*/,'')),hCF=subChs.map(sc=>cfOf(sc,week)??0),hDel=subChs.map(sc=>(agg[sc]&&agg[sc][week]?.delivery)||0),hOrd=subChs.map(sc=>(agg[sc]&&agg[sc][week]?.order)||0);
   const hH=Math.max(260,subChs.length*64+60);document.getElementById('subCh'+sfx+'HBarWrap').style.height=hH+'px';fill('subCh'+sfx+'BarSub',week);
-  dc('subCh'+sfx+'HBar');charts['subCh'+sfx+'HBar']=new Chart(document.getElementById('subCh'+sfx+'HBar'),{type:'bar',plugins:[hBarLabelPlugin],data:{labels:hLbl,datasets:[{data:hCF,extra:hDel,extra2:hOrd,backgroundColor:color,borderRadius:4,barThickness:32}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},layout:{padding:{right:120}},scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+  dc('subCh'+sfx+'HBar');charts['subCh'+sfx+'HBar']=new Chart(document.getElementById('subCh'+sfx+'HBar'),{type:'bar',plugins:[hBarLabelPlugin],data:{labels:hLbl,datasets:[{data:hCF,extra:hDel,extra2:hOrd,backgroundColor:color,borderRadius:4,barThickness:32}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},layout:{padding:{right:120}},scales:{x:{min:0,max:110,title:{display:true,text:'Case Fill %',font:{size:10,weight:'600'},color:'#6B7280'},ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},y:{title:{display:true,text:'Sub Channel',font:{size:10,weight:'600'},color:'#6B7280'},grid:{display:false},ticks:{font:{size:11}}}}}});
   fill('subCh'+sfx+'TableHead',`<tr><th>Sub Channel</th>${allWeeks.map(w=>`<th colspan="2" style="text-align:center">${w}</th>`).join('')}</tr><tr><th></th>${allWeeks.map(()=>'<th>Delivery</th><th>CF%</th>').join('')}</tr>`);
   fill('subCh'+sfx+'TableBody',subChs.map(sc=>{const label=sc.replace(/^\[.+?\]\s*/,'');const tag=sc.match(/^\[.+?\]/)?.[0]||'';const cells=allWeeks.map(w=>{const a=agg[sc]&&agg[sc][w];const del=a?a.delivery:null;const cf=a&&a.order>0?(a.delivery/a.order*100):null;const pc=cf!=null?pctColor(cf):'#9CA3AF';return`<td>${del!=null?fmt(del):'-'}</td><td style="color:${pc};font-weight:700">${cf!=null?cf.toFixed(1)+'%':'-'}</td>`;}).join('');return`<tr><td class="td-name"><span style="color:${color};font-size:10px;font-weight:700">${tag}</span> ${label}</td>${cells}</tr>`;}).join(''));
 }
