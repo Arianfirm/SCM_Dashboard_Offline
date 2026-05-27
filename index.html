@@ -122,10 +122,7 @@ tr:hover td{background:#FAFBFF;}
 .rc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
 .rc-name{font-size:13px;font-weight:700;color:var(--text);}
 .rc-cf{font-size:22px;font-weight:700;line-height:1;}
-.rc-cf.excellent{color:#22C55E;}
-.rc-cf.good{color:#F59E0B;}
-.rc-cf.warn{color:#EC4899;}
-.rc-cf.bad{color:#B91C1C;}
+.rc-cf.good{color:#22C55E;}.rc-cf.warn{color:#F59E0B;}.rc-cf.bad{color:#EF4444;}
 .rc-bar-bg{background:#F3F4F6;border-radius:999px;height:5px;margin-bottom:10px;overflow:hidden;}
 .rc-bar-fill{height:5px;border-radius:999px;}
 .rc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;}
@@ -533,7 +530,7 @@ tr:hover td{background:#FAFBFF;}
         <div class="card-head"><div><div class="card-title">Detail Level 2 + SKU</div><div class="card-sub" id="ltL2TableSub">—</div></div></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>#</th><th>Product Name</th><th>Loss Level 1</th><th>Loss Level 2</th><th>Order</th><th>Delivery</th><th style="text-align:right">GAP</th><th style="text-align:right">% of Week</th></tr></thead>
+            <thead><tr><th>#</th><th>Product Name</th><th>Loss Level 1</th><th>Loss Level 2</th><th>Order</th><th>Delivery</th><th style="text-align:right">GAP</th><th style="text-align:right">% of Total Loss</th></tr></thead>
             <tbody id="ltL2TableBody"></tbody>
           </table>
         </div>
@@ -634,7 +631,7 @@ function l1Pill(name){ return L1_COLORS[name]?.pill || 'pill-supply'; }
 /* ══ HELPERS ══ */
 const num  = v => parseFloat(String(v||0).replace(/,/g,'.'))||0;
 const fmt  = v => Math.round(num(v)).toLocaleString('id-ID');
-const cfCls= v => v>=98?'excellent':v>=90?'good':v>=75?'warn':'bad';
+const cfCls= v => v>=95?'good':v>=85?'warn':'bad';
 const sortW= arr => [...new Set(arr)].filter(Boolean).sort((a,b)=>{
   const k=s=>(String(s).match(/\d+/g)||[]).map(n=>n.padStart(4,'0')).join('');
   return k(a)<k(b)?-1:k(a)>k(b)?1:0;
@@ -643,7 +640,7 @@ const fill = (id,v) => { const e=document.getElementById(id); if(e) e.innerHTML=
 const dc   = k => { if(charts[k]){ charts[k].destroy(); delete charts[k]; }};
 const csv  = url => new Promise(r => Papa.parse(url,{download:true,header:true,skipEmptyLines:true,complete:res=>r(res.data)}));
 function getCh(row){ return (row.Channel||row['Channel Breakdown']||'').trim().toUpperCase(); }
-const pctColor = v => v>=98?'#22C55E':v>=90?'#F59E0B':v>=75?'#EC4899':'#B91C1C';
+const pctColor = v => v>=95?'#22C55E':v>=85?'#F59E0B':'#EF4444';
 
 const PAGE_META = {
   overview:      {icon:'📊', title:'KPI Weekly',                     sub:'Ringkasan performa mingguan seluruh channel'},
@@ -1078,7 +1075,7 @@ function renderLossTreeL2(){
     });
   }
 
-  // Aggregate SKU
+  // Aggregate SKU — hitung total loss untuk % per week
   const skuAgg = {};
   data.forEach(d=>{
     const name = (d['Product Name']||'Unknown').trim();
@@ -1086,33 +1083,140 @@ function renderLossTreeL2(){
     skuAgg[name].gap += num(d['GAP']);
   });
   const skuSorted = Object.entries(skuAgg).sort((a,b)=>a[1].gap-b[1].gap).slice(0,10);
+
+  // Total loss dari semua SKU yang terfilter (bukan hanya top 10)
+  // supaya % akurat terhadap total week/filter
+  const totalLossFiltered = Object.values(skuAgg).reduce((s,r)=>s+r.gap, 0);
+
+  // Custom plugin: label di ujung bar → "−9,360 (46.3%)"
+  const skuLabelPlugin = {
+    id: 'skuBarLabel',
+    afterDatasetsDraw(chart){
+      const ctx = chart.ctx;
+      ctx.save();
+      ctx.textBaseline = 'middle';
+      ctx.textAlign    = 'left';
+      ctx.font         = '600 11px Inter, sans-serif';
+
+      chart.data.datasets.forEach((ds, di)=>{
+        const meta = chart.getDatasetMeta(di);
+        if(meta.hidden) return;
+        meta.data.forEach((bar, i)=>{
+          const absVal  = ds.data[i];
+          if(!absVal) return;
+          const origGap = skuSorted[i]?.[1]?.gap ?? 0;
+          const pct     = totalLossFiltered !== 0
+            ? Math.abs(origGap / totalLossFiltered * 100)
+            : 0;
+          const label   = `−${Math.round(absVal).toLocaleString('id-ID')} (${pct.toFixed(1)}%)`;
+          const x = bar.x + 8;
+          const y = bar.y;
+          // background pill
+          const metrics = ctx.measureText(label);
+          const pw = metrics.width + 10;
+          const ph = 16;
+          ctx.fillStyle = 'rgba(83,74,183,0.08)';
+          ctx.beginPath();
+          ctx.roundRect(x - 2, y - ph/2, pw, ph, 4);
+          ctx.fill();
+          // text
+          ctx.fillStyle = '#26215C';
+          ctx.fillText(label, x + 3, y + 1);
+        });
+      });
+      ctx.restore();
+    }
+  };
+
   dc('ltSkuChart');
   const ctx4 = document.getElementById('ltSkuChart');
   if(ctx4){
+    // Tinggi dinamis: min 320px, per bar 48px
+    const barH = Math.max(320, skuSorted.length * 52 + 80);
+    ctx4.parentElement.style.height = barH + 'px';
+
     charts['ltSkuChart'] = new Chart(ctx4, {
-      type:'bar',
+      type: 'bar',
+      plugins: [skuLabelPlugin],
       data:{
-        labels: skuSorted.map(([n])=>n.length>45?n.slice(0,45)+'…':n),
-        datasets:[{ data:skuSorted.map(([,v])=>Math.abs(v.gap)), backgroundColor:skuSorted.map(([,v])=>l1Hex(v.l1)), borderRadius:5 }]
+        labels: skuSorted.map(([n])=> n.length>46 ? n.slice(0,46)+'…' : n),
+        datasets:[{
+          data:            skuSorted.map(([,v])=> Math.abs(v.gap)),
+          backgroundColor: skuSorted.map(([,v])=> l1Hex(v.l1)),
+          borderRadius:    5,
+          borderSkipped:   false,
+          // simpan gap asli di extra untuk tooltip
+          extra:           skuSorted.map(([,v])=> v.gap),
+        }]
       },
-      options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:ctx=>`Loss: -${fmt(ctx.parsed.x)}`}}},
-        scales:{ x:{ beginAtZero:true, ticks:{ callback:v=>fmt(v), font:{size:10}}, grid:{color:'#F3F4F6'}}, y:{ ticks:{ font:{size:11}}, grid:{display:false}}}}
+      options:{
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { right: 180 } },   // ruang untuk label
+        plugins:{
+          legend:  { display: false },
+          tooltip: { callbacks: {
+            label: ctx => {
+              const absVal = ctx.parsed.x;
+              const pct    = totalLossFiltered !== 0
+                ? Math.abs(skuSorted[ctx.dataIndex]?.[1]?.gap / totalLossFiltered * 100)
+                : 0;
+              return `Loss: −${fmt(absVal)}  |  ${pct.toFixed(1)}% of total`;
+            }
+          }}
+        },
+        scales:{
+          x:{
+            beginAtZero: true,
+            ticks:{ callback: v => fmt(v), font:{ size:10 } },
+            grid:{ color:'#F3F4F6' }
+          },
+          y:{
+            ticks:{ font:{ size:11 }, color:'#374151' },
+            grid:{ display: false }
+          }
+        }
+      }
     });
   }
 
-  // Detail table
+  // Detail table — % dihitung dari total loss semua SKU terfilter
   const tableSorted = [...data].sort((a,b)=>num(a['GAP'])-num(b['GAP']));
-  fill('ltL2TableBody', tableSorted.map((d,i)=>`<tr>
-    <td style="color:#534AB7;font-weight:700">${i+1}</td>
-    <td class="td-name" style="max-width:180px;overflow:hidden;text-overflow:ellipsis">${d['Product Name']||'—'}</td>
-    <td><span class="pill ${l1Pill(d['Loss Level 1'])}">${(d['Loss Level 1']||'').replace('Issue','').trim()}</span></td>
-    <td><span class="pill ${l2Pill(d['Loss Level 2'])}">${(d['Loss Level 2']||'').substring(0,22)}</span></td>
-    <td>${fmt(d['Order Quantity'])}</td>
-    <td>${fmt(d['Delivery Quantity'])}</td>
-    <td class="td-loss" style="text-align:right">${fmt(d['GAP'])}</td>
-    <td style="text-align:right;color:var(--muted)">${num(d['% of Week Loss']).toFixed(1)}%</td>
-  </tr>`).join(''));
+
+  // Aggregate total per week untuk % yang lebih akurat
+  // Jika filter "All Weeks", % dihitung per week masing-masing
+  const weekTotals = {};
+  data.forEach(d=>{
+    const w = d.Week||'all';
+    if(!weekTotals[w]) weekTotals[w] = 0;
+    weekTotals[w] += num(d['GAP']);
+  });
+
+  fill('ltL2TableBody', tableSorted.map((d,i)=>{
+    const gap      = num(d['GAP']);
+    const wTotal   = filterWeek==='all' ? (weekTotals[d.Week]||totalLossFiltered) : totalLossFiltered;
+    const pct      = wTotal !== 0 ? Math.abs(gap/wTotal*100) : 0;
+    const l1short  = (d['Loss Level 1']||'').replace(/^\d+\.\d+\s/,'').replace('Issue','').trim();
+    const l2short  = (d['Loss Level 2']||'').replace(/^\d+\.\d+\s/,'');
+    return `<tr>
+      <td style="color:#534AB7;font-weight:700">${i+1}</td>
+      <td class="td-name" style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${d['Product Name']||''}">${(d['Product Name']||'—').substring(0,38)}${(d['Product Name']||'').length>38?'…':''}</td>
+      <td><span class="pill ${l1Pill(d['Loss Level 1'])}">${l1short}</span></td>
+      <td><span class="pill ${l2Pill(d['Loss Level 2'])}">${l2short.substring(0,22)}</span></td>
+      <td>${fmt(d['Order Quantity'])}</td>
+      <td>${fmt(d['Delivery Quantity'])}</td>
+      <td class="td-loss" style="text-align:right">${fmt(gap)}</td>
+      <td style="text-align:right">
+        <div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">
+          <div style="width:48px;background:#F3F4F6;border-radius:999px;height:5px;overflow:hidden">
+            <div style="width:${Math.min(100,pct).toFixed(0)}%;height:5px;border-radius:999px;background:#534AB7"></div>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:#534AB7;min-width:36px;text-align:right">${pct.toFixed(1)}%</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join(''));
 }
 
 function setLtL2Week(w){ activeLtL2Week=w; renderLossTreeL2(); }
@@ -1246,9 +1350,7 @@ function buildChannelTrend(){
   const mtD=mtR.map(r=>r?num(r['Delivery Quantity']):null);const gtD=gtR.map(r=>r?num(r['Delivery Quantity']):null);
   const mtO=mtR.map(r=>r?num(r['Order Quantity']):null);const gtO=gtR.map(r=>r?num(r['Order Quantity']):null);
   const lMT=mtR.filter(Boolean).slice(-1)[0];const lGT=gtR.filter(Boolean).slice(-1)[0];
-  const mtCfPct = lMT?num(lMT['Case Fill']):null;
-  const gtCfPct = lGT?num(lGT['Case Fill']):null;
-  fill('chTrendKpiRow',`<div class="kpi-card"><div class="kpi-head"><span class="kpi-label">MT Latest</span><span class="kpi-badge mt">MT</span></div><div class="kpi-pct mt" style="color:${mtCfPct!==null?pctColor(mtCfPct):'#7C79E0'}">${lMT?mtCfPct.toFixed(1)+'%':'—'}</div><div class="kpi-details"><div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val">${lMT?fmt(lMT['Order Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val">${lMT?fmt(lMT['Delivery Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" style="color:#EF4444">${lMT?fmt(lMT['GAP']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">CF</div><div class="kdi-val" style="color:${mtCfPct!==null?pctColor(mtCfPct):'#7C79E0'}">${lMT?mtCfPct.toFixed(2)+'%':'—'}</div></div></div></div><div class="kpi-card"><div class="kpi-head"><span class="kpi-label">GT Latest</span><span class="kpi-badge gt">GT</span></div><div class="kpi-pct gt" style="color:${gtCfPct!==null?pctColor(gtCfPct):'#3B82F6'}">${lGT?gtCfPct.toFixed(1)+'%':'—'}</div><div class="kpi-details"><div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val">${lGT?fmt(lGT['Order Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val">${lGT?fmt(lGT['Delivery Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" style="color:#EF4444">${lGT?fmt(lGT['GAP']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">CF</div><div class="kdi-val" style="color:${gtCfPct!==null?pctColor(gtCfPct):'#3B82F6'}">${lGT?gtCfPct.toFixed(2)+'%':'—'}</div></div></div></div>`);
+  fill('chTrendKpiRow',`<div class="kpi-card"><div class="kpi-head"><span class="kpi-label">MT Latest</span><span class="kpi-badge mt">MT</span></div><div class="kpi-pct mt">${lMT?num(lMT['Case Fill']).toFixed(1)+'%':'—'}</div><div class="kpi-details"><div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val">${lMT?fmt(lMT['Order Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val">${lMT?fmt(lMT['Delivery Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" style="color:#EF4444">${lMT?fmt(lMT['GAP']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">CF</div><div class="kdi-val" style="color:#7C79E0">${lMT?num(lMT['Case Fill']).toFixed(2)+'%':'—'}</div></div></div></div><div class="kpi-card"><div class="kpi-head"><span class="kpi-label">GT Latest</span><span class="kpi-badge gt">GT</span></div><div class="kpi-pct gt">${lGT?num(lGT['Case Fill']).toFixed(1)+'%':'—'}</div><div class="kpi-details"><div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val">${lGT?fmt(lGT['Order Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val">${lGT?fmt(lGT['Delivery Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" style="color:#EF4444">${lGT?fmt(lGT['GAP']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">CF</div><div class="kdi-val" style="color:#3B82F6">${lGT?num(lGT['Case Fill']).toFixed(2)+'%':'—'}</div></div></div></div>`);
   dc('chTrendLine');charts['chTrendLine']=new Chart(document.getElementById('chTrendLine'),{type:'line',data:{labels:allWeeks,datasets:[{label:'MT',data:mtCF,borderColor:'#7C79E0',backgroundColor:'rgba(124,121,224,.08)',fill:true,tension:.4,pointRadius:5,pointBackgroundColor:'#7C79E0',borderWidth:2.5,spanGaps:true},{label:'GT',data:gtCF,borderColor:'#3B82F6',backgroundColor:'rgba(59,130,246,.06)',fill:true,tension:.4,pointRadius:5,pointBackgroundColor:'#3B82F6',borderWidth:2.5,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});
   dc('chTrendDelivery');charts['chTrendDelivery']=new Chart(document.getElementById('chTrendDelivery'),{type:'line',data:{labels:allWeeks,datasets:[{label:'MT',data:mtD,borderColor:'#7C79E0',backgroundColor:'transparent',fill:false,tension:.4,pointRadius:5,pointBackgroundColor:'#7C79E0',borderWidth:2.5,spanGaps:true},{label:'GT',data:gtD,borderColor:'#3B82F6',backgroundColor:'transparent',fill:false,tension:.4,pointRadius:5,pointBackgroundColor:'#3B82F6',borderWidth:2.5,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v,font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});
   function mkHBar(cId,wId,cfArr,delArr,ordArr,color){const hH=Math.max(180,allWeeks.length*64+60);document.getElementById(wId).style.height=hH+'px';dc(cId);charts[cId]=new Chart(document.getElementById(cId),{type:'bar',plugins:[hBarLabelPlugin],data:{labels:allWeeks,datasets:[{data:cfArr,extra:delArr,extra2:ordArr,backgroundColor:color,borderRadius:4,barThickness:32}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},layout:{padding:{right:110}},scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});}
@@ -1270,11 +1372,11 @@ function buildSubChannelTrend(ch,week){
   const cfOf=(sc,w)=>{const a=agg[sc]&&agg[sc][w];return a&&a.order>0?parseFloat((a.delivery/a.order*100).toFixed(2)):null;};
   fill('subCh'+sfx+'Cards',subChs.map(sc=>{const d=agg[sc]&&agg[sc][week]||{order:0,delivery:0,gap:0};const cf=d.order>0?(d.delivery/d.order*100):0;const cls=cfCls(cf);const label=sc.replace(/^\[.+?\]\s*/,'');const tag=sc.match(/^\[.+?\]/)?.[0]||sc;return`<div class="region-card"><div class="rc-top"><div style="font-size:11px;font-weight:700;color:var(--text);line-height:1.3">${tag}<br><span style="font-weight:500;color:var(--muted)">${label}</span></div><div class="rc-cf ${cls}">${cf.toFixed(1)}%</div></div><div class="rc-bar-bg"><div class="rc-bar-fill" style="width:${Math.min(100,cf)}%;background:${color}"></div></div><div class="rc-row"><div class="rc-stat"><small>Order</small><strong>${fmt(d.order)}</strong></div><div class="rc-stat"><small>Delivery</small><strong>${fmt(d.delivery)}</strong></div><div class="rc-stat"><small>Loss</small><strong style="color:#EF4444">${fmt(d.gap)}</strong></div></div></div>`;}).join('')||`<div class="empty-state">Tidak ada sub-channel ${ch}.</div>`);
   const tDS=subChs.map((sc,ri)=>({label:sc,data:allWeeks.map(w=>cfOf(sc,w)),borderColor:COLORS[ri%COLORS.length],backgroundColor:'transparent',tension:.4,pointRadius:4,borderWidth:2,spanGaps:true}));
-  dc('subCh'+sfx+'TrendLine');charts['subCh'+sfx+'TrendLine']=new Chart(document.getElementById('subCh'+sfx+'TrendLine'),{type:'line',data:{labels:allWeeks,datasets:tDS},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,title:{display:true,text:'Case Fill %',font:{size:10,weight:'600'},color:'#6B7280'},ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{title:{display:true,text:'Week',font:{size:10,weight:'600'},color:'#6B7280'},grid:{display:false},ticks:{font:{size:11}}}}}});
+  dc('subCh'+sfx+'TrendLine');charts['subCh'+sfx+'TrendLine']=new Chart(document.getElementById('subCh'+sfx+'TrendLine'),{type:'line',data:{labels:allWeeks,datasets:tDS},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});
   fill('subCh'+sfx+'TrendLegend',subChs.map((sc,ri)=>{const short=sc.replace(/^\[.+?\]\s*/,'').substring(0,22);return`<div class="legend-item"><div class="legend-sq" style="background:${COLORS[ri%COLORS.length]}"></div>${short}</div>`;}).join(''));
   const hLbl=subChs.map(sc=>sc.replace(/^\[.+?\]\s*/,'')),hCF=subChs.map(sc=>cfOf(sc,week)??0),hDel=subChs.map(sc=>(agg[sc]&&agg[sc][week]?.delivery)||0),hOrd=subChs.map(sc=>(agg[sc]&&agg[sc][week]?.order)||0);
   const hH=Math.max(260,subChs.length*64+60);document.getElementById('subCh'+sfx+'HBarWrap').style.height=hH+'px';fill('subCh'+sfx+'BarSub',week);
-  dc('subCh'+sfx+'HBar');charts['subCh'+sfx+'HBar']=new Chart(document.getElementById('subCh'+sfx+'HBar'),{type:'bar',plugins:[hBarLabelPlugin],data:{labels:hLbl,datasets:[{data:hCF,extra:hDel,extra2:hOrd,backgroundColor:color,borderRadius:4,barThickness:32}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},layout:{padding:{right:120}},scales:{x:{min:0,max:110,title:{display:true,text:'Case Fill %',font:{size:10,weight:'600'},color:'#6B7280'},ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},y:{title:{display:true,text:'Sub Channel',font:{size:10,weight:'600'},color:'#6B7280'},grid:{display:false},ticks:{font:{size:11}}}}}});
+  dc('subCh'+sfx+'HBar');charts['subCh'+sfx+'HBar']=new Chart(document.getElementById('subCh'+sfx+'HBar'),{type:'bar',plugins:[hBarLabelPlugin],data:{labels:hLbl,datasets:[{data:hCF,extra:hDel,extra2:hOrd,backgroundColor:color,borderRadius:4,barThickness:32}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},layout:{padding:{right:120}},scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
   fill('subCh'+sfx+'TableHead',`<tr><th>Sub Channel</th>${allWeeks.map(w=>`<th colspan="2" style="text-align:center">${w}</th>`).join('')}</tr><tr><th></th>${allWeeks.map(()=>'<th>Delivery</th><th>CF%</th>').join('')}</tr>`);
   fill('subCh'+sfx+'TableBody',subChs.map(sc=>{const label=sc.replace(/^\[.+?\]\s*/,'');const tag=sc.match(/^\[.+?\]/)?.[0]||'';const cells=allWeeks.map(w=>{const a=agg[sc]&&agg[sc][w];const del=a?a.delivery:null;const cf=a&&a.order>0?(a.delivery/a.order*100):null;const pc=cf!=null?pctColor(cf):'#9CA3AF';return`<td>${del!=null?fmt(del):'-'}</td><td style="color:${pc};font-weight:700">${cf!=null?cf.toFixed(1)+'%':'-'}</td>`;}).join('');return`<tr><td class="td-name"><span style="color:${color};font-size:10px;font-weight:700">${tag}</span> ${label}</td>${cells}</tr>`;}).join(''));
 }
