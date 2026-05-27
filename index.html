@@ -122,7 +122,10 @@ tr:hover td{background:#FAFBFF;}
 .rc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
 .rc-name{font-size:13px;font-weight:700;color:var(--text);}
 .rc-cf{font-size:22px;font-weight:700;line-height:1;}
-.rc-cf.good{color:#22C55E;}.rc-cf.warn{color:#F59E0B;}.rc-cf.bad{color:#EF4444;}
+.rc-cf.excellent{color:#22C55E;}
+.rc-cf.good{color:#F59E0B;}
+.rc-cf.warn{color:#EC4899;}
+.rc-cf.bad{color:#B91C1C;}
 .rc-bar-bg{background:#F3F4F6;border-radius:999px;height:5px;margin-bottom:10px;overflow:hidden;}
 .rc-bar-fill{height:5px;border-radius:999px;}
 .rc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;}
@@ -631,7 +634,7 @@ function l1Pill(name){ return L1_COLORS[name]?.pill || 'pill-supply'; }
 /* ══ HELPERS ══ */
 const num  = v => parseFloat(String(v||0).replace(/,/g,'.'))||0;
 const fmt  = v => Math.round(num(v)).toLocaleString('id-ID');
-const cfCls= v => v>=95?'good':v>=85?'warn':'bad';
+const cfCls= v => v>=98?'excellent':v>=90?'good':v>=75?'warn':'bad';
 const sortW= arr => [...new Set(arr)].filter(Boolean).sort((a,b)=>{
   const k=s=>(String(s).match(/\d+/g)||[]).map(n=>n.padStart(4,'0')).join('');
   return k(a)<k(b)?-1:k(a)>k(b)?1:0;
@@ -640,7 +643,7 @@ const fill = (id,v) => { const e=document.getElementById(id); if(e) e.innerHTML=
 const dc   = k => { if(charts[k]){ charts[k].destroy(); delete charts[k]; }};
 const csv  = url => new Promise(r => Papa.parse(url,{download:true,header:true,skipEmptyLines:true,complete:res=>r(res.data)}));
 function getCh(row){ return (row.Channel||row['Channel Breakdown']||'').trim().toUpperCase(); }
-const pctColor = v => v>=95?'#22C55E':v>=85?'#F59E0B':'#EF4444';
+const pctColor = v => v>=98?'#22C55E':v>=90?'#F59E0B':v>=75?'#EC4899':'#B91C1C';
 
 const PAGE_META = {
   overview:      {icon:'📊', title:'KPI Weekly',                     sub:'Ringkasan performa mingguan seluruh channel'},
@@ -1243,7 +1246,9 @@ function buildChannelTrend(){
   const mtD=mtR.map(r=>r?num(r['Delivery Quantity']):null);const gtD=gtR.map(r=>r?num(r['Delivery Quantity']):null);
   const mtO=mtR.map(r=>r?num(r['Order Quantity']):null);const gtO=gtR.map(r=>r?num(r['Order Quantity']):null);
   const lMT=mtR.filter(Boolean).slice(-1)[0];const lGT=gtR.filter(Boolean).slice(-1)[0];
-  fill('chTrendKpiRow',`<div class="kpi-card"><div class="kpi-head"><span class="kpi-label">MT Latest</span><span class="kpi-badge mt">MT</span></div><div class="kpi-pct mt">${lMT?num(lMT['Case Fill']).toFixed(1)+'%':'—'}</div><div class="kpi-details"><div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val">${lMT?fmt(lMT['Order Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val">${lMT?fmt(lMT['Delivery Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" style="color:#EF4444">${lMT?fmt(lMT['GAP']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">CF</div><div class="kdi-val" style="color:#7C79E0">${lMT?num(lMT['Case Fill']).toFixed(2)+'%':'—'}</div></div></div></div><div class="kpi-card"><div class="kpi-head"><span class="kpi-label">GT Latest</span><span class="kpi-badge gt">GT</span></div><div class="kpi-pct gt">${lGT?num(lGT['Case Fill']).toFixed(1)+'%':'—'}</div><div class="kpi-details"><div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val">${lGT?fmt(lGT['Order Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val">${lGT?fmt(lGT['Delivery Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" style="color:#EF4444">${lGT?fmt(lGT['GAP']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">CF</div><div class="kdi-val" style="color:#3B82F6">${lGT?num(lGT['Case Fill']).toFixed(2)+'%':'—'}</div></div></div></div>`);
+  const mtCfPct = lMT?num(lMT['Case Fill']):null;
+  const gtCfPct = lGT?num(lGT['Case Fill']):null;
+  fill('chTrendKpiRow',`<div class="kpi-card"><div class="kpi-head"><span class="kpi-label">MT Latest</span><span class="kpi-badge mt">MT</span></div><div class="kpi-pct mt" style="color:${mtCfPct!==null?pctColor(mtCfPct):'#7C79E0'}">${lMT?mtCfPct.toFixed(1)+'%':'—'}</div><div class="kpi-details"><div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val">${lMT?fmt(lMT['Order Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val">${lMT?fmt(lMT['Delivery Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" style="color:#EF4444">${lMT?fmt(lMT['GAP']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">CF</div><div class="kdi-val" style="color:${mtCfPct!==null?pctColor(mtCfPct):'#7C79E0'}">${lMT?mtCfPct.toFixed(2)+'%':'—'}</div></div></div></div><div class="kpi-card"><div class="kpi-head"><span class="kpi-label">GT Latest</span><span class="kpi-badge gt">GT</span></div><div class="kpi-pct gt" style="color:${gtCfPct!==null?pctColor(gtCfPct):'#3B82F6'}">${lGT?gtCfPct.toFixed(1)+'%':'—'}</div><div class="kpi-details"><div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val">${lGT?fmt(lGT['Order Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val">${lGT?fmt(lGT['Delivery Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" style="color:#EF4444">${lGT?fmt(lGT['GAP']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">CF</div><div class="kdi-val" style="color:${gtCfPct!==null?pctColor(gtCfPct):'#3B82F6'}">${lGT?gtCfPct.toFixed(2)+'%':'—'}</div></div></div></div>`);
   dc('chTrendLine');charts['chTrendLine']=new Chart(document.getElementById('chTrendLine'),{type:'line',data:{labels:allWeeks,datasets:[{label:'MT',data:mtCF,borderColor:'#7C79E0',backgroundColor:'rgba(124,121,224,.08)',fill:true,tension:.4,pointRadius:5,pointBackgroundColor:'#7C79E0',borderWidth:2.5,spanGaps:true},{label:'GT',data:gtCF,borderColor:'#3B82F6',backgroundColor:'rgba(59,130,246,.06)',fill:true,tension:.4,pointRadius:5,pointBackgroundColor:'#3B82F6',borderWidth:2.5,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});
   dc('chTrendDelivery');charts['chTrendDelivery']=new Chart(document.getElementById('chTrendDelivery'),{type:'line',data:{labels:allWeeks,datasets:[{label:'MT',data:mtD,borderColor:'#7C79E0',backgroundColor:'transparent',fill:false,tension:.4,pointRadius:5,pointBackgroundColor:'#7C79E0',borderWidth:2.5,spanGaps:true},{label:'GT',data:gtD,borderColor:'#3B82F6',backgroundColor:'transparent',fill:false,tension:.4,pointRadius:5,pointBackgroundColor:'#3B82F6',borderWidth:2.5,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v,font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});
   function mkHBar(cId,wId,cfArr,delArr,ordArr,color){const hH=Math.max(180,allWeeks.length*64+60);document.getElementById(wId).style.height=hH+'px';dc(cId);charts[cId]=new Chart(document.getElementById(cId),{type:'bar',plugins:[hBarLabelPlugin],data:{labels:allWeeks,datasets:[{data:cfArr,extra:delArr,extra2:ordArr,backgroundColor:color,borderRadius:4,barThickness:32}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},layout:{padding:{right:110}},scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});}
