@@ -535,14 +535,55 @@ tr:hover td{background:#F7F9FE;}
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span style="font-size:11px;color:var(--muted)">Week:</span>
-          <div class="wk-chips" id="rgDrillWeekChips"></div>
-          <div id="rgChFilterBtns" style="display:flex;gap:6px;">
-            <button onclick="setRgChFilter('')"  class="rg-ch-btn rg-ch-active">All</button>
-            <button onclick="setRgChFilter('MT')" class="rg-ch-btn">MT</button>
-            <button onclick="setRgChFilter('GT')" class="rg-ch-btn">GT</button>
-          </div>
-        </div>
-      </div>
+         <div style="
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+  width:100%;
+">
+
+  <div style="
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  ">
+
+    <span style="
+      font-size:11px;
+      color:var(--muted);
+      font-weight:600;
+    ">
+      Week:
+    </span>
+
+    <div class="wk-chips" id="rgDrillWeekChips"></div>
+
+  </div>
+
+  <div id="rgChFilterBtns" style="
+    display:flex;
+    gap:8px;
+    align-items:center;
+  ">
+
+    <button onclick="setRgChFilter('')" class="rg-ch-btn rg-ch-active">
+      All
+    </button>
+
+    <button onclick="setRgChFilter('MT')" class="rg-ch-btn">
+      MT
+    </button>
+
+    <button onclick="setRgChFilter('GT')" class="rg-ch-btn">
+      GT
+    </button>
+
+  </div>
+
+</div>
 
       <!-- Region cards -->
       <div class="card" style="padding:18px 20px;">
