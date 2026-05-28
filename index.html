@@ -702,6 +702,12 @@ function showPage(page,btn){
   if(page==='top')buildSkuTop(activeTopWeek);
   if(page==='channelDrill')buildChannelDrillPage();
   if(page==='regionDrill')buildRegionDrillPage();
+  const topbarRight = document.querySelector('.topbar-right')
+  if(page === 'regionDrill'){
+    topbarRight.style.display = 'none';
+  }else{
+    topbarRight.style.display = 'flex';
+  }
 }
 
 /* ══ PLUGINS ══ */
