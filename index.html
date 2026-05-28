@@ -235,6 +235,9 @@ tr:hover td{background:#F7F9FE;}
 .rg-drill-card.below-target{border-color:#FCA5A5;}
 .rg-filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 
+.rg-ch-btn{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);font-size:11px;font-weight:600;cursor:pointer;background:#fff;color:#64748B;font-family:'Inter',sans-serif;transition:all var(--ease);}
+.rg-ch-btn:hover{border-color:#7C79E0;color:#534AB7;}
+.rg-ch-btn.rg-ch-active{background:#534AB7;color:#fff;border-color:#534AB7;}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:99px;}
@@ -533,11 +536,11 @@ tr:hover td{background:#F7F9FE;}
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span style="font-size:11px;color:var(--muted)">Week:</span>
           <div class="wk-chips" id="rgDrillWeekChips"></div>
-          <select id="rgDrillChFilter" onchange="buildRegionDrillCards()" style="border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--text);background:#fff;outline:none;">
-            <option value="">Semua Channel</option>
-            <option value="MT">MT Only</option>
-            <option value="GT">GT Only</option>
-          </select>
+          <div id="rgChFilterBtns" style="display:flex;gap:6px;">
+            <button onclick="setRgChFilter('')"  class="rg-ch-btn rg-ch-active">All</button>
+            <button onclick="setRgChFilter('MT')" class="rg-ch-btn">MT</button>
+            <button onclick="setRgChFilter('GT')" class="rg-ch-btn">GT</button>
+          </div>
         </div>
       </div>
 
@@ -647,6 +650,7 @@ let DB={ch:[],bd:[],sku:[],rg:[],rgBd:[],top:[],l1:[],l2:[]};
 let charts={},curWeek='',activeTopWeek='all',activeLtWeek='all',activeLtL2Week='all';
 let chDrillWeek='all',rgDrillWeek='all';
 let selectedChannel=null,selectedRegion=null;
+let rgChFilter='';
 
 const COLORS=['#7C79E0','#E879A0','#22C55E','#F59E0B','#3B82F6','#EF4444','#8B5CF6','#06B6D4','#10B981','#F97316'];
 const L1_COLORS={'3.0 Supply Issue':{bar:'#534AB7',pill:'pill-supply',hex:'#534AB7'},'6.0 Rejection Issue':{bar:'#EF4444',pill:'pill-reject',hex:'#EF4444'},'5.0 Transport Issue':{bar:'#F59E0B',pill:'pill-transport',hex:'#F59E0B'}};
@@ -942,10 +946,18 @@ function buildRegionDrillPage(){
 }
 
 function setRgDrillWeek(w){rgDrillWeek=w;buildRegionDrillPage();}
+function setRgChFilter(v){
+  rgChFilter=v;
+  document.querySelectorAll('.rg-ch-btn').forEach(b=>b.classList.remove('rg-ch-active'));
+  const idx={'':0,'MT':1,'GT':2}[v]??0;
+  document.querySelectorAll('.rg-ch-btn')[idx]?.classList.add('rg-ch-active');
+  buildRegionDrillCards();
+  if(selectedRegion)drillIntoRegion(selectedRegion);
+}
 
 function buildRegionDrillCards(){
   // Hitung CF per region dari KPI_REGION
-  const chFilter=document.getElementById('rgDrillChFilter')?.value||'';
+  const chFilter=rgChFilter;
   let source=rgDrillWeek==='all'?DB.rg:DB.rg.filter(d=>d.Week===rgDrillWeek);
 
   // Jika ada channel filter, gunakan rgBd
@@ -989,7 +1001,7 @@ function buildRegionDrillCards(){
 
 function drillIntoRegion(regionName){
   selectedRegion=regionName;
-  const chFilter=document.getElementById('rgDrillChFilter')?.value||'';
+  const chFilter=rgChFilter;
 
   // Filter L2 by region + week + optional channel
   let data=DB.l2.filter(d=>(d['Region']||'').trim()===regionName);
