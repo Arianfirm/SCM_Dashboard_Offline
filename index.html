@@ -703,7 +703,7 @@ function showPage(page,btn){
   if(page==='channelDrill')buildChannelDrillPage();
   if(page==='regionDrill')buildRegionDrillPage();
   const topbarRight = document.querySelector('.topbar-right')
-  if(page === 'regionDrill'){
+  if(page === 'regionDrill' || page === 'channelDrill'){
     topbarRight.style.display = 'none';
   }else{
     topbarRight.style.display = 'flex';
