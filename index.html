@@ -942,14 +942,32 @@ function computeChCF(channelName){
    REGION DRILL-DOWN
 ══════════════════════════════════════════ */
 function buildRegionDrillPage(){
-  const weeks=sortW(DB.rg.map(d=>d.Week));
-  const chipsEl=document.getElementById('rgDrillWeekChips');
-  if(chipsEl){
-    chipsEl.innerHTML=`<span class="wk-chip ${rgDrillWeek==='all'?'active':''}" onclick="setRgDrillWeek('all')">All</span>`
-      +weeks.map(w=>`<span class="wk-chip ${rgDrillWeek===w?'active':''}" onclick="setRgDrillWeek('${w}')">${w}</span>`).join('');
+
+  const weeks = sortW(DB.rg.map(d=>d.Week));
+
+  const ddl = document.getElementById('rgWeekDropdown');
+
+  if(ddl){
+
+    ddl.innerHTML =
+      '<option value="all">All Week</option>' +
+
+      weeks.map(w => `
+        <option value="${w}" ${rgDrillWeek===w?'selected':''}>
+          ${w}
+        </option>
+      `).join('');
+
+    ddl.onchange = (e)=>{
+      setRgDrillWeek(e.target.value);
+    };
+
   }
+
   buildRegionDrillCards();
+
 }
+
 
 function setRgDrillWeek(w){rgDrillWeek=w;buildRegionDrillPage();}
 function setRgChFilter(v){
