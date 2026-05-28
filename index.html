@@ -783,13 +783,29 @@ function buildChannelDrillPage(){
 }
 
 function setChDrillWeek(w){chDrillWeek=w;buildChannelDrillPage();}
+function setChFilter(v){
+
+  chFilter = v;
+
+  document.querySelectorAll('#chFilterBtns .rg-ch-btn')
+    .forEach(b=>b.classList.remove('rg-ch-active'));
+
+  const idx = {'':0,'MT':1,'GT':2}[v] ?? 0;
+
+  document.querySelectorAll('#chFilterBtns .rg-ch-btn')[idx]
+    ?.classList.add('rg-ch-active');
+
+  buildChannelDrillCards();
+
+}
 
 function buildChannelDrillCards(){
   // Hitung CF per sub-channel dari KPI_BREAKDOWN
   const data=chDrillWeek==='all'?DB.bd:DB.bd.filter(d=>d.Week===chDrillWeek);
   const aggCh={};
   data.forEach(d=>{
-    const ch=(d['Channel Breakdown']||'').trim();if(!ch)return;
+    const ch=(d['Channel Breakdown']||'').trim();
+    if(chFilter && !ch.includes(chFilter)) return;
     if(!aggCh[ch])aggCh[ch]={order:0,delivery:0,gap:0};
     aggCh[ch].order+=num(d['Order Quantity']);
     aggCh[ch].delivery+=num(d['Delivery Quantity']);
