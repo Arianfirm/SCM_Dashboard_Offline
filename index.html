@@ -465,6 +465,11 @@ tr:hover td{background:#F7F9FE;}
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-size:11px;color:var(--muted)">Week:</span>
           <select id="chWeekDropdown" class="week-select"></select>
+          <div id="chFilterBtns" style="display:flex;gap:6px;">
+          <button onclick="setChFilter('')" class="rg-ch-btn rg-ch-active">All</button>
+          <button onclick="setChFilter('MT')" class="rg-ch-btn">MT</button>
+          <button onclick="setChFilter('GT')" class="rg-ch-btn">GT</button>
+        </div>
         </div>
       </div>
 
