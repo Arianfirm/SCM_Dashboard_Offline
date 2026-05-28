@@ -464,7 +464,7 @@ tr:hover td{background:#F7F9FE;}
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-size:11px;color:var(--muted)">Week:</span>
-          <div class="wk-chips" id="chDrillWeekChips"></div>
+          <select id="chWeekDropdown" class="week-select"></select>
         </div>
       </div>
 
@@ -751,13 +751,30 @@ function render(week){
    CHANNEL DRILL-DOWN
 ══════════════════════════════════════════ */
 function buildChannelDrillPage(){
-  const weeks=sortW(DB.bd.map(d=>d.Week));
-  const chipsEl=document.getElementById('chDrillWeekChips');
-  if(chipsEl){
-    chipsEl.innerHTML=`<span class="wk-chip ${chDrillWeek==='all'?'active':''}" onclick="setChDrillWeek('all')">All</span>`
-      +weeks.map(w=>`<span class="wk-chip ${chDrillWeek===w?'active':''}" onclick="setChDrillWeek('${w}')">${w}</span>`).join('');
+
+  const weeks = sortW(DB.ch.map(d=>d.Week));
+
+  const ddl = document.getElementById('chWeekDropdown');
+
+  if(ddl){
+
+    ddl.innerHTML =
+      '<option value="all">All Week</option>' +
+
+      weeks.map(w => `
+        <option value="${w}" ${chDrillWeek===w?'selected':''}>
+          ${w}
+        </option>
+      `).join('');
+
+    ddl.onchange = (e)=>{
+      setChDrillWeek(e.target.value);
+    };
+
   }
+
   buildChannelDrillCards();
+
 }
 
 function setChDrillWeek(w){chDrillWeek=w;buildChannelDrillPage();}
