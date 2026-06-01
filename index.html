@@ -694,144 +694,176 @@ tr:hover td{background:#F7F9FE;}
         </div>
       </div>
 
-      <!-- SECTION 1: Peta Indonesia full width -->
-      <div class="card" style="padding:22px 24px;">
-        <div class="card-head">
+      <!-- KPI SUMMARY ROW -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:2px;">
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px 18px;">
+          <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;">Total CF% (All Region)</div>
+          <div style="font-size:28px;font-weight:700;letter-spacing:-1px;line-height:1;" id="rmapKpiCF">—</div>
+          <div style="font-size:11px;margin-top:5px;color:var(--muted);">vs target 98% <span id="rmapKpiDiff" style="font-weight:700;">—</span></div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px 18px;">
+          <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;">Total Delivery</div>
+          <div style="font-size:28px;font-weight:700;letter-spacing:-1px;line-height:1;color:#534AB7;" id="rmapKpiDel">—</div>
+          <div style="font-size:11px;margin-top:5px;color:var(--muted);">order</div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px 18px;">
+          <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;">Total Loss</div>
+          <div style="font-size:28px;font-weight:700;letter-spacing:-1px;line-height:1;color:#DC2626;" id="rmapKpiLoss">—</div>
+          <div style="font-size:11px;margin-top:5px;color:var(--muted);"><span id="rmapKpiBelow">—</span> region di bawah target 98%</div>
+        </div>
+      </div>
+
+      <!-- BUBBLE MAP -->
+      <div class="card" style="padding:20px 22px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
           <div>
             <div class="card-title">Peta CF% per Region — Indonesia</div>
-            <div class="card-sub" id="rmapMapSub">Semua week · All channel · klik region untuk highlight</div>
+            <div class="card-sub" id="rmapMapSub">Semua week · All channel · klik bubble untuk highlight</div>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-            <div style="display:flex;gap:1px;">
-              <div style="width:18px;height:10px;background:#DC2626;border-radius:3px 0 0 3px;"></div>
-              <div style="width:18px;height:10px;background:#F59E0B;"></div>
-              <div style="width:18px;height:10px;background:#FCD34D;"></div>
-              <div style="width:18px;height:10px;background:#86EFAC;"></div>
-              <div style="width:18px;height:10px;background:#16A34A;border-radius:0 3px 3px 0;"></div>
-            </div>
-            <span style="font-size:10px;color:#DC2626;">&lt;90%</span>
-            <span style="font-size:10px;color:var(--muted);">→</span>
-            <span style="font-size:10px;color:#16A34A;">≥98%</span>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);"><div style="width:10px;height:10px;border-radius:50%;background:#16A34A;"></div>≥98%</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);"><div style="width:10px;height:10px;border-radius:50%;background:#EF9F27;"></div>95–97.99%</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);"><div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;"></div>&lt;95%</div>
           </div>
         </div>
 
-        <svg id="rmapSvg" viewBox="0 0 680 300" width="100%"
-             style="display:block;border-radius:12px;background:linear-gradient(160deg,#EFF6FF,#E0F2FE);">
+        <svg id="rmapSvg" viewBox="0 0 640 310" width="100%"
+             style="display:block;background:#EFF6FF;border-radius:10px;border:1px solid var(--border);">
           <defs>
-            <pattern id="seaDots" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
-              <circle cx="8" cy="8" r="0.8" fill="#93C5FD" opacity=".4"/>
+            <pattern id="rmapSea" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse">
+              <circle cx="9" cy="9" r="0.7" fill="#93C5FD" opacity=".5"/>
             </pattern>
           </defs>
-          <rect width="680" height="300" fill="url(#seaDots)"/>
+          <rect width="640" height="310" fill="url(#rmapSea)"/>
 
-          <!-- SUMATRA -->
-          <g id="rmap-Sumatra" class="rmap-region" onclick="rmapHighlight('Sumatra')" style="cursor:pointer;">
-            <path d="M22,38 C28,22 44,14 62,16 C78,18 90,28 96,42 C104,60 102,82 96,102 C90,122 80,140 68,154 C56,168 42,174 30,168 C18,162 14,146 16,128 C18,108 24,86 26,66 C24,52 22,44 22,38Z"
-                  fill="#E2E8F0" stroke="#fff" stroke-width="1.8"/>
-            <line x1="28" y1="98" x2="96" y2="90" stroke="#94A3B8" stroke-width="1" stroke-dasharray="3,2"/>
-            <text x="58" y="66" text-anchor="middle" font-size="9" font-weight="600" fill="#475569" font-family="Inter,sans-serif">N. Sumatra</text>
-            <text id="rmap-cf-Sumatra" x="58" y="90" text-anchor="middle" font-size="13" font-weight="800" fill="#1E293B" font-family="Inter,sans-serif">—</text>
-            <text x="56" y="130" text-anchor="middle" font-size="9" font-weight="600" fill="#475569" font-family="Inter,sans-serif">S. Sumatra</text>
-            <text id="rmap-loss-Sumatra" x="56" y="144" text-anchor="middle" font-size="8" fill="#94A3B8" font-family="Inter,sans-serif">—</text>
+          <!-- Silhouette Sumatra -->
+          <path d="M18,35 C24,18 42,10 60,13 C76,16 88,28 93,44 C100,64 97,88 90,110 C83,132 72,152 59,165 C46,178 31,182 20,174 C9,166 6,148 8,128 C10,106 17,82 20,60 C18,48 17,40 18,35Z" fill="#CBD5E1" stroke="#fff" stroke-width="1.5" opacity=".5"/>
+          <!-- Silhouette Jawa -->
+          <path d="M108,198 C114,190 340,182 360,188 C366,194 364,214 350,220 C180,228 112,222 108,212 C107,206 107,202 108,198Z" fill="#CBD5E1" stroke="#fff" stroke-width="1.2" opacity=".4"/>
+          <!-- Silhouette Kalimantan -->
+          <path d="M190,20 C212,6 244,0 276,4 C308,8 334,22 348,46 C362,70 362,100 354,126 C346,152 330,170 308,180 C286,190 260,192 238,184 C216,176 198,160 190,136 C182,112 182,84 188,62 C192,42 190,28 190,20Z" fill="#CBD5E1" stroke="#fff" stroke-width="1.5" opacity=".45"/>
+          <!-- Silhouette Sulawesi -->
+          <path d="M380,52 C392,36 408,28 422,32 C434,36 440,50 438,66 C436,82 426,96 416,108 C428,118 436,134 432,150 C428,164 414,172 400,168 C386,164 378,150 378,136 C366,144 352,148 340,142 C328,136 324,120 330,106 C336,92 350,82 364,78 C370,66 376,56 380,52Z" fill="#CBD5E1" stroke="#fff" stroke-width="1.5" opacity=".45"/>
+          <path d="M420,28 C436,16 460,12 482,16 C502,20 514,34 512,48 C510,62 498,70 484,72 C470,74 454,64 442,52 C432,42 420,30 420,28Z" fill="#CBD5E1" stroke="#fff" stroke-width="1.2" opacity=".4"/>
+          <!-- Silhouette Maluku -->
+          <path d="M528,40 C538,26 554,20 566,24 C576,28 582,42 578,56 C574,70 560,78 548,74 C536,70 526,56 528,40Z" fill="#CBD5E1" stroke="#fff" stroke-width="1" opacity=".4"/>
+          <path d="M536,92 C546,80 562,76 574,82 C584,88 588,102 582,116 C576,128 562,134 550,130 C538,126 530,112 536,92Z" fill="#CBD5E1" stroke="#fff" stroke-width="1" opacity=".4"/>
+          <!-- Silhouette Papua -->
+          <path d="M596,22 C616,8 640,2 640,0 L640,158 C618,162 596,148 584,126 C570,102 570,76 578,52 C584,34 594,28 596,22Z" fill="#CBD5E1" stroke="#fff" stroke-width="1.5" opacity=".45"/>
+
+          <!-- BUBBLES -->
+          <!-- Sumatra N -->
+          <g id="rmap-Sumatra" class="rmap-region" onclick="rmapBubClick('Sumatra')" style="cursor:pointer;">
+            <circle cx="56" cy="72" r="36" fill="#EAF3DE" stroke="#fff" stroke-width="2"/>
+            <text x="56" y="65" text-anchor="middle" font-size="9" font-weight="600" fill="#27500A" font-family="Inter,sans-serif">N. Sumatra</text>
+            <text id="rmap-cf-Sumatra" x="56" y="79" text-anchor="middle" font-size="13" font-weight="700" fill="#27500A" font-family="Inter,sans-serif">—</text>
+            <text id="rmap-loss-Sumatra" x="56" y="91" text-anchor="middle" font-size="8.5" fill="#3B6D11" font-family="Inter,sans-serif">—</text>
+          </g>
+          <g id="rmap-South Sumatra" class="rmap-region" onclick="rmapBubClick('South Sumatra')" style="cursor:pointer;">
+            <circle cx="52" cy="142" r="30" fill="#FCEBEB" stroke="#fff" stroke-width="2"/>
+            <text x="52" y="136" text-anchor="middle" font-size="8.5" font-weight="600" fill="#791F1F" font-family="Inter,sans-serif">S. Sumatra</text>
+            <text id="rmap-cf-South Sumatra" x="52" y="149" text-anchor="middle" font-size="13" font-weight="700" fill="#791F1F" font-family="Inter,sans-serif">—</text>
+            <text id="rmap-loss-South Sumatra" x="52" y="160" text-anchor="middle" font-size="8.5" fill="#A32D2D" font-family="Inter,sans-serif">—</text>
+          </g>
+          <line x1="24" y1="109" x2="82" y2="109" stroke="#94A3B8" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+          <!-- Kalimantan (big bubble) -->
+          <g id="rmap-Kalimantan" class="rmap-region" onclick="rmapBubClick('Kalimantan')" style="cursor:pointer;">
+            <circle cx="270" cy="96" r="56" fill="#FAEEDA" stroke="#fff" stroke-width="2"/>
+            <text x="270" y="86" text-anchor="middle" font-size="11" font-weight="600" fill="#412402" font-family="Inter,sans-serif">Kalimantan</text>
+            <text id="rmap-cf-Kalimantan" x="270" y="102" text-anchor="middle" font-size="16" font-weight="700" fill="#412402" font-family="Inter,sans-serif">—</text>
+            <text id="rmap-loss-Kalimantan" x="270" y="116" text-anchor="middle" font-size="8.5" fill="#633806" font-family="Inter,sans-serif">—</text>
+          </g>
+          <!-- South Sulawesi -->
+          <g id="rmap-South Sulawesi" class="rmap-region" onclick="rmapBubClick('South Sulawesi')" style="cursor:pointer;">
+            <circle cx="388" cy="110" r="42" fill="#EAF3DE" stroke="#fff" stroke-width="2"/>
+            <text x="388" y="101" text-anchor="middle" font-size="9" font-weight="600" fill="#27500A" font-family="Inter,sans-serif">South Sulawesi</text>
+            <text id="rmap-cf-South Sulawesi" x="388" y="116" text-anchor="middle" font-size="14" font-weight="700" fill="#173404" font-family="Inter,sans-serif">—</text>
+            <text id="rmap-loss-South Sulawesi" x="388" y="128" text-anchor="middle" font-size="8.5" fill="#3B6D11" font-family="Inter,sans-serif">—</text>
+          </g>
+          <!-- North Sulawesi -->
+          <g id="rmap-North Sulawesi" class="rmap-region" onclick="rmapBubClick('North Sulawesi')" style="cursor:pointer;">
+            <circle cx="468" cy="50" r="26" fill="#EAF3DE" stroke="#fff" stroke-width="1.5"/>
+            <text x="468" y="43" text-anchor="middle" font-size="8" font-weight="600" fill="#27500A" font-family="Inter,sans-serif">North Sulawesi</text>
+            <text id="rmap-cf-North Sulawesi" x="468" y="57" text-anchor="middle" font-size="12" font-weight="700" fill="#173404" font-family="Inter,sans-serif">—</text>
+            <text id="rmap-loss-North Sulawesi" x="468" y="67" text-anchor="middle" font-size="8" fill="#3B6D11" font-family="Inter,sans-serif">—</text>
+          </g>
+          <!-- Maluku -->
+          <g id="rmap-Maluku" class="rmap-region" onclick="rmapBubClick('Maluku')" style="cursor:pointer;">
+            <circle cx="546" cy="88" r="24" fill="#FAEEDA" stroke="#fff" stroke-width="1.5"/>
+            <text x="546" y="82" text-anchor="middle" font-size="8.5" font-weight="600" fill="#412402" font-family="Inter,sans-serif">Maluku</text>
+            <text id="rmap-cf-Maluku" x="546" y="95" text-anchor="middle" font-size="12" font-weight="700" fill="#412402" font-family="Inter,sans-serif">—</text>
+            <text id="rmap-loss-Maluku" x="546" y="105" text-anchor="middle" font-size="8" fill="#633806" font-family="Inter,sans-serif">—</text>
+          </g>
+          <!-- Papua -->
+          <g id="rmap-Papua" class="rmap-region" onclick="rmapBubClick('Papua')" style="cursor:pointer;">
+            <circle cx="612" cy="78" r="32" fill="#EAF3DE" stroke="#fff" stroke-width="2"/>
+            <text x="612" y="70" text-anchor="middle" font-size="9" font-weight="600" fill="#27500A" font-family="Inter,sans-serif">Papua</text>
+            <text id="rmap-cf-Papua" x="612" y="84" text-anchor="middle" font-size="14" font-weight="700" fill="#173404" font-family="Inter,sans-serif">—</text>
+            <text id="rmap-loss-Papua" x="612" y="95" text-anchor="middle" font-size="8" fill="#3B6D11" font-family="Inter,sans-serif">—</text>
+          </g>
+          <!-- Jawa row -->
+          <g id="rmap-Jabo" class="rmap-region" onclick="rmapBubClick('Jabo')" style="cursor:pointer;">
+            <circle cx="148" cy="228" r="28" fill="#EAF3DE" stroke="#fff" stroke-width="1.5"/>
+            <text x="148" y="222" text-anchor="middle" font-size="8.5" font-weight="600" fill="#27500A" font-family="Inter,sans-serif">Jabo</text>
+            <text id="rmap-cf-Jabo" x="148" y="234" text-anchor="middle" font-size="12" font-weight="700" fill="#173404" font-family="Inter,sans-serif">—</text>
+            <text id="rmap-loss-Jabo" x="148" y="244" text-anchor="middle" font-size="8" fill="#3B6D11" font-family="Inter,sans-serif">—</text>
           </g>
 
-          <!-- JABO -->
-          <g id="rmap-Jabo" class="rmap-region" onclick="rmapHighlight('Jabo')" style="cursor:pointer;">
-            <path d="M122,196 C130,188 146,184 160,188 C172,192 178,202 176,214 C174,224 162,230 150,228 C138,226 126,218 122,208 C120,202 120,198 122,196Z"
-                  fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-            <text x="149" y="207" text-anchor="middle" font-size="8.5" font-weight="700" fill="#475569" font-family="Inter,sans-serif">Jabo</text>
-            <text id="rmap-cf-Jabo" x="149" y="220" text-anchor="middle" font-size="11" font-weight="800" fill="#1E293B" font-family="Inter,sans-serif">—</text>
+          <g id="rmap-Central Java" class="rmap-region" onclick="rmapBubClick('Central Java')" style="cursor:pointer;">
+            <circle cx="210" cy="228" r="26" fill="#FAEEDA" stroke="#fff" stroke-width="1.5"/>
+            <text x="210" y="222" text-anchor="middle" font-size="8" font-weight="600" fill="#412402" font-family="Inter,sans-serif">C. Java</text>
+            <text id="rmap-cf-Central Java" x="210" y="234" text-anchor="middle" font-size="12" font-weight="700" fill="#412402" font-family="Inter,sans-serif">—</text>
+            <text id="rmap-loss-Central Java" x="210" y="244" text-anchor="middle" font-size="8" fill="#633806" font-family="Inter,sans-serif">—</text>
           </g>
-
-          <!-- CENTRAL JAVA -->
-          <g id="rmap-Central Java" class="rmap-region" onclick="rmapHighlight('Central Java')" style="cursor:pointer;">
-            <path d="M182,192 C192,184 208,182 222,186 C234,190 240,200 238,212 C236,222 224,228 212,226 C200,224 188,216 184,206 C182,200 180,196 182,192Z"
-                  fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-            <text x="211" y="203" text-anchor="middle" font-size="8" font-weight="700" fill="#475569" font-family="Inter,sans-serif">C. Java</text>
-            <text id="rmap-cf-Central Java" x="211" y="217" text-anchor="middle" font-size="11" font-weight="800" fill="#1E293B" font-family="Inter,sans-serif">—</text>
+          <g id="rmap-East Java" class="rmap-region" onclick="rmapBubClick('East Java')" style="cursor:pointer;">
+            <circle cx="268" cy="228" r="24" fill="#FAEEDA" stroke="#fff" stroke-width="1.5"/>
+            <text x="268" y="222" text-anchor="middle" font-size="8" font-weight="600" fill="#412402" font-family="Inter,sans-serif">East Java</text>
+            <text id="rmap-cf-East Java" x="268" y="234" text-anchor="middle" font-size="12" font-weight="700" fill="#412402" font-family="Inter,sans-serif">—</text>
+            <text id="rmap-loss-East Java" x="268" y="244" text-anchor="middle" font-size="8" fill="#633806" font-family="Inter,sans-serif">—</text>
           </g>
-
-          <!-- EAST JAVA -->
-          <g id="rmap-East Java" class="rmap-region" onclick="rmapHighlight('East Java')" style="cursor:pointer;">
-            <path d="M244,188 C256,180 274,178 288,184 C300,190 304,202 300,214 C296,224 282,230 270,228 C258,226 246,218 242,206 C240,196 240,192 244,188Z"
-                  fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-            <text x="271" y="202" text-anchor="middle" font-size="8" font-weight="700" fill="#475569" font-family="Inter,sans-serif">East Java</text>
-            <text id="rmap-cf-East Java" x="271" y="216" text-anchor="middle" font-size="11" font-weight="800" fill="#1E293B" font-family="Inter,sans-serif">—</text>
-          </g>
-
-          <!-- BALI NUSRA -->
-          <g id="rmap-Bali Nusra" class="rmap-region" onclick="rmapHighlight('Bali Nusra')" style="cursor:pointer;">
-            <path d="M306,192 C314,186 326,184 336,188 C346,192 350,202 346,212 C342,220 330,224 318,222 C308,220 302,212 304,202 C304,198 304,194 306,192Z"
-                  fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-            <ellipse cx="358" cy="207" rx="9" ry="6" fill="#E2E8F0" stroke="#fff" stroke-width="1"/>
-            <ellipse cx="374" cy="209" rx="11" ry="6" fill="#E2E8F0" stroke="#fff" stroke-width="1"/>
-            <ellipse cx="392" cy="211" rx="9" ry="5" fill="#E2E8F0" stroke="#fff" stroke-width="1"/>
-            <text x="322" y="202" text-anchor="middle" font-size="7.5" font-weight="700" fill="#475569" font-family="Inter,sans-serif">Bali Nusra</text>
-            <text id="rmap-cf-Bali Nusra" x="322" y="215" text-anchor="middle" font-size="11" font-weight="800" fill="#1E293B" font-family="Inter,sans-serif">—</text>
-          </g>
-
-          <!-- KALIMANTAN -->
-          <g id="rmap-Kalimantan" class="rmap-region" onclick="rmapHighlight('Kalimantan')" style="cursor:pointer;">
-            <path d="M226,24 C246,10 274,4 302,8 C330,12 354,26 366,48 C378,70 378,98 370,124 C362,148 346,166 324,176 C302,186 276,188 254,180 C232,172 216,156 208,134 C200,112 200,86 208,64 C214,44 224,30 226,24Z"
-                  fill="#E2E8F0" stroke="#fff" stroke-width="2"/>
-            <text x="288" y="86" text-anchor="middle" font-size="12" font-weight="700" fill="#475569" font-family="Inter,sans-serif">Kalimantan</text>
-            <text id="rmap-cf-Kalimantan" x="288" y="104" text-anchor="middle" font-size="15" font-weight="800" fill="#1E293B" font-family="Inter,sans-serif">—</text>
-            <text id="rmap-loss-Kalimantan" x="288" y="119" text-anchor="middle" font-size="8" fill="#94A3B8" font-family="Inter,sans-serif">—</text>
-          </g>
-
-          <!-- SOUTH SULAWESI -->
-          <g id="rmap-South Sulawesi" class="rmap-region" onclick="rmapHighlight('South Sulawesi')" style="cursor:pointer;">
-            <path d="M398,56 C408,40 422,32 436,36 C448,40 454,54 452,70 C450,86 440,100 430,112 C442,122 450,138 446,154 C442,168 428,176 414,172 C400,168 392,154 392,140 C380,148 366,152 354,146 C342,140 338,124 344,110 C350,96 364,86 378,82 C384,70 390,58 398,56Z"
-                  fill="#E2E8F0" stroke="#fff" stroke-width="1.8"/>
-            <text x="404" y="98" text-anchor="middle" font-size="8.5" font-weight="700" fill="#475569" font-family="Inter,sans-serif">S. Sulawesi</text>
-            <text id="rmap-cf-South Sulawesi" x="404" y="113" text-anchor="middle" font-size="11" font-weight="800" fill="#1E293B" font-family="Inter,sans-serif">—</text>
-          </g>
-
-          <!-- NORTH SULAWESI -->
-          <g id="rmap-North Sulawesi" class="rmap-region" onclick="rmapHighlight('North Sulawesi')" style="cursor:pointer;">
-            <path d="M436,32 C452,20 476,16 498,20 C518,24 530,36 530,50 C530,62 520,70 506,72 C492,74 476,66 462,54 C450,44 438,34 436,32Z"
-                  fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-            <text x="483" y="43" text-anchor="middle" font-size="8" font-weight="700" fill="#475569" font-family="Inter,sans-serif">N. Sulawesi</text>
-            <text id="rmap-cf-North Sulawesi" x="483" y="57" text-anchor="middle" font-size="11" font-weight="800" fill="#1E293B" font-family="Inter,sans-serif">—</text>
-          </g>
-
-          <!-- MALUKU -->
-          <g id="rmap-Maluku" class="rmap-region" onclick="rmapHighlight('Maluku')" style="cursor:pointer;">
-            <path d="M546,44 C556,30 570,24 582,28 C592,32 598,46 594,60 C590,74 578,82 566,78 C554,74 544,60 546,44Z"
-                  fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-            <path d="M554,100 C564,88 580,84 592,90 C602,96 606,110 600,124 C594,136 580,142 568,138 C556,134 548,120 554,100Z"
-                  fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-            <text x="572" y="58" text-anchor="middle" font-size="8.5" font-weight="700" fill="#475569" font-family="Inter,sans-serif">Maluku</text>
-            <text id="rmap-cf-Maluku" x="572" y="116" text-anchor="middle" font-size="11" font-weight="800" fill="#1E293B" font-family="Inter,sans-serif">—</text>
-          </g>
-
-          <!-- PAPUA -->
-          <g id="rmap-Papua" class="rmap-region" onclick="rmapHighlight('Papua')" style="cursor:pointer;">
-            <path d="M616,30 C634,14 662,6 690,8 C718,10 742,24 752,46 C762,68 756,96 742,116 C728,136 706,148 682,150 C658,152 636,140 622,120 C608,100 604,74 610,52 C612,42 614,34 616,30Z"
-                  fill="#E2E8F0" stroke="#fff" stroke-width="2"/>
-            <path d="M752,46 C760,36 772,30 764,50 C760,60 754,52 752,46Z"
-                  fill="#E2E8F0" stroke="#fff" stroke-width="1"/>
-            <text x="682" y="82" text-anchor="middle" font-size="12" font-weight="700" fill="#475569" font-family="Inter,sans-serif">Papua</text>
-            <text id="rmap-cf-Papua" x="682" y="100" text-anchor="middle" font-size="15" font-weight="800" fill="#1E293B" font-family="Inter,sans-serif">—</text>
+          <g id="rmap-Bali Nusra" class="rmap-region" onclick="rmapBubClick('Bali Nusra')" style="cursor:pointer;">
+            <circle cx="322" cy="228" r="20" fill="#EAF3DE" stroke="#fff" stroke-width="1.5"/>
+            <text x="322" y="223" text-anchor="middle" font-size="7.5" font-weight="600" fill="#27500A" font-family="Inter,sans-serif">Bali Nusra</text>
+            <text id="rmap-cf-Bali Nusra" x="322" y="234" text-anchor="middle" font-size="11" font-weight="700" fill="#173404" font-family="Inter,sans-serif">—</text>
+            <text id="rmap-loss-Bali Nusra" x="322" y="244" text-anchor="middle" font-size="7.5" fill="#3B6D11" font-family="Inter,sans-serif">—</text>
           </g>
 
           <!-- Target line -->
-          <rect x="8" y="268" width="664" height="22" rx="4" fill="rgba(254,242,242,.8)"/>
-          <line x1="8" y1="279" x2="672" y2="279" stroke="#DC2626" stroke-width="1" stroke-dasharray="5,3"/>
-          <text x="14" y="276" font-size="8.5" font-weight="700" fill="#DC2626" font-family="Inter,sans-serif">— target 98%  ·  merah = di bawah target  ·  hijau = on target</text>
+          <line x1="10" y1="292" x2="630" y2="292" stroke="#E24B4A" stroke-width="1" stroke-dasharray="6,3"/>
+          <text x="16" y="289" font-size="8.5" font-weight="600" fill="#A32D2D" font-family="Inter,sans-serif">-- Target CF: 98%</text>
         </svg>
+      </div>
 
-        <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;">
-          <div class="rmap-summary-box" style="flex:1;min-width:180px;">
-            <div style="font-size:10px;color:var(--muted);">Total loss semua region</div>
-            <div class="rmap-summary-num" id="rmapTotalLoss">—</div>
-            <div class="rmap-summary-lbl" id="rmapBelowTarget">—</div>
+      <!-- INSET JAWA ZOOM -->
+      <div class="card" style="padding:16px 20px;">
+        <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">Inset Jawa (zoom) — detail 4 sub-region</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;" id="rmapInsetJawa">
+          <div style="background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;">
+            <div style="font-size:10px;font-weight:600;color:var(--muted);margin-bottom:4px;">Jabo</div>
+            <div style="font-size:18px;font-weight:700;line-height:1;" id="iz-Jabo">—</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px;" id="io-Jabo">—</div>
+          </div>
+          <div style="background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;">
+            <div style="font-size:10px;font-weight:600;color:var(--muted);margin-bottom:4px;">C. Java</div>
+            <div style="font-size:18px;font-weight:700;line-height:1;" id="iz-Central Java">—</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px;" id="io-Central Java">—</div>
+          </div>
+          <div style="background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;">
+            <div style="font-size:10px;font-weight:600;color:var(--muted);margin-bottom:4px;">East Java</div>
+            <div style="font-size:18px;font-weight:700;line-height:1;" id="iz-East Java">—</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px;" id="io-East Java">—</div>
+          </div>
+          <div style="background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;">
+            <div style="font-size:10px;font-weight:600;color:var(--muted);margin-bottom:4px;">Bali Nusra</div>
+            <div style="font-size:18px;font-weight:700;line-height:1;" id="iz-Bali Nusra">—</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px;" id="io-Bali Nusra">—</div>
           </div>
         </div>
       </div>
 
-      <!-- SECTION 2: Ranked bar full width -->
-      <div class="card" style="padding:22px 24px;">
+      <!-- RANKED BAR -->
+      <div class="card" style="padding:20px 22px;">
         <div class="card-head">
           <div>
             <div class="card-title">Ranking CF% per Region</div>
@@ -1511,56 +1543,62 @@ function buildSubChannelTrend(ch,week){const color=ch==='MT'?'#7C79E0':'#3B82F6'
    REGION PERFORMANCE MAP
 ══════════════════════════════════════════ */
 let rmapWeek='all', rmapCh='';
-const RMAP_IDS={'Jabo':'Jabo','Kalimantan':'Kalimantan','East Java':'East Java','Central Java':'Central Java','South Sulawesi':'South Sulawesi','Bali Nusra':'Bali Nusra','Maluku':'Maluku','Papua':'Papua','Sumatra':'Sumatra','North Sulawesi':'South Sulawesi','South Sumatra':'Sumatra','North Sumatra':'Sumatra','Central Sumatra':'Sumatra','West Sumatra':'Sumatra'};
+const RMAP_IDS={'Jabo':'Jabo','Kalimantan':'Kalimantan','East Java':'East Java','Central Java':'Central Java','South Sulawesi':'South Sulawesi','Bali Nusra':'Bali Nusra','Maluku':'Maluku','Papua':'Papua','Sumatra':'Sumatra','North Sulawesi':'North Sulawesi','South Sumatra':'South Sumatra','North Sumatra':'Sumatra','Central Sumatra':'Sumatra','West Sumatra':'Sumatra'};
 function rmapColor(cf){if(cf>=98)return'#16A34A';if(cf>=96)return'#86EFAC';if(cf>=94)return'#FCD34D';if(cf>=90)return'#F59E0B';return'#DC2626';}
 function rmapTextColor(cf){if(cf>=98)return'#14532D';if(cf>=96)return'#166534';if(cf>=94)return'#78350F';if(cf>=90)return'#92400E';return'#7F1D1D';}
 function rmapGetAgg(){let src=rmapCh===''?DB.rg:DB.rgBd.filter(d=>getCh(d).includes(rmapCh));if(rmapWeek!=='all')src=src.filter(d=>d.Week===rmapWeek);const agg={};src.forEach(d=>{const rg=(d.Region||'').trim();if(!rg)return;if(!agg[rg])agg[rg]={order:0,delivery:0,gap:0};agg[rg].order+=num(d['Order Quantity']);agg[rg].delivery+=num(d['Delivery Quantity']);agg[rg].gap+=num(d['GAP']);});return agg;}
 function buildRegionMap(){
   const allWeeks=sortW([...new Set(DB.rg.map(d=>d.Week))]);
   const chipsEl=document.getElementById('rmapWeekChips');
-  if(chipsEl){chipsEl.innerHTML=`<span class="wk-chip ${rmapWeek==='all'?'active':''}" onclick="setRmapWeek('all')">All</span>`+allWeeks.map(w=>`<span class="wk-chip ${rmapWeek===w?'active':''}" onclick="setRmapWeek('${w}')">${w}</span>`).join('');}
+  if(chipsEl)chipsEl.innerHTML=`<span class="wk-chip ${rmapWeek==='all'?'active':''}" onclick="setRmapWeek('all')">All</span>`+allWeeks.map(w=>`<span class="wk-chip ${rmapWeek===w?'active':''}" onclick="setRmapWeek('${w}')">${w}</span>`).join('');
   const agg=rmapGetAgg();
   const sorted=Object.entries(agg).sort((a,b)=>{const cfA=a[1].order>0?(a[1].delivery/a[1].order*100):0;const cfB=b[1].order>0?(b[1].delivery/b[1].order*100):0;return cfA-cfB;});
   const mapSubEl=document.getElementById('rmapMapSub');
-  if(mapSubEl)mapSubEl.innerHTML=`${rmapWeek==='all'?'Semua week':rmapWeek} · ${rmapCh===''?'All channel':rmapCh+' only'}`;
-  document.querySelectorAll('.rmap-region path,.rmap-region ellipse,.rmap-region circle').forEach(el=>{el.setAttribute('fill','#E2E8F0');el.setAttribute('stroke','#fff');el.setAttribute('stroke-width','1.5');});
-  document.querySelectorAll('[id^="rmap-cf-"]').forEach(el=>{el.innerHTML='—';el.setAttribute('fill','#475569');});
+  if(mapSubEl)mapSubEl.innerHTML=`${rmapWeek==='all'?'Semua week':rmapWeek} · ${rmapCh===''?'All channel':rmapCh+' only'} · klik bubble untuk highlight`;
+  /* ── KPI Summary ── */
+  let totOrd=0,totDel=0,totLoss=0,belowCt=0;
+  sorted.forEach(([,d])=>{totOrd+=d.order;totDel+=d.delivery;totLoss+=d.gap;if(d.order>0&&(d.delivery/d.order*100)<98)belowCt++;});
+  const avgCF=totOrd>0?(totDel/totOrd*100):0;const diff=(avgCF-98).toFixed(1);
+  const cfEl=document.getElementById('rmapKpiCF');if(cfEl){cfEl.textContent=avgCF.toFixed(1)+'%';cfEl.style.color=avgCF>=98?'#16A34A':'#DC2626';}
+  const diffEl=document.getElementById('rmapKpiDiff');if(diffEl){diffEl.textContent=(diff>=0?'+':'')+diff+'pp';diffEl.style.color=diff>=0?'#16A34A':'#DC2626';}
+  const delEl=document.getElementById('rmapKpiDel');if(delEl)delEl.textContent=totOrd>=1000?(totOrd/1000).toFixed(1)+'K':fmt(totOrd);
+  const lossEl=document.getElementById('rmapKpiLoss');if(lossEl)lossEl.textContent=totLoss<0?(Math.abs(totLoss)>=1000?'-'+(Math.abs(totLoss)/1000).toFixed(1)+'K':fmt(totLoss)):'0';
+  const belowEl=document.getElementById('rmapKpiBelow');if(belowEl)belowEl.textContent=belowCt;
+  /* ── Reset bubbles ── */
+  document.querySelectorAll('.rmap-region circle').forEach(el=>{el.setAttribute('stroke','#fff');el.setAttribute('stroke-width','1.5');});
+  document.querySelectorAll('[id^="rmap-cf-"]').forEach(el=>{el.innerHTML='—';});
   document.querySelectorAll('[id^="rmap-loss-"]').forEach(el=>{el.innerHTML='';});
-  let totalLoss=0,belowCount=0;
+  const jawa=['Jabo','Central Java','East Java','Bali Nusra'];
   sorted.forEach(([rg,d])=>{
-    const cf=d.order>0?(d.delivery/d.order*100):0;const color=rmapColor(cf);const tCol=rmapTextColor(cf);
-    totalLoss+=d.gap;if(cf<98)belowCount++;
-    const svgKey=RMAP_IDS[rg]||rg;const gEl=document.getElementById('rmap-'+svgKey);
-    if(gEl){const shape=gEl.querySelector('path')||gEl.querySelector('ellipse')||gEl.querySelector('circle');if(shape)shape.setAttribute('fill',color);const cfEl=document.getElementById('rmap-cf-'+svgKey);if(cfEl){cfEl.innerHTML=cf.toFixed(1)+'%';cfEl.setAttribute('fill',tCol);}const lEl=document.getElementById('rmap-loss-'+svgKey);if(lEl&&d.gap<0)lEl.innerHTML=fmt(d.gap);}
+    const cf=d.order>0?(d.delivery/d.order*100):0;
+    const fill=cf>=98?'#EAF3DE':cf>=95?'#FAEEDA':'#FCEBEB';
+    const txtClr=cf>=98?'#27500A':cf>=95?'#412402':'#791F1F';
+    const subClr=cf>=98?'#3B6D11':cf>=95?'#633806':'#A32D2D';
+    const svgKey=RMAP_IDS[rg]||rg;
+    const gEl=document.getElementById('rmap-'+svgKey);
+    if(gEl){const circle=gEl.querySelector('circle');if(circle)circle.setAttribute('fill',fill);const cfSvgEl=document.getElementById('rmap-cf-'+svgKey);if(cfSvgEl){cfSvgEl.innerHTML=cf.toFixed(1)+'%';cfSvgEl.style.fill=txtClr;}const lossSvgEl=document.getElementById('rmap-loss-'+svgKey);if(lossSvgEl&&d.gap<0)lossSvgEl.innerHTML=fmt(d.gap)+' loss';}
+    if(jawa.includes(rg)){const izEl=document.getElementById('iz-'+rg);const ioEl=document.getElementById('io-'+rg);if(izEl){izEl.textContent=cf.toFixed(1)+'%';izEl.style.color=cf>=98?'#16A34A':cf>=95?'#D97706':'#DC2626';}if(ioEl)ioEl.textContent=fmt(d.order)+' order';}
   });
-  const tlEl=document.getElementById('rmapTotalLoss');if(tlEl)tlEl.innerHTML=totalLoss<0?fmt(totalLoss):'0';
-  const btEl=document.getElementById('rmapBelowTarget');if(btEl)btEl.innerHTML=`${belowCount} dari ${sorted.length} region di bawah target 98%`;
+  /* ── Ranked bars ── */
   const barsEl=document.getElementById('rmapRankedBars');
   if(barsEl){
     const below=sorted.filter(([,d])=>d.order>0&&(d.delivery/d.order*100)<98);
     const above=sorted.filter(([,d])=>d.order<=0||(d.delivery/d.order*100)>=98);
     let html='';
-    below.forEach(([rg,d])=>{const cf=(d.delivery/d.order*100);const diff=(cf-98).toFixed(1);html+=`<div class="rmap-ranked-row"><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${rg}">${rg.length>13?rg.slice(0,13)+'…':rg}</span><div class="rmap-ranked-track"><div class="rmap-ranked-fill" style="width:${cf.toFixed(0)}%;background:${rmapColor(cf)};"></div></div><span style="font-weight:700;color:${rmapColor(cf)}">${cf.toFixed(1)}%</span><span style="font-size:10px;color:#DC2626;">${diff}pp</span></div>`;});
-    if(below.length&&above.length){html+=`<div style="display:grid;grid-template-columns:106px 1fr 52px 44px;gap:8px;margin:4px 0;"><span style="font-size:9px;color:#DC2626;font-weight:700;">── 98% target</span><div class="rmap-target-line"></div><span></span><span></span></div>`;}
-    above.forEach(([rg,d])=>{const cf=d.order>0?(d.delivery/d.order*100):100;const diff='+'+(cf-98).toFixed(1);html+=`<div class="rmap-ranked-row"><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${rg}">${rg.length>13?rg.slice(0,13)+'…':rg}</span><div class="rmap-ranked-track"><div class="rmap-ranked-fill" style="width:${Math.min(100,cf).toFixed(0)}%;background:${rmapColor(cf)};"></div></div><span style="font-weight:700;color:${rmapColor(cf)}">${cf.toFixed(1)}%</span><span style="font-size:10px;color:#16A34A;">${diff}pp</span></div>`;});
+    below.forEach(([rg,d])=>{const cf=(d.delivery/d.order*100),dif=(cf-98).toFixed(1);const col=cf>=95?'#EF9F27':'#E24B4A';html+=`<div style="display:grid;grid-template-columns:110px 1fr 54px 46px;align-items:center;gap:8px;margin-bottom:7px;font-size:11px;"><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${rg}">${rg.length>13?rg.slice(0,13)+'…':rg}</span><div style="background:#F1F5F9;border-radius:3px;height:12px;overflow:hidden;"><div style="width:${cf.toFixed(0)}%;height:12px;border-radius:3px;background:${col};"></div></div><span style="font-weight:700;color:${col};font-size:12px;">${cf.toFixed(1)}%</span><span style="font-size:10px;color:#A32D2D;">${dif}pp</span></div>`;});
+    html+=`<div style="display:grid;grid-template-columns:110px 1fr 54px 46px;gap:8px;margin:6px 0;align-items:center;"><span style="font-size:9px;color:#A32D2D;font-weight:700;white-space:nowrap;">── 98% target</span><div style="border-top:1.5px dashed #E24B4A;"></div><span></span><span></span></div>`;
+    above.forEach(([rg,d])=>{const cf=d.order>0?(d.delivery/d.order*100):100,dif='+'+(cf-98).toFixed(1);html+=`<div style="display:grid;grid-template-columns:110px 1fr 54px 46px;align-items:center;gap:8px;margin-bottom:7px;font-size:11px;"><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${rg}">${rg.length>13?rg.slice(0,13)+'…':rg}</span><div style="background:#F1F5F9;border-radius:3px;height:12px;overflow:hidden;"><div style="width:${Math.min(100,cf).toFixed(0)}%;height:12px;border-radius:3px;background:#16A34A;"></div></div><span style="font-weight:700;color:#16A34A;font-size:12px;">${cf.toFixed(1)}%</span><span style="font-size:10px;color:#16A34A;">${dif}pp</span></div>`;});
     barsEl.innerHTML=html||'<div style="color:var(--muted);font-size:12px;padding:12px 0;">Tidak ada data.</div>';
   }
+  /* ── Trend table ── */
   const trendWeeks=sortW([...new Set(DB.rg.map(d=>d.Week))]).slice(-3);
   const tblEl=document.getElementById('rmapTrendTable');
-  if(tblEl){
-    tblEl.innerHTML=sorted.map(([rg,d])=>{
-      const cf=d.order>0?(d.delivery/d.order*100):0;const diff=(cf-98).toFixed(1);
-      const pillClass=cf<93?'rmap-pill-bad':cf<98?'rmap-pill-warn':'rmap-pill-ok';
-      const sparkData=trendWeeks.map(w=>{let s=rmapCh===''?DB.rg:DB.rgBd.filter(x=>getCh(x).includes(rmapCh));s=s.filter(x=>x.Week===w&&(x.Region||'').trim()===rg);const o=s.reduce((a,x)=>a+num(x['Order Quantity']),0);const dv=s.reduce((a,x)=>a+num(x['Delivery Quantity']),0);return o>0?(dv/o*100):null;});
-      const maxSp=Math.max(...sparkData.filter(v=>v!==null),60);
-      const sparkHtml=trendWeeks.map((_,i)=>{const v=sparkData[i];if(v===null)return`<div class="rmap-spark-b" style="height:4px;background:#E2E8F0;"></div>`;return`<div class="rmap-spark-b" style="height:${Math.max(4,Math.round(v/maxSp*20))}px;background:${rmapColor(v)};"></div>`;}).join('');
-      return`<tr><td style="font-weight:600;">${rg}</td><td><span class="${pillClass}">${(cf>=98?'+':'')+diff}pp</span></td><td style="text-align:right;font-weight:700;color:${rmapColor(cf)}">${cf.toFixed(1)}%</td><td style="text-align:right;color:#DC2626;font-weight:600;">${d.gap<0?fmt(d.gap):'0'}</td><td style="text-align:center;"><div class="rmap-spark" style="justify-content:center;">${sparkHtml}</div></td></tr>`;
-    }).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px;">Tidak ada data.</td></tr>';
-  }
+  if(tblEl){tblEl.innerHTML=sorted.map(([rg,d])=>{const cf=d.order>0?(d.delivery/d.order*100):0;const dif=(cf-98).toFixed(1);const pillClass=cf<93?'rmap-pill-bad':cf<98?'rmap-pill-warn':'rmap-pill-ok';const sparkData=trendWeeks.map(w=>{let s=rmapCh===''?DB.rg:DB.rgBd.filter(x=>getCh(x).includes(rmapCh));s=s.filter(x=>x.Week===w&&(x.Region||'').trim()===rg);const o=s.reduce((a,x)=>a+num(x['Order Quantity']),0);const dv=s.reduce((a,x)=>a+num(x['Delivery Quantity']),0);return o>0?(dv/o*100):null;});const maxSp=Math.max(...sparkData.filter(v=>v!==null),60);const sparkHtml=trendWeeks.map((_,i)=>{const v=sparkData[i];if(v===null)return'<div class="rmap-spark-b" style="height:4px;background:#E2E8F0;"></div>';const col=v>=98?'#16A34A':v>=95?'#EF9F27':'#E24B4A';return`<div class="rmap-spark-b" style="height:${Math.max(4,Math.round(v/maxSp*20))}px;background:${col};"></div>`;}).join('');return`<tr><td style="font-weight:600;">${rg}</td><td><span class="${pillClass}">${(cf>=98?'+':'')+dif}pp</span></td><td style="text-align:right;font-weight:700;color:${cf>=98?'#16A34A':cf>=95?'#D97706':'#DC2626'}">${cf.toFixed(1)}%</td><td style="text-align:right;color:#DC2626;font-weight:600;">${d.gap<0?fmt(d.gap):'0'}</td><td style="text-align:center;"><div class="rmap-spark" style="justify-content:center;">${sparkHtml}</div></td></tr>`;}).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px;">Tidak ada data.</td></tr>';}
 }
+function rmapBubClick(rg){document.querySelectorAll('.rmap-region circle').forEach(el=>{el.setAttribute('stroke','#fff');el.setAttribute('stroke-width','1.5');});const svgKey=RMAP_IDS[rg]||rg;const gEl=document.getElementById('rmap-'+svgKey);if(gEl){const c=gEl.querySelector('circle');if(c){c.setAttribute('stroke','#0F172A');c.setAttribute('stroke-width','3');}}}
 function setRmapWeek(w){rmapWeek=w;buildRegionMap();}
 function setRmapCh(ch,btn){rmapCh=ch;document.querySelectorAll('#regionMapPage .rg-ch-btn').forEach(b=>b.classList.remove('rg-ch-active'));if(btn)btn.classList.add('rg-ch-active');buildRegionMap();}
-function rmapHighlight(rg){document.querySelectorAll('.rmap-region path,.rmap-region ellipse,.rmap-region circle').forEach(el=>{el.setAttribute('stroke','#fff');el.setAttribute('stroke-width','1.5');});const svgKey=RMAP_IDS[rg]||rg;const gEl=document.getElementById('rmap-'+svgKey);if(gEl){const shape=gEl.querySelector('path')||gEl.querySelector('ellipse')||gEl.querySelector('circle');if(shape){shape.setAttribute('stroke','#0F172A');shape.setAttribute('stroke-width','2.5');}}}
+function rmapHighlight(rg){rmapBubClick(rg);}
 
 init();
 </script>
