@@ -416,7 +416,7 @@ tr:hover td{background:#F7F9FE;}
         <div class="card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
             <div><div class="card-title">Loss Tree — Level 1</div><div class="card-sub">Total Loss per root cause · <span id="ltL1Sub">—</span></div></div>
-            <div class="wk-chips" id="ltOverviewChips" style="margin-bottom:0;justify-content:flex-end;"></div>
+            <select id="ltOverviewChips" onchange="renderLossTreeOverview(this.value)" style="font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;"></select>
           </div>
           <div id="ltL1Bars"></div>
           <div class="lt-treemap"><div class="lt-treemap-label">Proporsi visual:</div><div id="ltTreemap"></div></div>
@@ -1186,7 +1186,7 @@ function renderLossTreeOverview(filterWeek){
   activeLtWeek=filterWeek||'all';
   const weeks=sortW(DB.l1.map(d=>d.Week));
   const chipsEl=document.getElementById('ltOverviewChips');
-  if(chipsEl){chipsEl.innerHTML=`<span class="wk-chip ${activeLtWeek==='all'?'active':''}" onclick="renderLossTreeOverview('all')">All Weeks</span>`+weeks.map(w=>`<span class="wk-chip ${activeLtWeek===w?'active':''}" onclick="renderLossTreeOverview('${w}')">${w}</span>`).join('');}
+  if(chipsEl){chipsEl.innerHTML=`<option value="all">All Weeks</option>`+weeks.map(w=>`<option value="${w}">${w}</option>`).join('');chipsEl.value=activeLtWeek;}
   let l1data=activeLtWeek==='all'?DB.l1:DB.l1.filter(d=>d.Week===activeLtWeek);
   let l2data=activeLtWeek==='all'?DB.l2:DB.l2.filter(d=>d.Week===activeLtWeek);
   if(activeLtChannel!=='all'){l1data=l1data.filter(d=>(d['Channel Breakdown']||'').trim().toUpperCase()===activeLtChannel);l2data=l2data.filter(d=>(d['Channel Breakdown']||'').trim().toUpperCase()===activeLtChannel);}
