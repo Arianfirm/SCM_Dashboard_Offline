@@ -310,6 +310,11 @@ tr:hover td{background:#F7F9FE;}
       <div class="week-badge"><span class="sync-dot"></span><span id="weekBadgeText">Loading...</span></div>
       <select id="weekFilter"></select>
     </div>
+    <div id="ltChannelToggle" class="wk-chips" style="display:none;align-items:center;gap:6px;">
+      <span class="wk-chip active" onclick="setLtChannel('all')">All</span>
+      <span class="wk-chip" onclick="setLtChannel('MT')">MT</span>
+      <span class="wk-chip" onclick="setLtChannel('GT')">GT</span>
+    </div>
   </div>
 
   <div class="content">
@@ -652,7 +657,7 @@ const URLS={
 };
 
 let DB={ch:[],bd:[],sku:[],rg:[],rgBd:[],top:[],l1:[],l2:[]};
-let charts={},curWeek='',activeTopWeek='all',activeLtWeek='all',activeLtL2Week='all';
+let charts={},curWeek='',activeTopWeek='all',activeLtWeek='all',activeLtL2Week='all',activeLtChannel='all';
 let chDrillWeek='all',rgDrillWeek='all';
 let selectedChannel=null,selectedRegion=null;
 let chFilter='',rgChFilter='';
@@ -707,12 +712,14 @@ function showPage(page,btn){
   if(page==='top')buildSkuTop(activeTopWeek);
   if(page==='channelDrill')buildChannelDrillPage();
   if(page==='regionDrill')buildRegionDrillPage();
-  const topbarRight = document.querySelector('.topbar-right')
-  if(page === 'regionDrill' || page === 'channelDrill'|| page ==='losstree'){
+  const topbarRight = document.querySelector('.topbar-right');
+  const ltToggle = document.getElementById('ltChannelToggle');
+  if(page === 'regionDrill' || page === 'channelDrill' || page === 'lossTree'){
     topbarRight.style.display = 'none';
   }else{
     topbarRight.style.display = 'flex';
   }
+  ltToggle.style.display = page === 'lossTree' ? 'flex' : 'none';
 }
 
 /* ══ PLUGINS ══ */
@@ -1180,8 +1187,9 @@ function renderLossTreeOverview(filterWeek){
   const weeks=sortW(DB.l1.map(d=>d.Week));
   const chipsEl=document.getElementById('ltOverviewChips');
   if(chipsEl){chipsEl.innerHTML=`<span class="wk-chip ${activeLtWeek==='all'?'active':''}" onclick="renderLossTreeOverview('all')">All Weeks</span>`+weeks.map(w=>`<span class="wk-chip ${activeLtWeek===w?'active':''}" onclick="renderLossTreeOverview('${w}')">${w}</span>`).join('');}
-  const l1data=activeLtWeek==='all'?DB.l1:DB.l1.filter(d=>d.Week===activeLtWeek);
-  const l2data=activeLtWeek==='all'?DB.l2:DB.l2.filter(d=>d.Week===activeLtWeek);
+  let l1data=activeLtWeek==='all'?DB.l1:DB.l1.filter(d=>d.Week===activeLtWeek);
+  let l2data=activeLtWeek==='all'?DB.l2:DB.l2.filter(d=>d.Week===activeLtWeek);
+  if(activeLtChannel!=='all'){l1data=l1data.filter(d=>(d['Channel Breakdown']||'').trim().toUpperCase()===activeLtChannel);l2data=l2data.filter(d=>(d['Channel Breakdown']||'').trim().toUpperCase()===activeLtChannel);}
   const weekLabel=activeLtWeek==='all'?'Semua week':activeLtWeek;
   const l1Agg={};l1data.forEach(d=>{const cat=d['Loss Level 1']||'?';if(!l1Agg[cat])l1Agg[cat]={order:0,delivery:0,gap:0};l1Agg[cat].order+=num(d['Order Quantity']);l1Agg[cat].delivery+=num(d['Delivery Quantity']);l1Agg[cat].gap+=num(d['GAP']);});
   const totalLoss=Object.values(l1Agg).reduce((s,r)=>s+r.gap,0);
@@ -1260,6 +1268,7 @@ function renderLossTreeL2(){
   fill('ltL2TableBody',tblSorted.map((d,i)=>{const gap=num(d['GAP']);const wT=fW==='all'?(wTotals[d.Week]||totFiltered):totFiltered;const pct=wT!==0?Math.abs(gap/wT*100):0;const l1s=(d['Loss Level 1']||'').replace(/^\d+\.\d+\s/,'').replace('Issue','').trim();const l2s=(d['Loss Level 2']||'').replace(/^\d+\.\d+\s/,'');return`<tr><td style="color:#534AB7;font-weight:700">${i+1}</td><td class="td-name" style="max-width:180px;overflow:hidden;text-overflow:ellipsis">${(d['Product Name']||'—').substring(0,38)}${(d['Product Name']||'').length>38?'…':''}</td><td><span class="pill ${l1Pill(d['Loss Level 1'])}">${l1s}</span></td><td><span class="pill ${l2Pill(d['Loss Level 2'])}">${l2s.substring(0,22)}</span></td><td>${fmt(d['Order Quantity'])}</td><td>${fmt(d['Delivery Quantity'])}</td><td class="td-loss" style="text-align:right">${fmt(gap)}</td><td style="text-align:right"><div style="display:flex;align-items:center;gap:6px;justify-content:flex-end"><div style="width:48px;background:#F3F4F6;border-radius:999px;height:5px;overflow:hidden"><div style="width:${Math.min(100,pct).toFixed(0)}%;height:5px;border-radius:999px;background:#534AB7"></div></div><span style="font-size:11px;font-weight:700;color:#534AB7;min-width:36px;text-align:right">${pct.toFixed(1)}%</span></div></td></tr>`;}).join(''));
 }
 function setLtL2Week(w){activeLtL2Week=w;renderLossTreeL2();}
+function setLtChannel(ch){activeLtChannel=ch;document.querySelectorAll('#ltChannelToggle .wk-chip').forEach(c=>c.classList.toggle('active',c.textContent.trim()===(ch==='all'?'All':ch)));renderLossTreeOverview(activeLtWeek);}
 
 /* ══ OTHER BUILD FUNCTIONS ══ */
 function buildBarChart(data){dc('bar');charts['bar']=new Chart(document.getElementById('barChart'),{type:'bar',plugins:[vBarLabelPlugin],data:{labels:data.map(d=>d.Channel||'-'),datasets:[{data:data.map(d=>num(d['Case Fill'])),backgroundColor:['#7C79E0','#3B82F6'],borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},layout:{padding:{top:24}},scales:{y:{min:0,max:115,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});}
