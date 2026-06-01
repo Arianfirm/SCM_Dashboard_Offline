@@ -243,6 +243,35 @@ tr:hover td{background:#F7F9FE;}
 ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:99px;}
 ::-webkit-scrollbar-thumb:hover{background:#94A3B8;}
 @media(max-width:960px){.chart-row,.kpi-row{grid-template-columns:1fr;}}
+/* ══ REGION PERFORMANCE MAP ══ */
+.map-layout{display:grid;grid-template-columns:290px 1fr;gap:16px;align-items:start;}
+.map-svg-wrap{background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;box-shadow:var(--shadow-xs);}
+.map-legend-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+.map-legend-strip{display:flex;align-items:center;gap:4px;margin-bottom:3px;}
+.map-legend-grad{display:flex;gap:1px;}
+.map-legend-seg{width:22px;height:10px;}
+.map-legend-seg:first-child{border-radius:3px 0 0 3px;}
+.map-legend-seg:last-child{border-radius:0 3px 3px 0;}
+.map-legend-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:10px;}
+.rmap-ranked-row{display:grid;grid-template-columns:106px 1fr 52px 44px;align-items:center;gap:8px;margin-bottom:6px;font-size:11px;}
+.rmap-ranked-track{background:#F1F5F9;border-radius:3px;height:13px;overflow:hidden;}
+.rmap-ranked-fill{height:13px;border-radius:3px;}
+.rmap-target-line{border-top:1.5px dashed #EF4444;margin:6px 0;}
+.rmap-summary-box{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-top:12px;}
+.rmap-summary-num{font-size:20px;font-weight:700;color:#DC2626;margin-top:2px;}
+.rmap-summary-lbl{font-size:10px;color:var(--muted);margin-top:3px;}
+.rmap-trend-tbl{width:100%;border-collapse:collapse;font-size:11.5px;}
+.rmap-trend-tbl th{padding:8px 12px;text-align:left;font-size:9.5px;font-weight:700;color:#94A3B8;letter-spacing:.6px;text-transform:uppercase;border-bottom:1.5px solid var(--border);background:#FAFBFD;white-space:nowrap;}
+.rmap-trend-tbl td{padding:10px 12px;border-bottom:1px solid #F1F5F9;color:var(--text);}
+.rmap-trend-tbl tr:last-child td{border-bottom:none;}
+.rmap-trend-tbl tr:hover td{background:#F7F9FE;}
+.rmap-spark{display:flex;align-items:flex-end;gap:2px;height:20px;}
+.rmap-spark-b{width:7px;border-radius:2px 2px 0 0;}
+.rmap-pill-bad{background:#FEF2F2;color:#991B1B;display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;}
+.rmap-pill-warn{background:#FFFBEB;color:#92400E;display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;}
+.rmap-pill-ok{background:#F0FDF4;color:#166534;display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;}
+.rmap-filter-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+@media(max-width:900px){.map-layout{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -272,6 +301,10 @@ tr:hover td{background:#F7F9FE;}
   <div class="nav">
     <button class="nav-item" onclick="showPage('channelDrill',this)"><span class="nav-icon">🔎</span> Channel Drill-Down</button>
     <button class="nav-item" onclick="showPage('regionDrill',this)"><span class="nav-icon">🗂️</span> Region Drill-Down</button>
+  </div>
+  <div class="sidebar-section">Peta &amp; Analisis</div>
+  <div class="nav">
+    <button class="nav-item" onclick="showPage('regionMap',this)"><span class="nav-icon">🗺️</span> Region Performance Map</button>
   </div>
   <div class="sidebar-section">Region by Channel</div>
   <div class="nav nav-sub">
@@ -644,6 +677,108 @@ tr:hover td{background:#F7F9FE;}
       <div class="card"><div class="table-wrap"><table><thead id="subChGTTableHead"></thead><tbody id="subChGTTableBody"></tbody></table></div></div>
     </div>
 
+    <!-- ══ REGION PERFORMANCE MAP ══ -->
+    <div class="page" id="regionMapPage">
+      <div class="rmap-filter-bar">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:11px;font-weight:600;color:var(--muted);">Week:</span>
+          <div class="wk-chips" id="rmapWeekChips"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:11px;font-weight:600;color:var(--muted);">Channel:</span>
+          <button class="rg-ch-btn rg-ch-active" onclick="setRmapCh('',this)">All</button>
+          <button class="rg-ch-btn" onclick="setRmapCh('MT',this)">MT</button>
+          <button class="rg-ch-btn" onclick="setRmapCh('GT',this)">GT</button>
+        </div>
+      </div>
+      <div class="map-layout">
+        <div class="map-svg-wrap">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">Peta CF% per Region</div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:10px;" id="rmapMapSub">Semua week · All channel</div>
+          <svg id="rmapSvg" viewBox="0 0 265 205" width="100%" style="display:block;">
+            <g id="rmap-Sumatra" class="rmap-region" onclick="rmapHighlight('Sumatra')" style="cursor:pointer;">
+              <ellipse cx="44" cy="90" rx="36" ry="68" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+              <text x="44" y="83" text-anchor="middle" font-size="8" font-weight="600" fill="#475569">Sumatra</text>
+              <text id="rmap-cf-Sumatra" x="44" y="95" text-anchor="middle" font-size="10.5" font-weight="700" fill="#475569">—</text>
+              <text id="rmap-loss-Sumatra" x="44" y="106" text-anchor="middle" font-size="7.5" fill="#94A3B8">—</text>
+            </g>
+            <g id="rmap-Central Java" class="rmap-region" onclick="rmapHighlight('Central Java')" style="cursor:pointer;">
+              <ellipse cx="100" cy="160" rx="22" ry="16" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+              <text x="100" y="157" text-anchor="middle" font-size="6.5" font-weight="600" fill="#475569">C. Java</text>
+              <text id="rmap-cf-Central Java" x="100" y="167" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">—</text>
+            </g>
+            <g id="rmap-Jabo" class="rmap-region" onclick="rmapHighlight('Jabo')" style="cursor:pointer;">
+              <ellipse cx="132" cy="160" rx="24" ry="17" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+              <text x="132" y="157" text-anchor="middle" font-size="7.5" font-weight="600" fill="#475569">Jabo</text>
+              <text id="rmap-cf-Jabo" x="132" y="167" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">—</text>
+            </g>
+            <g id="rmap-East Java" class="rmap-region" onclick="rmapHighlight('East Java')" style="cursor:pointer;">
+              <ellipse cx="164" cy="160" rx="22" ry="16" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+              <text x="164" y="157" text-anchor="middle" font-size="6.5" font-weight="600" fill="#475569">E. Java</text>
+              <text id="rmap-cf-East Java" x="164" y="167" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">—</text>
+            </g>
+            <g id="rmap-Kalimantan" class="rmap-region" onclick="rmapHighlight('Kalimantan')" style="cursor:pointer;">
+              <ellipse cx="152" cy="84" rx="50" ry="50" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+              <text x="152" y="78" text-anchor="middle" font-size="8" font-weight="600" fill="#475569">Kalimantan</text>
+              <text id="rmap-cf-Kalimantan" x="152" y="90" text-anchor="middle" font-size="10.5" font-weight="700" fill="#475569">—</text>
+              <text id="rmap-loss-Kalimantan" x="152" y="101" text-anchor="middle" font-size="7.5" fill="#94A3B8">—</text>
+            </g>
+            <g id="rmap-South Sulawesi" class="rmap-region" onclick="rmapHighlight('South Sulawesi')" style="cursor:pointer;">
+              <ellipse cx="208" cy="97" rx="24" ry="44" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+              <text x="208" y="90" text-anchor="middle" font-size="7" font-weight="600" fill="#475569">S. Sulawesi</text>
+              <text id="rmap-cf-South Sulawesi" x="208" y="101" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">—</text>
+            </g>
+            <g id="rmap-Bali Nusra" class="rmap-region" onclick="rmapHighlight('Bali Nusra')" style="cursor:pointer;">
+              <ellipse cx="195" cy="163" rx="18" ry="12" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+              <text x="195" y="160" text-anchor="middle" font-size="6" font-weight="600" fill="#475569">Bali Nusra</text>
+              <text id="rmap-cf-Bali Nusra" x="195" y="169" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">—</text>
+            </g>
+            <g id="rmap-Maluku" class="rmap-region" onclick="rmapHighlight('Maluku')" style="cursor:pointer;">
+              <circle cx="234" cy="118" r="13" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+              <text x="234" y="115" text-anchor="middle" font-size="6.5" font-weight="600" fill="#475569">Maluku</text>
+              <text id="rmap-cf-Maluku" x="234" y="125" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">—</text>
+            </g>
+            <g id="rmap-Papua" class="rmap-region" onclick="rmapHighlight('Papua')" style="cursor:pointer;">
+              <ellipse cx="250" cy="74" rx="13" ry="28" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+              <text x="250" y="68" text-anchor="middle" font-size="6.5" font-weight="600" fill="#475569">Papua</text>
+              <text id="rmap-cf-Papua" x="250" y="78" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">—</text>
+            </g>
+            <line x1="4" y1="197" x2="261" y2="197" stroke="#EF4444" stroke-width=".8" stroke-dasharray="3,2"/>
+            <text x="4" y="194" font-size="7" fill="#EF4444">target 98%</text>
+          </svg>
+          <div class="map-legend-title">Case Fill %</div>
+          <div class="map-legend-strip">
+            <div class="map-legend-grad">
+              <div class="map-legend-seg" style="background:#DC2626;"></div>
+              <div class="map-legend-seg" style="background:#F59E0B;"></div>
+              <div class="map-legend-seg" style="background:#FCD34D;"></div>
+              <div class="map-legend-seg" style="background:#86EFAC;"></div>
+              <div class="map-legend-seg" style="background:#16A34A;"></div>
+            </div>
+          </div>
+          <div class="map-legend-labels"><span style="color:#DC2626;">&lt;90%</span><span>94%</span><span style="color:#16A34A;">≥98%</span></div>
+          <div class="rmap-summary-box">
+            <div style="font-size:10px;color:var(--muted);">Total loss semua region</div>
+            <div class="rmap-summary-num" id="rmapTotalLoss">—</div>
+            <div class="rmap-summary-lbl" id="rmapBelowTarget">— region di bawah target 98%</div>
+          </div>
+        </div>
+        <div class="card" style="padding:20px 22px;">
+          <div class="card-head"><div><div class="card-title">Ranking CF% per Region</div><div class="card-sub">Terburuk → terbaik · selisih vs target 98%</div></div></div>
+          <div id="rmapRankedBars"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Trend &amp; Loss Summary</div><div class="card-sub">CF% per region · sparkline 3 week terakhir · total loss</div></div></div>
+        <div class="table-wrap">
+          <table class="rmap-trend-tbl">
+            <thead><tr><th>Region</th><th>Status vs 98%</th><th style="text-align:right">Case Fill</th><th style="text-align:right">Total Loss</th><th style="text-align:center">Trend (3 wk)</th></tr></thead>
+            <tbody id="rmapTrendTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -699,6 +834,7 @@ const PAGE_META={
   channelTrendGT:{icon:'🔵',title:'Channel Trend — GT',sub:'Trend weekly GT'},
   subChTrendMT:{icon:'📊',title:'Sub Channel Trend — MT',sub:'Trend per sub-channel MT'},
   subChTrendGT:{icon:'📊',title:'Sub Channel Trend — GT',sub:'Trend per sub-channel GT'},
+  regionMap:{icon:'🗺️',title:'Region Performance Map',sub:'Peta CF% · Ranking · Trend & Loss summary per region'},
 };
 
 function showPage(page,btn){
@@ -714,8 +850,9 @@ function showPage(page,btn){
   if(page==='top')buildSkuTop(activeTopWeek);
   if(page==='channelDrill')buildChannelDrillPage();
   if(page==='regionDrill')buildRegionDrillPage();
+  if(page==='regionMap')buildRegionMap();
   const topbarRight = document.querySelector('.topbar-right');
-  if(page === 'regionDrill' || page === 'channelDrill' || page === 'lossTree' || page === 'lossTreeL2' || page === 'top'){
+  if(page === 'regionDrill' || page === 'channelDrill' || page === 'lossTree' || page === 'lossTreeL2' || page === 'top' || page === 'regionMap'){
     topbarRight.style.display = 'none';
   }else{
     topbarRight.style.display = 'flex';
@@ -1281,6 +1418,61 @@ function buildRegionAll(week){const allW=[...new Set(DB.rg.map(d=>d.Week))].sort
 function buildRegionCh(ch,week){const color=ch==='MT'?'#7C79E0':'#3B82F6';const allW=[...new Set(DB.rgBd.map(d=>d.Week))].sort();const isCh=row=>getCh(row).includes(ch);const rowsAll=DB.rgBd.filter(isCh);const rowsWeek=rowsAll.filter(d=>d.Week===week);const aggW={};rowsWeek.forEach(d=>{const rg=(d.Region||'').trim();if(!rg)return;if(!aggW[rg])aggW[rg]={order:0,delivery:0,gap:0};aggW[rg].order+=num(d['Order Quantity']);aggW[rg].delivery+=num(d['Delivery Quantity']);aggW[rg].gap+=num(d['GAP']);});const regions=Object.keys(aggW).sort();fill('regionGrid'+ch,regions.length?regions.map(rg=>{const d=aggW[rg];const cf=d.order>0?(d.delivery/d.order*100):0;return`<div class="region-card"><div class="rc-top"><div class="rc-name">${rg}</div><div class="rc-cf ${cfCls(cf)}">${cf.toFixed(1)}%</div></div><div class="rc-bar-bg"><div class="rc-bar-fill" style="width:${Math.min(100,cf)}%;background:${color}"></div></div><div class="rc-row"><div class="rc-stat"><small>Order</small><strong>${fmt(d.order)}</strong></div><div class="rc-stat"><small>Delivery</small><strong>${fmt(d.delivery)}</strong></div><div class="rc-stat"><small>Loss</small><strong style="color:#EF4444">${fmt(d.gap)}</strong></div></div></div>`;}).join(''):`<div class="empty-state">Tidak ada data ${ch}.</div>`);const aggAll={};rowsAll.forEach(d=>{const rg=(d.Region||'').trim();if(!rg)return;const w=d.Week;if(!aggAll[rg])aggAll[rg]={};if(!aggAll[rg][w])aggAll[rg][w]={order:0,delivery:0};aggAll[rg][w].order+=num(d['Order Quantity']);aggAll[rg][w].delivery+=num(d['Delivery Quantity']);});const allRg=[...new Set(rowsAll.map(d=>(d.Region||'').trim()).filter(Boolean))].sort();const tDS=allRg.map((rg,ri)=>({label:rg,data:allW.map(w=>{const a=aggAll[rg]&&aggAll[rg][w];return a&&a.order>0?parseFloat((a.delivery/a.order*100).toFixed(2)):null;}),borderColor:COLORS[ri%COLORS.length],backgroundColor:'transparent',tension:.4,pointRadius:3,borderWidth:2,spanGaps:true}));dc('rTrend'+ch);charts['rTrend'+ch]=new Chart(document.getElementById('regionTrend'+ch),{type:'line',data:{labels:allW,datasets:tDS},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});fill('regionTrendLegend'+ch,allRg.map((rg,ri)=>`<div class="legend-item"><div class="legend-sq" style="background:${COLORS[ri%COLORS.length]}"></div>${rg}</div>`).join(''));const hH=Math.max(180,regions.length*56+60);document.getElementById('regionHBar'+ch+'Wrap').style.height=hH+'px';fill('regionBar'+ch+'Sub',week);dc('rHBar'+ch);charts['rHBar'+ch]=new Chart(document.getElementById('regionHBar'+ch),{type:'bar',plugins:[hBarLabelPlugin],data:{labels:regions,datasets:[{data:regions.map(rg=>{const d=aggW[rg];return d.order>0?parseFloat((d.delivery/d.order*100).toFixed(2)):0;}),extra:regions.map(rg=>aggW[rg].delivery),backgroundColor:color,borderRadius:4,barThickness:28}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},layout:{padding:{right:52}},scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});fill('regionTable'+ch,regions.length?regions.map(rg=>{const d=aggW[rg];const cf=d.order>0?(d.delivery/d.order*100):0;const pc=pctColor(cf);return`<tr><td class="td-name">${rg}</td><td>${fmt(d.order)}</td><td>${fmt(d.delivery)}</td><td class="td-loss">${fmt(d.gap)}</td><td><div class="cf-bar-wrap"><div class="cf-bar-bg"><div class="cf-bar-fill" style="width:${Math.min(100,cf)}%;background:${color}"></div></div><span class="cf-bar-pct" style="color:${pc}">${cf.toFixed(1)}%</span></div></td></tr>`;}).join(''):`<tr><td colspan="5" class="empty-state">Tidak ada data ${ch}.</td></tr>`);}
 function buildChannelTrend(){const allW=sortW(DB.ch.map(d=>d.Week));const mtR=allW.map(w=>DB.ch.find(d=>d.Week===w&&getCh(d).includes('MT'))||null);const gtR=allW.map(w=>DB.ch.find(d=>d.Week===w&&getCh(d).includes('GT'))||null);const mtCF=mtR.map(r=>r?parseFloat(num(r['Case Fill']).toFixed(2)):null);const gtCF=gtR.map(r=>r?parseFloat(num(r['Case Fill']).toFixed(2)):null);const mtD=mtR.map(r=>r?num(r['Delivery Quantity']):null);const gtD=gtR.map(r=>r?num(r['Delivery Quantity']):null);const mtO=mtR.map(r=>r?num(r['Order Quantity']):null);const gtO=gtR.map(r=>r?num(r['Order Quantity']):null);const lMT=mtR.filter(Boolean).slice(-1)[0];const lGT=gtR.filter(Boolean).slice(-1)[0];fill('chTrendKpiRow',`<div class="kpi-card"><div class="kpi-head"><span class="kpi-label">MT Latest</span><span class="kpi-badge mt">MT</span></div><div class="kpi-pct mt">${lMT?num(lMT['Case Fill']).toFixed(1)+'%':'—'}</div><div class="kpi-details"><div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val">${lMT?fmt(lMT['Order Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val">${lMT?fmt(lMT['Delivery Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" style="color:#EF4444">${lMT?fmt(lMT['GAP']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">CF</div><div class="kdi-val" style="color:#7C79E0">${lMT?num(lMT['Case Fill']).toFixed(2)+'%':'—'}</div></div></div></div><div class="kpi-card"><div class="kpi-head"><span class="kpi-label">GT Latest</span><span class="kpi-badge gt">GT</span></div><div class="kpi-pct gt">${lGT?num(lGT['Case Fill']).toFixed(1)+'%':'—'}</div><div class="kpi-details"><div class="kpi-detail-item"><div class="kdi-label">Order</div><div class="kdi-val">${lGT?fmt(lGT['Order Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Delivery</div><div class="kdi-val">${lGT?fmt(lGT['Delivery Quantity']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">Loss</div><div class="kdi-val" style="color:#EF4444">${lGT?fmt(lGT['GAP']):'—'}</div></div><div class="kpi-detail-item"><div class="kdi-label">CF</div><div class="kdi-val" style="color:#3B82F6">${lGT?num(lGT['Case Fill']).toFixed(2)+'%':'—'}</div></div></div></div>`);dc('chTrendLine');charts['chTrendLine']=new Chart(document.getElementById('chTrendLine'),{type:'line',data:{labels:allW,datasets:[{label:'MT',data:mtCF,borderColor:'#7C79E0',backgroundColor:'rgba(124,121,224,.08)',fill:true,tension:.4,pointRadius:5,pointBackgroundColor:'#7C79E0',borderWidth:2.5,spanGaps:true},{label:'GT',data:gtCF,borderColor:'#3B82F6',backgroundColor:'rgba(59,130,246,.06)',fill:true,tension:.4,pointRadius:5,pointBackgroundColor:'#3B82F6',borderWidth:2.5,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});dc('chTrendDelivery');charts['chTrendDelivery']=new Chart(document.getElementById('chTrendDelivery'),{type:'line',data:{labels:allW,datasets:[{label:'MT',data:mtD,borderColor:'#7C79E0',backgroundColor:'transparent',fill:false,tension:.4,pointRadius:5,pointBackgroundColor:'#7C79E0',borderWidth:2.5,spanGaps:true},{label:'GT',data:gtD,borderColor:'#3B82F6',backgroundColor:'transparent',fill:false,tension:.4,pointRadius:5,pointBackgroundColor:'#3B82F6',borderWidth:2.5,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v,font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});function mkHBar(cId,wId,cfArr,dArr,oArr,color){const hH=Math.max(180,allW.length*64+60);document.getElementById(wId).style.height=hH+'px';dc(cId);charts[cId]=new Chart(document.getElementById(cId),{type:'bar',plugins:[hBarLabelPlugin],data:{labels:allW,datasets:[{data:cfArr,extra:dArr,extra2:oArr,backgroundColor:color,borderRadius:4,barThickness:32}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},layout:{padding:{right:110}},scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}})}mkHBar('chHBarMTAll','chHBarMTAllWrap',mtCF,mtD,mtO,'#7C79E0');mkHBar('chHBarGTAll','chHBarGTAllWrap',gtCF,gtD,gtO,'#3B82F6');const rowsAll=[];allW.forEach(w=>{const mr=mtR[allW.indexOf(w)];const gr=gtR[allW.indexOf(w)];if(mr)rowsAll.push({week:w,ch:'MT',row:mr,col:'#7C79E0'});if(gr)rowsAll.push({week:w,ch:'GT',row:gr,col:'#3B82F6'});});fill('chTrendTableAll',rowsAll.map(({week,ch,row,col})=>{const cf=num(row['Case Fill']);const pc=pctColor(cf);return`<tr><td class="td-name">${week}</td><td><span class="pill ${ch==='MT'?'pill-mt':'pill-gt'}">${ch}</span></td><td>${fmt(row['Order Quantity'])}</td><td>${fmt(row['Delivery Quantity'])}</td><td class="td-loss">${fmt(row['GAP'])}</td><td><div class="cf-bar-wrap"><div class="cf-bar-bg"><div class="cf-bar-fill" style="width:${Math.min(100,cf)}%;background:${col}"></div></div><span class="cf-bar-pct" style="color:${pc}">${cf.toFixed(1)}%</span></div></td></tr>`;}).join(''));['MT','GT'].forEach(ch=>{const isM=ch==='MT';const color=isM?'#7C79E0':'#3B82F6';const cfArr=isM?mtCF:gtCF;const dArr=isM?mtD:gtD;const oArr=isM?mtO:gtO;const rows=isM?mtR:gtR;dc('chTrendLine'+ch);charts['chTrendLine'+ch]=new Chart(document.getElementById('chTrendLine'+ch),{type:'line',data:{labels:allW,datasets:[{label:ch,data:cfArr,borderColor:color,backgroundColor:color.replace(')',',0.08)').replace('rgb','rgba'),fill:true,tension:.4,pointRadius:5,pointBackgroundColor:color,borderWidth:2.5,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});const hH2=Math.max(180,allW.length*64+60);document.getElementById('chHBar'+ch+'Wrap').style.height=hH2+'px';dc('chHBar'+ch);charts['chHBar'+ch]=new Chart(document.getElementById('chHBar'+ch),{type:'bar',plugins:[hBarLabelPlugin],data:{labels:allW,datasets:[{data:cfArr,extra:dArr,extra2:oArr,backgroundColor:color,borderRadius:4,barThickness:32}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},layout:{padding:{right:110}},scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});fill('chTrendTable'+ch,allW.map((w,i)=>{const r=rows[i];if(!r)return'';const cf=num(r['Case Fill']);const pc=pctColor(cf);return`<tr><td class="td-name">${w}</td><td>${fmt(r['Order Quantity'])}</td><td>${fmt(r['Delivery Quantity'])}</td><td class="td-loss">${fmt(r['GAP'])}</td><td><div class="cf-bar-wrap"><div class="cf-bar-bg"><div class="cf-bar-fill" style="width:${Math.min(100,cf)}%;background:${color}"></div></div><span class="cf-bar-pct" style="color:${pc}">${cf.toFixed(1)}%</span></div></td></tr>`;}).join(''));});}
 function buildSubChannelTrend(ch,week){const color=ch==='MT'?'#7C79E0':'#3B82F6';const sfx=ch;const allW=sortW(DB.bd.map(d=>d.Week));const rows=DB.bd.filter(d=>(d['Channel Breakdown']||'').toUpperCase().includes('['+ch+'-'));const subChSet=new Set();rows.forEach(d=>subChSet.add(d['Channel Breakdown']||''));const subChs=[...subChSet].sort();const agg={};rows.forEach(d=>{const sc=d['Channel Breakdown']||'';const w=d.Week;if(!agg[sc])agg[sc]={};if(!agg[sc][w])agg[sc][w]={order:0,delivery:0,gap:0};agg[sc][w].order+=num(d['Order Quantity']);agg[sc][w].delivery+=num(d['Delivery Quantity']);agg[sc][w].gap+=num(d['GAP']);});const cfOf=(sc,w)=>{const a=agg[sc]&&agg[sc][w];return a&&a.order>0?parseFloat((a.delivery/a.order*100).toFixed(2)):null;};fill('subCh'+sfx+'Cards',subChs.map(sc=>{const d=agg[sc]&&agg[sc][week]||{order:0,delivery:0,gap:0};const cf=d.order>0?(d.delivery/d.order*100):0;const cls=cfCls(cf);const label=sc.replace(/^\[.+?\]\s*/,'');const tag=sc.match(/^\[.+?\]/)?.[0]||sc;return`<div class="region-card"><div class="rc-top"><div style="font-size:11px;font-weight:700;color:var(--text);line-height:1.3">${tag}<br><span style="font-weight:500;color:var(--muted)">${label}</span></div><div class="rc-cf ${cls}">${cf.toFixed(1)}%</div></div><div class="rc-bar-bg"><div class="rc-bar-fill" style="width:${Math.min(100,cf)}%;background:${color}"></div></div><div class="rc-row"><div class="rc-stat"><small>Order</small><strong>${fmt(d.order)}</strong></div><div class="rc-stat"><small>Delivery</small><strong>${fmt(d.delivery)}</strong></div><div class="rc-stat"><small>Loss</small><strong style="color:#EF4444">${fmt(d.gap)}</strong></div></div></div>`;}).join('')||`<div class="empty-state">Tidak ada sub-channel ${ch}.</div>`);const tDS=subChs.map((sc,ri)=>({label:sc,data:allW.map(w=>cfOf(sc,w)),borderColor:COLORS[ri%COLORS.length],backgroundColor:'transparent',tension:.4,pointRadius:4,borderWidth:2,spanGaps:true}));dc('subCh'+sfx+'TrendLine');charts['subCh'+sfx+'TrendLine']=new Chart(document.getElementById('subCh'+sfx+'TrendLine'),{type:'line',data:{labels:allW,datasets:tDS},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});fill('subCh'+sfx+'TrendLegend',subChs.map((sc,ri)=>{const short=sc.replace(/^\[.+?\]\s*/,'').substring(0,22);return`<div class="legend-item"><div class="legend-sq" style="background:${COLORS[ri%COLORS.length]}"></div>${short}</div>`;}).join(''));const hLbl=subChs.map(sc=>sc.replace(/^\[.+?\]\s*/,'')),hCF=subChs.map(sc=>cfOf(sc,week)??0),hDel=subChs.map(sc=>(agg[sc]&&agg[sc][week]?.delivery)||0),hOrd=subChs.map(sc=>(agg[sc]&&agg[sc][week]?.order)||0);const hH=Math.max(260,subChs.length*64+60);document.getElementById('subCh'+sfx+'HBarWrap').style.height=hH+'px';fill('subCh'+sfx+'BarSub',week);dc('subCh'+sfx+'HBar');charts['subCh'+sfx+'HBar']=new Chart(document.getElementById('subCh'+sfx+'HBar'),{type:'bar',plugins:[hBarLabelPlugin],data:{labels:hLbl,datasets:[{data:hCF,extra:hDel,extra2:hOrd,backgroundColor:color,borderRadius:4,barThickness:32}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},layout:{padding:{right:120}},scales:{x:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F3F4F6'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});fill('subCh'+sfx+'TableHead',`<tr><th>Sub Channel</th>${allW.map(w=>`<th colspan="2" style="text-align:center">${w}</th>`).join('')}</tr><tr><th></th>${allW.map(()=>'<th>Delivery</th><th>CF%</th>').join('')}</tr>`);fill('subCh'+sfx+'TableBody',subChs.map(sc=>{const label=sc.replace(/^\[.+?\]\s*/,'');const tag=sc.match(/^\[.+?\]/)?.[0]||'';const cells=allW.map(w=>{const a=agg[sc]&&agg[sc][w];const del=a?a.delivery:null;const cf=a&&a.order>0?(a.delivery/a.order*100):null;const pc=cf!=null?pctColor(cf):'#9CA3AF';return`<td>${del!=null?fmt(del):'-'}</td><td style="color:${pc};font-weight:700">${cf!=null?cf.toFixed(1)+'%':'-'}</td>`;}).join('');return`<tr><td class="td-name"><span style="color:${color};font-size:10px;font-weight:700">${tag}</span> ${label}</td>${cells}</tr>`;}).join(''));}
+
+/* ══════════════════════════════════════════
+   REGION PERFORMANCE MAP
+══════════════════════════════════════════ */
+let rmapWeek='all', rmapCh='';
+const RMAP_IDS={'Jabo':'Jabo','Kalimantan':'Kalimantan','East Java':'East Java','Central Java':'Central Java','South Sulawesi':'South Sulawesi','Bali Nusra':'Bali Nusra','Maluku':'Maluku','Papua':'Papua','Sumatra':'Sumatra','North Sulawesi':'South Sulawesi','South Sumatra':'Sumatra','North Sumatra':'Sumatra','Central Sumatra':'Sumatra','West Sumatra':'Sumatra'};
+function rmapColor(cf){if(cf>=98)return'#16A34A';if(cf>=96)return'#86EFAC';if(cf>=94)return'#FCD34D';if(cf>=90)return'#F59E0B';return'#DC2626';}
+function rmapTextColor(cf){if(cf>=98)return'#14532D';if(cf>=96)return'#166534';if(cf>=94)return'#78350F';if(cf>=90)return'#92400E';return'#7F1D1D';}
+function rmapGetAgg(){let src=rmapCh===''?DB.rg:DB.rgBd.filter(d=>getCh(d).includes(rmapCh));if(rmapWeek!=='all')src=src.filter(d=>d.Week===rmapWeek);const agg={};src.forEach(d=>{const rg=(d.Region||'').trim();if(!rg)return;if(!agg[rg])agg[rg]={order:0,delivery:0,gap:0};agg[rg].order+=num(d['Order Quantity']);agg[rg].delivery+=num(d['Delivery Quantity']);agg[rg].gap+=num(d['GAP']);});return agg;}
+function buildRegionMap(){
+  const allWeeks=sortW([...new Set(DB.rg.map(d=>d.Week))]);
+  const chipsEl=document.getElementById('rmapWeekChips');
+  if(chipsEl){chipsEl.innerHTML=`<span class="wk-chip ${rmapWeek==='all'?'active':''}" onclick="setRmapWeek('all')">All</span>`+allWeeks.map(w=>`<span class="wk-chip ${rmapWeek===w?'active':''}" onclick="setRmapWeek('${w}')">${w}</span>`).join('');}
+  const agg=rmapGetAgg();
+  const sorted=Object.entries(agg).sort((a,b)=>{const cfA=a[1].order>0?(a[1].delivery/a[1].order*100):0;const cfB=b[1].order>0?(b[1].delivery/b[1].order*100):0;return cfA-cfB;});
+  const mapSubEl=document.getElementById('rmapMapSub');
+  if(mapSubEl)mapSubEl.innerHTML=`${rmapWeek==='all'?'Semua week':rmapWeek} · ${rmapCh===''?'All channel':rmapCh+' only'}`;
+  document.querySelectorAll('.rmap-region ellipse,.rmap-region circle').forEach(el=>{el.setAttribute('fill','#E2E8F0');el.setAttribute('stroke','#fff');el.setAttribute('stroke-width','1.5');});
+  document.querySelectorAll('[id^="rmap-cf-"]').forEach(el=>{el.innerHTML='—';el.setAttribute('fill','#475569');});
+  document.querySelectorAll('[id^="rmap-loss-"]').forEach(el=>{el.innerHTML='';});
+  let totalLoss=0,belowCount=0;
+  sorted.forEach(([rg,d])=>{
+    const cf=d.order>0?(d.delivery/d.order*100):0;const color=rmapColor(cf);const tCol=rmapTextColor(cf);
+    totalLoss+=d.gap;if(cf<98)belowCount++;
+    const svgKey=RMAP_IDS[rg]||rg;const gEl=document.getElementById('rmap-'+svgKey);
+    if(gEl){const shape=gEl.querySelector('ellipse')||gEl.querySelector('circle');if(shape)shape.setAttribute('fill',color);const cfEl=document.getElementById('rmap-cf-'+svgKey);if(cfEl){cfEl.innerHTML=cf.toFixed(1)+'%';cfEl.setAttribute('fill',tCol);}const lEl=document.getElementById('rmap-loss-'+svgKey);if(lEl&&d.gap<0)lEl.innerHTML=fmt(d.gap);}
+  });
+  const tlEl=document.getElementById('rmapTotalLoss');if(tlEl)tlEl.innerHTML=totalLoss<0?fmt(totalLoss):'0';
+  const btEl=document.getElementById('rmapBelowTarget');if(btEl)btEl.innerHTML=`${belowCount} dari ${sorted.length} region di bawah target 98%`;
+  const barsEl=document.getElementById('rmapRankedBars');
+  if(barsEl){
+    const below=sorted.filter(([,d])=>d.order>0&&(d.delivery/d.order*100)<98);
+    const above=sorted.filter(([,d])=>d.order<=0||(d.delivery/d.order*100)>=98);
+    let html='';
+    below.forEach(([rg,d])=>{const cf=(d.delivery/d.order*100);const diff=(cf-98).toFixed(1);html+=`<div class="rmap-ranked-row"><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${rg}">${rg.length>13?rg.slice(0,13)+'…':rg}</span><div class="rmap-ranked-track"><div class="rmap-ranked-fill" style="width:${cf.toFixed(0)}%;background:${rmapColor(cf)};"></div></div><span style="font-weight:700;color:${rmapColor(cf)}">${cf.toFixed(1)}%</span><span style="font-size:10px;color:#DC2626;">${diff}pp</span></div>`;});
+    if(below.length&&above.length){html+=`<div style="display:grid;grid-template-columns:106px 1fr 52px 44px;gap:8px;margin:4px 0;"><span style="font-size:9px;color:#DC2626;font-weight:700;">── 98% target</span><div class="rmap-target-line"></div><span></span><span></span></div>`;}
+    above.forEach(([rg,d])=>{const cf=d.order>0?(d.delivery/d.order*100):100;const diff='+'+(cf-98).toFixed(1);html+=`<div class="rmap-ranked-row"><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${rg}">${rg.length>13?rg.slice(0,13)+'…':rg}</span><div class="rmap-ranked-track"><div class="rmap-ranked-fill" style="width:${Math.min(100,cf).toFixed(0)}%;background:${rmapColor(cf)};"></div></div><span style="font-weight:700;color:${rmapColor(cf)}">${cf.toFixed(1)}%</span><span style="font-size:10px;color:#16A34A;">${diff}pp</span></div>`;});
+    barsEl.innerHTML=html||'<div style="color:var(--muted);font-size:12px;padding:12px 0;">Tidak ada data.</div>';
+  }
+  const trendWeeks=sortW([...new Set(DB.rg.map(d=>d.Week))]).slice(-3);
+  const tblEl=document.getElementById('rmapTrendTable');
+  if(tblEl){
+    tblEl.innerHTML=sorted.map(([rg,d])=>{
+      const cf=d.order>0?(d.delivery/d.order*100):0;const diff=(cf-98).toFixed(1);
+      const pillClass=cf<93?'rmap-pill-bad':cf<98?'rmap-pill-warn':'rmap-pill-ok';
+      const sparkData=trendWeeks.map(w=>{let s=rmapCh===''?DB.rg:DB.rgBd.filter(x=>getCh(x).includes(rmapCh));s=s.filter(x=>x.Week===w&&(x.Region||'').trim()===rg);const o=s.reduce((a,x)=>a+num(x['Order Quantity']),0);const dv=s.reduce((a,x)=>a+num(x['Delivery Quantity']),0);return o>0?(dv/o*100):null;});
+      const maxSp=Math.max(...sparkData.filter(v=>v!==null),60);
+      const sparkHtml=trendWeeks.map((_,i)=>{const v=sparkData[i];if(v===null)return`<div class="rmap-spark-b" style="height:4px;background:#E2E8F0;"></div>`;return`<div class="rmap-spark-b" style="height:${Math.max(4,Math.round(v/maxSp*20))}px;background:${rmapColor(v)};"></div>`;}).join('');
+      return`<tr><td style="font-weight:600;">${rg}</td><td><span class="${pillClass}">${(cf>=98?'+':'')+diff}pp</span></td><td style="text-align:right;font-weight:700;color:${rmapColor(cf)}">${cf.toFixed(1)}%</td><td style="text-align:right;color:#DC2626;font-weight:600;">${d.gap<0?fmt(d.gap):'0'}</td><td style="text-align:center;"><div class="rmap-spark" style="justify-content:center;">${sparkHtml}</div></td></tr>`;
+    }).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px;">Tidak ada data.</td></tr>';
+  }
+}
+function setRmapWeek(w){rmapWeek=w;buildRegionMap();}
+function setRmapCh(ch,btn){rmapCh=ch;document.querySelectorAll('#regionMapPage .rg-ch-btn').forEach(b=>b.classList.remove('rg-ch-active'));if(btn)btn.classList.add('rg-ch-active');buildRegionMap();}
+function rmapHighlight(rg){document.querySelectorAll('.rmap-region ellipse,.rmap-region circle').forEach(el=>{el.setAttribute('stroke','#fff');el.setAttribute('stroke-width','1.5');});const svgKey=RMAP_IDS[rg]||rg;const gEl=document.getElementById('rmap-'+svgKey);if(gEl){const shape=gEl.querySelector('ellipse')||gEl.querySelector('circle');if(shape){shape.setAttribute('stroke','#0F172A');shape.setAttribute('stroke-width','2.5');}}}
 
 init();
 </script>
