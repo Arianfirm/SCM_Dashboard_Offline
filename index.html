@@ -679,6 +679,7 @@ tr:hover td{background:#F7F9FE;}
 
     <!-- ══ REGION PERFORMANCE MAP ══ -->
     <div class="page" id="regionMapPage">
+      <!-- Filter bar -->
       <div class="rmap-filter-bar">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span style="font-size:11px;font-weight:600;color:var(--muted);">Week:</span>
@@ -691,83 +692,122 @@ tr:hover td{background:#F7F9FE;}
           <button class="rg-ch-btn" onclick="setRmapCh('GT',this)">GT</button>
         </div>
       </div>
-      <div class="map-layout">
-        <div class="map-svg-wrap">
-          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">Peta CF% per Region</div>
-          <div style="font-size:10px;color:var(--muted);margin-bottom:10px;" id="rmapMapSub">Semua week · All channel</div>
-          <svg id="rmapSvg" viewBox="0 0 265 205" width="100%" style="display:block;">
-            <g id="rmap-Sumatra" class="rmap-region" onclick="rmapHighlight('Sumatra')" style="cursor:pointer;">
-              <ellipse cx="44" cy="90" rx="36" ry="68" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-              <text x="44" y="83" text-anchor="middle" font-size="8" font-weight="600" fill="#475569">Sumatra</text>
-              <text id="rmap-cf-Sumatra" x="44" y="95" text-anchor="middle" font-size="10.5" font-weight="700" fill="#475569">—</text>
-              <text id="rmap-loss-Sumatra" x="44" y="106" text-anchor="middle" font-size="7.5" fill="#94A3B8">—</text>
-            </g>
-            <g id="rmap-Central Java" class="rmap-region" onclick="rmapHighlight('Central Java')" style="cursor:pointer;">
-              <ellipse cx="100" cy="160" rx="22" ry="16" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-              <text x="100" y="157" text-anchor="middle" font-size="6.5" font-weight="600" fill="#475569">C. Java</text>
-              <text id="rmap-cf-Central Java" x="100" y="167" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">—</text>
-            </g>
-            <g id="rmap-Jabo" class="rmap-region" onclick="rmapHighlight('Jabo')" style="cursor:pointer;">
-              <ellipse cx="132" cy="160" rx="24" ry="17" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-              <text x="132" y="157" text-anchor="middle" font-size="7.5" font-weight="600" fill="#475569">Jabo</text>
-              <text id="rmap-cf-Jabo" x="132" y="167" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">—</text>
-            </g>
-            <g id="rmap-East Java" class="rmap-region" onclick="rmapHighlight('East Java')" style="cursor:pointer;">
-              <ellipse cx="164" cy="160" rx="22" ry="16" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-              <text x="164" y="157" text-anchor="middle" font-size="6.5" font-weight="600" fill="#475569">E. Java</text>
-              <text id="rmap-cf-East Java" x="164" y="167" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">—</text>
-            </g>
-            <g id="rmap-Kalimantan" class="rmap-region" onclick="rmapHighlight('Kalimantan')" style="cursor:pointer;">
-              <ellipse cx="152" cy="84" rx="50" ry="50" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-              <text x="152" y="78" text-anchor="middle" font-size="8" font-weight="600" fill="#475569">Kalimantan</text>
-              <text id="rmap-cf-Kalimantan" x="152" y="90" text-anchor="middle" font-size="10.5" font-weight="700" fill="#475569">—</text>
-              <text id="rmap-loss-Kalimantan" x="152" y="101" text-anchor="middle" font-size="7.5" fill="#94A3B8">—</text>
-            </g>
-            <g id="rmap-South Sulawesi" class="rmap-region" onclick="rmapHighlight('South Sulawesi')" style="cursor:pointer;">
-              <ellipse cx="208" cy="97" rx="24" ry="44" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-              <text x="208" y="90" text-anchor="middle" font-size="7" font-weight="600" fill="#475569">S. Sulawesi</text>
-              <text id="rmap-cf-South Sulawesi" x="208" y="101" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">—</text>
-            </g>
-            <g id="rmap-Bali Nusra" class="rmap-region" onclick="rmapHighlight('Bali Nusra')" style="cursor:pointer;">
-              <ellipse cx="195" cy="163" rx="18" ry="12" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-              <text x="195" y="160" text-anchor="middle" font-size="6" font-weight="600" fill="#475569">Bali Nusra</text>
-              <text id="rmap-cf-Bali Nusra" x="195" y="169" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">—</text>
-            </g>
-            <g id="rmap-Maluku" class="rmap-region" onclick="rmapHighlight('Maluku')" style="cursor:pointer;">
-              <circle cx="234" cy="118" r="13" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-              <text x="234" y="115" text-anchor="middle" font-size="6.5" font-weight="600" fill="#475569">Maluku</text>
-              <text id="rmap-cf-Maluku" x="234" y="125" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">—</text>
-            </g>
-            <g id="rmap-Papua" class="rmap-region" onclick="rmapHighlight('Papua')" style="cursor:pointer;">
-              <ellipse cx="250" cy="74" rx="13" ry="28" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
-              <text x="250" y="68" text-anchor="middle" font-size="6.5" font-weight="600" fill="#475569">Papua</text>
-              <text id="rmap-cf-Papua" x="250" y="78" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">—</text>
-            </g>
-            <line x1="4" y1="197" x2="261" y2="197" stroke="#EF4444" stroke-width=".8" stroke-dasharray="3,2"/>
-            <text x="4" y="194" font-size="7" fill="#EF4444">target 98%</text>
-          </svg>
-          <div class="map-legend-title">Case Fill %</div>
-          <div class="map-legend-strip">
-            <div class="map-legend-grad">
-              <div class="map-legend-seg" style="background:#DC2626;"></div>
-              <div class="map-legend-seg" style="background:#F59E0B;"></div>
-              <div class="map-legend-seg" style="background:#FCD34D;"></div>
-              <div class="map-legend-seg" style="background:#86EFAC;"></div>
-              <div class="map-legend-seg" style="background:#16A34A;"></div>
-            </div>
+
+      <!-- SECTION 1: Peta Indonesia full width -->
+      <div class="card" style="padding:22px 24px;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Peta CF% per Region — Indonesia</div>
+            <div class="card-sub" id="rmapMapSub">Semua week · All channel · klik region untuk highlight</div>
           </div>
-          <div class="map-legend-labels"><span style="color:#DC2626;">&lt;90%</span><span>94%</span><span style="color:#16A34A;">≥98%</span></div>
-          <div class="rmap-summary-box">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="display:flex;gap:1px;">
+              <div style="width:18px;height:12px;background:#DC2626;border-radius:3px 0 0 3px;"></div>
+              <div style="width:18px;height:12px;background:#F59E0B;"></div>
+              <div style="width:18px;height:12px;background:#FCD34D;"></div>
+              <div style="width:18px;height:12px;background:#86EFAC;"></div>
+              <div style="width:18px;height:12px;background:#16A34A;border-radius:0 3px 3px 0;"></div>
+            </div>
+            <span style="font-size:10px;color:#DC2626;">&lt;90%</span>
+            <span style="font-size:10px;color:var(--muted);">→</span>
+            <span style="font-size:10px;color:#16A34A;">≥98%</span>
+          </div>
+        </div>
+        <svg id="rmapSvg" viewBox="0 0 900 300" width="100%"
+             style="display:block;border-radius:12px;background:linear-gradient(160deg,#EFF6FF 0%,#E0F2FE 100%);"
+             aria-label="Peta choropleth CF% per region Indonesia">
+          <defs>
+            <pattern id="seaDots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="10" cy="10" r="1" fill="#93C5FD" opacity=".35"/>
+            </pattern>
+          </defs>
+          <rect width="900" height="300" fill="url(#seaDots)"/>
+          <!-- SUMATRA -->
+          <g id="rmap-Sumatra" class="rmap-region" onclick="rmapHighlight('Sumatra')" style="cursor:pointer;">
+            <path d="M50,45 C58,28 76,22 94,26 C110,30 122,44 126,60 C132,80 128,102 120,122 C112,142 100,160 86,172 C72,184 56,188 44,180 C32,172 28,154 30,136 C32,116 40,94 46,74 C48,64 48,52 50,45Z" fill="#E2E8F0" stroke="#fff" stroke-width="2"/>
+            <text x="78" y="96" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">Sumatra</text>
+            <text id="rmap-cf-Sumatra" x="78" y="112" text-anchor="middle" font-size="14" font-weight="800" fill="#1E293B">—</text>
+            <text id="rmap-loss-Sumatra" x="78" y="126" text-anchor="middle" font-size="9" fill="#94A3B8">—</text>
+          </g>
+          <!-- JABO -->
+          <g id="rmap-Jabo" class="rmap-region" onclick="rmapHighlight('Jabo')" style="cursor:pointer;">
+            <path d="M168,196 C178,186 196,182 212,186 C226,190 234,202 232,216 C230,228 218,236 204,236 C190,236 178,228 172,216 C168,208 166,200 168,196Z" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+            <text x="200" y="208" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">Jabo</text>
+            <text id="rmap-cf-Jabo" x="200" y="222" text-anchor="middle" font-size="12" font-weight="800" fill="#1E293B">—</text>
+          </g>
+          <!-- CENTRAL JAVA -->
+          <g id="rmap-Central Java" class="rmap-region" onclick="rmapHighlight('Central Java')" style="cursor:pointer;">
+            <path d="M238,192 C250,184 268,182 282,188 C294,194 300,206 296,218 C292,230 278,236 264,234 C250,232 240,222 238,210 C236,202 236,196 238,192Z" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+            <text x="268" y="206" text-anchor="middle" font-size="8.5" font-weight="700" fill="#475569">C. Java</text>
+            <text id="rmap-cf-Central Java" x="268" y="220" text-anchor="middle" font-size="12" font-weight="800" fill="#1E293B">—</text>
+          </g>
+          <!-- EAST JAVA -->
+          <g id="rmap-East Java" class="rmap-region" onclick="rmapHighlight('East Java')" style="cursor:pointer;">
+            <path d="M304,190 C320,182 342,180 358,188 C372,196 376,212 370,226 C364,238 348,244 332,242 C316,240 304,230 300,216 C296,204 300,194 304,190Z" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+            <text x="336" y="208" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">East Java</text>
+            <text id="rmap-cf-East Java" x="336" y="222" text-anchor="middle" font-size="12" font-weight="800" fill="#1E293B">—</text>
+          </g>
+          <!-- BALI NUSRA -->
+          <g id="rmap-Bali Nusra" class="rmap-region" onclick="rmapHighlight('Bali Nusra')" style="cursor:pointer;">
+            <path d="M378,196 C388,188 404,186 418,192 C430,198 434,212 428,224 C422,234 406,238 392,234 C378,230 372,218 374,206 C374,202 376,198 378,196Z" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+            <ellipse cx="444" cy="210" rx="12" ry="8" fill="#E2E8F0" stroke="#fff" stroke-width="1"/>
+            <ellipse cx="468" cy="212" rx="16" ry="8" fill="#E2E8F0" stroke="#fff" stroke-width="1"/>
+            <ellipse cx="496" cy="214" rx="13" ry="7" fill="#E2E8F0" stroke="#fff" stroke-width="1"/>
+            <text x="405" y="207" text-anchor="middle" font-size="7.5" font-weight="700" fill="#475569">Bali Nusra</text>
+            <text id="rmap-cf-Bali Nusra" x="405" y="220" text-anchor="middle" font-size="12" font-weight="800" fill="#1E293B">—</text>
+          </g>
+          <!-- KALIMANTAN -->
+          <g id="rmap-Kalimantan" class="rmap-region" onclick="rmapHighlight('Kalimantan')" style="cursor:pointer;">
+            <path d="M298,30 C320,14 352,8 384,12 C416,16 444,32 458,56 C472,80 472,110 462,136 C452,162 432,180 408,190 C384,200 356,202 332,194 C308,186 290,168 280,144 C270,120 270,92 278,68 C286,46 296,36 298,30Z" fill="#E2E8F0" stroke="#fff" stroke-width="2"/>
+            <text x="370" y="100" text-anchor="middle" font-size="13" font-weight="700" fill="#475569">Kalimantan</text>
+            <text id="rmap-cf-Kalimantan" x="370" y="118" text-anchor="middle" font-size="16" font-weight="800" fill="#1E293B">—</text>
+            <text id="rmap-loss-Kalimantan" x="370" y="134" text-anchor="middle" font-size="9" fill="#94A3B8">—</text>
+          </g>
+          <!-- SOUTH SULAWESI -->
+          <g id="rmap-South Sulawesi" class="rmap-region" onclick="rmapHighlight('South Sulawesi')" style="cursor:pointer;">
+            <path d="M516,44 C526,28 542,22 556,26 C568,30 576,44 574,60 C572,76 562,90 554,104 C566,114 572,130 568,146 C564,160 550,168 536,164 C522,160 514,146 514,132 C502,140 488,144 476,138 C464,132 460,116 466,102 C472,88 486,78 500,74 C506,62 510,50 516,44Z" fill="#E2E8F0" stroke="#fff" stroke-width="1.8"/>
+            <text x="524" y="90" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">S. Sulawesi</text>
+            <text id="rmap-cf-South Sulawesi" x="524" y="106" text-anchor="middle" font-size="12" font-weight="800" fill="#1E293B">—</text>
+          </g>
+          <!-- NORTH SULAWESI -->
+          <g id="rmap-North Sulawesi" class="rmap-region" onclick="rmapHighlight('North Sulawesi')" style="cursor:pointer;">
+            <path d="M554,22 C572,12 596,10 618,16 C638,22 652,36 650,52 C648,66 634,74 618,74 C602,74 588,64 576,52 C564,40 554,30 554,22Z" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+            <text x="604" y="42" text-anchor="middle" font-size="8.5" font-weight="700" fill="#475569">N. Sulawesi</text>
+            <text id="rmap-cf-North Sulawesi" x="604" y="58" text-anchor="middle" font-size="11" font-weight="800" fill="#1E293B">—</text>
+          </g>
+          <!-- MALUKU -->
+          <g id="rmap-Maluku" class="rmap-region" onclick="rmapHighlight('Maluku')" style="cursor:pointer;">
+            <path d="M672,52 C682,38 698,32 712,36 C724,40 730,54 726,70 C722,84 708,92 694,88 C680,84 670,70 672,52Z" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+            <path d="M686,116 C696,104 716,100 730,106 C742,112 746,128 740,142 C734,154 718,160 704,156 C690,152 682,138 686,116Z" fill="#E2E8F0" stroke="#fff" stroke-width="1.5"/>
+            <text x="706" y="68" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">Maluku</text>
+            <text id="rmap-cf-Maluku" x="706" y="136" text-anchor="middle" font-size="11" font-weight="800" fill="#1E293B">—</text>
+          </g>
+          <!-- PAPUA -->
+          <g id="rmap-Papua" class="rmap-region" onclick="rmapHighlight('Papua')" style="cursor:pointer;">
+            <path d="M756,36 C776,18 808,10 840,14 C872,18 898,36 900,62 C898,70 900,80 896,90 C892,116 876,140 854,154 C832,168 804,172 778,164 C752,156 734,136 730,112 C726,88 734,62 756,36Z" fill="#E2E8F0" stroke="#fff" stroke-width="2"/>
+            <text x="816" y="90" text-anchor="middle" font-size="13" font-weight="700" fill="#475569">Papua</text>
+            <text id="rmap-cf-Papua" x="816" y="108" text-anchor="middle" font-size="16" font-weight="800" fill="#1E293B">—</text>
+          </g>
+          <rect x="8" y="276" width="884" height="18" rx="4" fill="rgba(254,242,242,.75)"/>
+          <line x1="8" y1="285" x2="892" y2="285" stroke="#DC2626" stroke-width="1" stroke-dasharray="5,3"/>
+          <text x="14" y="283" font-size="9" font-weight="700" fill="#DC2626">— target 98%  ·  merah = di bawah target  ·  hijau = on target</text>
+        </svg>
+        <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;">
+          <div class="rmap-summary-box" style="flex:1;min-width:180px;">
             <div style="font-size:10px;color:var(--muted);">Total loss semua region</div>
             <div class="rmap-summary-num" id="rmapTotalLoss">—</div>
-            <div class="rmap-summary-lbl" id="rmapBelowTarget">— region di bawah target 98%</div>
+            <div class="rmap-summary-lbl" id="rmapBelowTarget">—</div>
           </div>
         </div>
-        <div class="card" style="padding:20px 22px;">
-          <div class="card-head"><div><div class="card-title">Ranking CF% per Region</div><div class="card-sub">Terburuk → terbaik · selisih vs target 98%</div></div></div>
-          <div id="rmapRankedBars"></div>
-        </div>
       </div>
+
+      <!-- SECTION 2: Ranked bar full width -->
+      <div class="card" style="padding:22px 24px;">
+        <div class="card-head"><div><div class="card-title">Ranking CF% per Region</div><div class="card-sub">Terburuk → terbaik · selisih vs target 98%</div></div></div>
+        <div id="rmapRankedBars"></div>
+      </div>
+
+      <!-- SECTION 3: Trend & Loss table -->
       <div class="card">
         <div class="card-head"><div><div class="card-title">Trend &amp; Loss Summary</div><div class="card-sub">CF% per region · sparkline 3 week terakhir · total loss</div></div></div>
         <div class="table-wrap">
@@ -1435,7 +1475,7 @@ function buildRegionMap(){
   const sorted=Object.entries(agg).sort((a,b)=>{const cfA=a[1].order>0?(a[1].delivery/a[1].order*100):0;const cfB=b[1].order>0?(b[1].delivery/b[1].order*100):0;return cfA-cfB;});
   const mapSubEl=document.getElementById('rmapMapSub');
   if(mapSubEl)mapSubEl.innerHTML=`${rmapWeek==='all'?'Semua week':rmapWeek} · ${rmapCh===''?'All channel':rmapCh+' only'}`;
-  document.querySelectorAll('.rmap-region ellipse,.rmap-region circle').forEach(el=>{el.setAttribute('fill','#E2E8F0');el.setAttribute('stroke','#fff');el.setAttribute('stroke-width','1.5');});
+  document.querySelectorAll('.rmap-region path,.rmap-region ellipse,.rmap-region circle').forEach(el=>{el.setAttribute('fill','#E2E8F0');el.setAttribute('stroke','#fff');el.setAttribute('stroke-width','1.5');});
   document.querySelectorAll('[id^="rmap-cf-"]').forEach(el=>{el.innerHTML='—';el.setAttribute('fill','#475569');});
   document.querySelectorAll('[id^="rmap-loss-"]').forEach(el=>{el.innerHTML='';});
   let totalLoss=0,belowCount=0;
@@ -1443,7 +1483,7 @@ function buildRegionMap(){
     const cf=d.order>0?(d.delivery/d.order*100):0;const color=rmapColor(cf);const tCol=rmapTextColor(cf);
     totalLoss+=d.gap;if(cf<98)belowCount++;
     const svgKey=RMAP_IDS[rg]||rg;const gEl=document.getElementById('rmap-'+svgKey);
-    if(gEl){const shape=gEl.querySelector('ellipse')||gEl.querySelector('circle');if(shape)shape.setAttribute('fill',color);const cfEl=document.getElementById('rmap-cf-'+svgKey);if(cfEl){cfEl.innerHTML=cf.toFixed(1)+'%';cfEl.setAttribute('fill',tCol);}const lEl=document.getElementById('rmap-loss-'+svgKey);if(lEl&&d.gap<0)lEl.innerHTML=fmt(d.gap);}
+    if(gEl){const shape=gEl.querySelector('path')||gEl.querySelector('ellipse')||gEl.querySelector('circle');if(shape)shape.setAttribute('fill',color);const cfEl=document.getElementById('rmap-cf-'+svgKey);if(cfEl){cfEl.innerHTML=cf.toFixed(1)+'%';cfEl.setAttribute('fill',tCol);}const lEl=document.getElementById('rmap-loss-'+svgKey);if(lEl&&d.gap<0)lEl.innerHTML=fmt(d.gap);}
   });
   const tlEl=document.getElementById('rmapTotalLoss');if(tlEl)tlEl.innerHTML=totalLoss<0?fmt(totalLoss):'0';
   const btEl=document.getElementById('rmapBelowTarget');if(btEl)btEl.innerHTML=`${belowCount} dari ${sorted.length} region di bawah target 98%`;
@@ -1472,7 +1512,7 @@ function buildRegionMap(){
 }
 function setRmapWeek(w){rmapWeek=w;buildRegionMap();}
 function setRmapCh(ch,btn){rmapCh=ch;document.querySelectorAll('#regionMapPage .rg-ch-btn').forEach(b=>b.classList.remove('rg-ch-active'));if(btn)btn.classList.add('rg-ch-active');buildRegionMap();}
-function rmapHighlight(rg){document.querySelectorAll('.rmap-region ellipse,.rmap-region circle').forEach(el=>{el.setAttribute('stroke','#fff');el.setAttribute('stroke-width','1.5');});const svgKey=RMAP_IDS[rg]||rg;const gEl=document.getElementById('rmap-'+svgKey);if(gEl){const shape=gEl.querySelector('ellipse')||gEl.querySelector('circle');if(shape){shape.setAttribute('stroke','#0F172A');shape.setAttribute('stroke-width','2.5');}}}
+function rmapHighlight(rg){document.querySelectorAll('.rmap-region path,.rmap-region ellipse,.rmap-region circle').forEach(el=>{el.setAttribute('stroke','#fff');el.setAttribute('stroke-width','1.5');});const svgKey=RMAP_IDS[rg]||rg;const gEl=document.getElementById('rmap-'+svgKey);if(gEl){const shape=gEl.querySelector('path')||gEl.querySelector('ellipse')||gEl.querySelector('circle');if(shape){shape.setAttribute('stroke','#0F172A');shape.setAttribute('stroke-width','2.5');}}}
 
 init();
 </script>
