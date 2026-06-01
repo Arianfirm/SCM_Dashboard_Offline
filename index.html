@@ -452,7 +452,7 @@ tr:hover td{background:#F7F9FE;}
       <div class="page-header"><div><div class="page-title">🔍 Loss Tree — Level 2 + SKU</div></div></div>
       <div class="card" style="padding:14px 18px">
         <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;">
-          <div><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Filter Week</div><div class="wk-chips" id="ltL2WeekChips"></div></div>
+          <div class="filter-item" style="min-width:140px"><label>Filter Week</label><select id="ltL2WeekChips" onchange="setLtL2Week(this.value)"></select></div>
           <div class="filter-item" style="min-width:160px"><label>Level 1</label><select id="ltL2L1Filter" onchange="renderLossTreeL2()"><option value="">Semua Level 1</option></select></div>
           <div class="filter-item" style="min-width:140px"><label>Cari SKU</label><input id="ltL2SkuSearch" type="search" placeholder="Nama produk..." oninput="renderLossTreeL2()"/></div>
         </div>
@@ -715,7 +715,7 @@ function showPage(page,btn){
   if(page==='channelDrill')buildChannelDrillPage();
   if(page==='regionDrill')buildRegionDrillPage();
   const topbarRight = document.querySelector('.topbar-right');
-  if(page === 'regionDrill' || page === 'channelDrill' || page === 'lossTree'){
+  if(page === 'regionDrill' || page === 'channelDrill' || page === 'lossTree' || page === 'lossTreeL2'){
     topbarRight.style.display = 'none';
   }else{
     topbarRight.style.display = 'flex';
@@ -1242,7 +1242,7 @@ function renderLossTreeL1(){
 function renderLossTreeL2(){
   const weeks=sortW(DB.l2.map(d=>d.Week));
   const chipsEl=document.getElementById('ltL2WeekChips');
-  if(chipsEl){chipsEl.innerHTML=`<span class="wk-chip ${activeLtL2Week==='all'?'active':''}" onclick="setLtL2Week('all')">All Weeks</span>`+weeks.map(w=>`<span class="wk-chip ${activeLtL2Week===w?'active':''}" onclick="setLtL2Week('${w}')">${w}</span>`).join('');}
+  if(chipsEl){chipsEl.innerHTML=`<option value="all">All Weeks</option>`+weeks.map(w=>`<option value="${w}">${w}</option>`).join('');chipsEl.value=activeLtL2Week;}
   const l1Sel=document.getElementById('ltL2L1Filter');
   if(l1Sel&&l1Sel.options.length<=1){const cats=[...new Set(DB.l2.map(d=>d['Loss Level 1']))].filter(Boolean);cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;l1Sel.appendChild(o);});}
   const fW=activeLtL2Week;const fL1=l1Sel?.value||'';const fSku=(document.getElementById('ltL2SkuSearch')?.value||'').trim().toLowerCase();
