@@ -684,7 +684,7 @@ tr:hover td{background:#F7F9FE;}
       <div class="rmap-filter-bar">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span style="font-size:11px;font-weight:600;color:var(--muted);">Week:</span>
-          <div class="wk-chips" id="rmapWeekChips"></div>
+          <select id="rmapWeekChips" onchange="setRmapWeek(this.value)" style="font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;"></select>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
           <span style="font-size:11px;font-weight:600;color:var(--muted);">Channel:</span>
@@ -1550,7 +1550,7 @@ function rmapGetAgg(){let src=rmapCh===''?DB.rg:DB.rgBd.filter(d=>getCh(d).inclu
 function buildRegionMap(){
   const allWeeks=sortW([...new Set(DB.rg.map(d=>d.Week))]);
   const chipsEl=document.getElementById('rmapWeekChips');
-  if(chipsEl)chipsEl.innerHTML=`<span class="wk-chip ${rmapWeek==='all'?'active':''}" onclick="setRmapWeek('all')">All</span>`+allWeeks.map(w=>`<span class="wk-chip ${rmapWeek===w?'active':''}" onclick="setRmapWeek('${w}')">${w}</span>`).join('');
+  if(chipsEl){chipsEl.innerHTML=`<option value="all">All Weeks</option>`+allWeeks.map(w=>`<option value="${w}">${w}</option>`).join('');chipsEl.value=rmapWeek;}
   const agg=rmapGetAgg();
   const sorted=Object.entries(agg).sort((a,b)=>{const cfA=a[1].order>0?(a[1].delivery/a[1].order*100):0;const cfB=b[1].order>0?(b[1].delivery/b[1].order*100):0;return cfA-cfB;});
   const mapSubEl=document.getElementById('rmapMapSub');
