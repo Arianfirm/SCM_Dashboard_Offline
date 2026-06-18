@@ -288,6 +288,7 @@ tr:hover td{background:#F7F9FE;}
     <button class="nav-item" onclick="showPage('region',this)"><span class="nav-icon">🗺️</span> By Region</button>
     <button class="nav-item" onclick="showPage('loss',this)"><span class="nav-icon">📉</span> Loss SKU Trend</button>
     <button class="nav-item" onclick="showPage('top',this)"><span class="nav-icon">🏆</span> Top Selling SKU</button>
+    <button class="nav-item" onclick="showPage('allSku',this)"><span class="nav-icon">📋</span> All SKU Order</button>
   </div>
   <div class="sidebar-section">Loss Tree</div>
   <div class="nav">
@@ -910,6 +911,46 @@ tr:hover td{background:#F7F9FE;}
 
     </div>
 
+    <div class="page" id="allSkuPage">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:4px;">
+        <div class="filter-item" style="min-width:120px">
+          <label>Channel</label>
+          <select id="allSkuCh" onchange="buildAllSku()">
+            <option value="">All</option>
+            <option value="MT">MT</option>
+            <option value="GT">GT</option>
+          </select>
+        </div>
+        <div class="filter-item" style="min-width:200px">
+          <label>Cari SKU</label>
+          <input id="allSkuSearch" type="search" placeholder="Nama produk..." oninput="buildAllSku()"/>
+        </div>
+        <div class="filter-item" style="min-width:120px">
+          <label>Sort by</label>
+          <select id="allSkuSort" onchange="buildAllSku()">
+            <option value="order">Order Terbesar</option>
+            <option value="loss">Loss Terbesar</option>
+            <option value="name">Nama SKU</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="allSkuKpi"></div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">All SKU Order — Trend per Week</div>
+            <div class="card-sub" id="allSkuSub">—</div>
+          </div>
+        </div>
+        <div class="table-wrap" style="overflow-x:auto;">
+          <table id="allSkuTable" style="min-width:800px;">
+            <thead id="allSkuHead"></thead>
+            <tbody id="allSkuBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -922,9 +963,10 @@ const URLS={
   region:BASE+'1045472937',regionBd:BASE+'149373509',topSelling:BASE+'2092850996',
   lossL1:'https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=211197383&single=true&output=csv',
   lossL2:'https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=1341928147&single=true&output=csv',
+  skuPivot:'https://docs.google.com/spreadsheets/d/e/2PACX-1vSzawLo-UIWO6rctA1PJGsrpEQyoFzkONyyhYOPknMXJHVlV24tVXX0LhNM6N8q1nmN-InEme4C3iGE/pub?gid=643091532&single=true&output=csv',
 };
 
-let DB={ch:[],bd:[],sku:[],rg:[],rgBd:[],top:[],l1:[],l2:[]};
+let DB={ch:[],bd:[],sku:[],rg:[],rgBd:[],top:[],l1:[],l2:[],skuPivot:[]};
 let charts={},curWeek='',activeTopWeek='all',activeLtWeek='all',activeLtL2Week='all',activeLtChannel='all';
 let _topSortedData=[],_topAllW=[],_topCurrentPage=1;
 let chDrillWeek='all',rgDrillWeek='all',activeRegionCh='';
@@ -967,6 +1009,7 @@ const PAGE_META={
   subChTrendMT:{icon:'📊',title:'Sub Channel Trend — MT',sub:'Trend per sub-channel MT'},
   subChTrendGT:{icon:'📊',title:'Sub Channel Trend — GT',sub:'Trend per sub-channel GT'},
   regionMap:{icon:'🗺️',title:'Region Performance Map',sub:'Peta CF% · Ranking · Trend & Loss summary per region'},
+  allSku:{icon:'📋',title:'All SKU Order',sub:'Semua SKU · breakdown per channel · trend per week'},
 };
 
 function showPage(page,btn){
@@ -983,6 +1026,7 @@ function showPage(page,btn){
   if(page==='channelDrill')buildChannelDrillPage();
   if(page==='regionDrill')buildRegionDrillPage();
   if(page==='regionMap')buildRegionMap();
+  if(page==='allSku')buildAllSku();
   const topbarRight = document.querySelector('.topbar-right');
   if(page === 'regionDrill' || page === 'channelDrill' || page === 'lossTree' || page === 'lossTreeL2' || page === 'top' || page === 'regionMap'){
     topbarRight.style.display = 'none';
@@ -995,13 +1039,123 @@ function showPage(page,btn){
 const hBarLabelPlugin={id:'hBarLabel',afterDatasetsDraw(chart){const ctx=chart.ctx;ctx.save();ctx.textBaseline='middle';ctx.textAlign='left';chart.data.datasets.forEach((ds,di)=>{const meta=chart.getDatasetMeta(di);if(meta.hidden)return;const extra=ds.extra||[];const extra2=ds.extra2||[];meta.data.forEach((bar,i)=>{const val=ds.data[i];if(val==null||val===0)return;const x=bar.x+8,y=bar.y;const pc=val>=95?'#22C55E':val>=85?'#F59E0B':'#EF4444';if(extra2[i]!=null){ctx.font='500 9px Inter,sans-serif';ctx.fillStyle='#9CA3AF';ctx.fillText('Ord:'+extra2[i].toLocaleString('id-ID'),x,y-8);ctx.font='500 9px Inter,sans-serif';ctx.fillStyle='#6B7280';ctx.fillText('Del:'+extra[i].toLocaleString('id-ID'),x,y+1);ctx.font='bold 11px Inter,sans-serif';ctx.fillStyle=pc;ctx.fillText(val.toFixed(1)+'%',x,y+11);}else if(extra[i]!=null){ctx.font='500 10px Inter,sans-serif';ctx.fillStyle='#6B7280';ctx.fillText(extra[i].toLocaleString('id-ID'),x,y-7);ctx.font='bold 11px Inter,sans-serif';ctx.fillStyle=pc;ctx.fillText(val.toFixed(1)+'%',x,y+6);}else{ctx.font='bold 11px Inter,sans-serif';ctx.fillStyle=pc;ctx.fillText(val.toFixed(1)+'%',x,y);}});});ctx.restore();}};
 const vBarLabelPlugin={id:'vBarLabel',afterDatasetsDraw(chart){const ctx=chart.ctx;ctx.save();ctx.font='bold 12px Inter,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';chart.data.datasets.forEach((ds,di)=>{const meta=chart.getDatasetMeta(di);if(meta.hidden)return;meta.data.forEach((bar,i)=>{const val=ds.data[i];if(val==null||val===0)return;ctx.fillStyle=val>=95?'#22C55E':val>=85?'#F59E0B':'#EF4444';ctx.fillText(val.toFixed(1)+'%',bar.x,bar.y-4);});});ctx.restore();}};
 
+function buildAllSku(){
+  const data = DB.skuPivot;
+  if(!data || !data.length){
+    fill('allSkuBody','<tr><td colspan="10" class="empty-state">Tidak ada data.</td></tr>');
+    return;
+  }
+
+  const fCh  = document.getElementById('allSkuCh')?.value || '';
+  const fQ   = (document.getElementById('allSkuSearch')?.value||'').trim().toLowerCase();
+  const fSort= document.getElementById('allSkuSort')?.value || 'order';
+
+  // Filter
+  let rows = data.filter(d => {
+    const ch = (d['Channel Breakdown']||'').toUpperCase();
+    if(fCh && !ch.includes(fCh)) return false;
+    if(fQ && !(d['Product Name']||'').toLowerCase().includes(fQ)) return false;
+    return true;
+  });
+
+  // Deteksi kolom week dari header
+  const allCols = Object.keys(data[0]||{});
+  const weeks = [...new Set(
+    allCols
+    .filter(c => c.match(/^W\d+_Order$/))
+    .map(c => c.replace('_Order',''))
+  )].sort((a,b) => parseInt(a.slice(1)) - parseInt(b.slice(1)));
+
+  // Hitung total order & loss per row (semua week)
+  rows = rows.map(r => {
+    const totOrd  = weeks.reduce((s,w) => s + (num(r[w+'_Order'])||0), 0);
+    const totLoss = weeks.reduce((s,w) => s + (num(r[w+'_Loss'])||0), 0);
+    const totDel  = weeks.reduce((s,w) => s + (num(r[w+'_Delivery'])||0), 0);
+    return {...r, _totOrd:totOrd, _totLoss:totLoss, _totDel:totDel};
+  });
+
+  // Sort
+  if(fSort==='order') rows.sort((a,b) => b._totOrd - a._totOrd);
+  else if(fSort==='loss') rows.sort((a,b) => a._totLoss - b._totLoss);
+  else rows.sort((a,b) => (a['Product Name']||'').localeCompare(b['Product Name']||''));
+
+  // KPI
+  const totOrdAll  = rows.reduce((s,r) => s+r._totOrd, 0);
+  const totLossAll = rows.reduce((s,r) => s+r._totLoss, 0);
+  const totDelAll  = rows.reduce((s,r) => s+r._totDel, 0);
+  fill('allSkuKpi',`
+    <div class="kpi-detail-item" style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 18px;">
+      <div class="kdi-label">Total SKU</div>
+      <div class="kdi-val" style="color:#7C79E0;font-size:26px;">${rows.length}</div>
+    </div>
+    <div class="kpi-detail-item" style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 18px;">
+      <div class="kdi-label">Total Order (all week)</div>
+      <div class="kdi-val" style="color:#3B82F6;font-size:26px;">${fmt(totOrdAll)}</div>
+    </div>
+    <div class="kpi-detail-item" style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 18px;">
+      <div class="kdi-label">Total Loss (all week)</div>
+      <div class="kdi-val" style="color:#EF4444;font-size:26px;">${fmt(totLossAll)}</div>
+    </div>
+  `);
+
+  fill('allSkuSub', `${rows.length} SKU · ${weeks.length} week · ${fCh||'All Channel'}`);
+
+  // Header: Channel | SKU | W09 Order | W09 Del | W09 Loss | W10 ...
+  const weekHeaders = weeks.map(w =>
+    `<th colspan="3" style="text-align:center;background:rgba(124,121,224,.08);">${w}</th>`
+  ).join('');
+  const weekSubHeaders = weeks.map(w =>
+    `<th style="text-align:right;font-size:9px;">Order</th>
+     <th style="text-align:right;font-size:9px;">Delivery</th>
+     <th style="text-align:right;font-size:9px;color:#DC2626;">Loss</th>`
+  ).join('');
+
+  fill('allSkuHead',`
+    <tr>
+      <th rowspan="2" style="position:sticky;left:0;background:#FAFBFD;z-index:2;min-width:140px;">Channel</th>
+      <th rowspan="2" style="position:sticky;left:140px;background:#FAFBFD;z-index:2;min-width:200px;">Product Name</th>
+      <th rowspan="2" style="text-align:right;">Total Order</th>
+      <th rowspan="2" style="text-align:right;color:#DC2626;">Total Loss</th>
+      ${weekHeaders}
+    </tr>
+    <tr>${weekSubHeaders}</tr>
+  `);
+
+  // Body
+  const bodyRows = rows.map((r,i) => {
+    const ch = r['Channel Breakdown']||'';
+    const isMT = ch.toUpperCase().includes('MT');
+    const weekCells = weeks.map(w => {
+      const o = num(r[w+'_Order'])||0;
+      const d = num(r[w+'_Delivery'])||0;
+      const l = num(r[w+'_Loss'])||0;
+      return `<td style="text-align:right;">${o?fmt(o):'-'}</td>
+              <td style="text-align:right;color:#16A34A;">${d?fmt(d):'-'}</td>
+              <td style="text-align:right;color:${l<0?'#DC2626':'var(--muted)'};">${l?fmt(l):'-'}</td>`;
+    }).join('');
+
+    return `<tr>
+      <td style="position:sticky;left:0;background:#fff;z-index:1;">
+        <span class="pill ${isMT?'pill-mt':'pill-gt'}">${isMT?'MT':'GT'}</span>
+        <span style="font-size:10px;color:var(--muted);margin-left:4px;">${ch.replace(/^\[.+?\]\s*/,'').substring(0,18)}</span>
+      </td>
+      <td style="position:sticky;left:140px;background:#fff;z-index:1;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;" title="${r['Product Name']||''}">${(r['Product Name']||'').substring(0,30)}</td>
+      <td style="text-align:right;font-weight:700;color:#534AB7;">${fmt(r._totOrd)}</td>
+      <td style="text-align:right;font-weight:700;color:${r._totLoss<0?'#DC2626':'var(--muted)'};">${r._totLoss?fmt(r._totLoss):'-'}</td>
+      ${weekCells}
+    </tr>`;
+  }).join('');
+
+  fill('allSkuBody', bodyRows || '<tr><td colspan="20" class="empty-state">Tidak ada data.</td></tr>');
+}
+
 /* ══ INIT ══ */
 async function init(){
   fill('syncInfo','Mengambil data...');
-  [DB.ch,DB.bd,DB.sku,DB.rg,DB.rgBd,DB.top,DB.l1,DB.l2]=await Promise.all([
+  [DB.ch,DB.bd,DB.sku,DB.rg,DB.rgBd,DB.top,DB.l1,DB.l2,DB.skuPivot]=await Promise.all([
     csv(URLS.channel),csv(URLS.breakdown),csv(URLS.sku),
     csv(URLS.region),csv(URLS.regionBd),csv(URLS.topSelling),
-    csv(URLS.lossL1),csv(URLS.lossL2),
+    csv(URLS.lossL1),csv(URLS.lossL2),csv(URLS.skuPivot),
   ]);
   const weeks=sortW(DB.ch.map(d=>d.Week));
   const sel=document.getElementById('weekFilter');
