@@ -913,7 +913,7 @@ tr:hover td{background:#F7F9FE;}
 
     <div class="page" id="allSkuPage">
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:4px;">
-        <div class="filter-item" style="min-width:120px">
+        <div class="filter-item" style="min-width:120px;">
           <label>Channel</label>
           <select id="allSkuCh" onchange="buildAllSku()">
             <option value="">All</option>
@@ -921,20 +921,20 @@ tr:hover td{background:#F7F9FE;}
             <option value="GT">GT</option>
           </select>
         </div>
-        <div class="filter-item" style="min-width:200px">
+        <div class="filter-item" style="flex:1;min-width:200px;">
           <label>Cari SKU</label>
           <input id="allSkuSearch" type="search" placeholder="Nama produk..." oninput="buildAllSku()"/>
         </div>
-        <div class="filter-item" style="min-width:120px">
+        <div class="filter-item" style="min-width:140px;">
           <label>Sort by</label>
           <select id="allSkuSort" onchange="buildAllSku()">
-            <option value="order">Order Terbesar</option>
-            <option value="loss">Loss Terbesar</option>
-            <option value="name">Nama SKU</option>
+            <option value="order">Total Order Terbesar</option>
+            <option value="loss">Total Loss Terbesar</option>
+            <option value="name">Nama SKU A-Z</option>
           </select>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="allSkuKpi"></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;" id="allSkuKpi"></div>
       <div class="card">
         <div class="card-head">
           <div>
@@ -943,7 +943,7 @@ tr:hover td{background:#F7F9FE;}
           </div>
         </div>
         <div class="table-wrap" style="overflow-x:auto;">
-          <table id="allSkuTable" style="min-width:800px;">
+          <table id="allSkuTable" style="min-width:900px;border-collapse:collapse;">
             <thead id="allSkuHead"></thead>
             <tbody id="allSkuBody"></tbody>
           </table>
@@ -1009,7 +1009,7 @@ const PAGE_META={
   subChTrendMT:{icon:'📊',title:'Sub Channel Trend — MT',sub:'Trend per sub-channel MT'},
   subChTrendGT:{icon:'📊',title:'Sub Channel Trend — GT',sub:'Trend per sub-channel GT'},
   regionMap:{icon:'🗺️',title:'Region Performance Map',sub:'Peta CF% · Ranking · Trend & Loss summary per region'},
-  allSku:{icon:'📋',title:'All SKU Order',sub:'Semua SKU · breakdown per channel · trend per week'},
+  allSku:{icon:'📋',title:'All SKU Order',sub:'Semua SKU unik · breakdown MT & GT · trend per week'},
 };
 
 function showPage(page,btn){
@@ -1041,112 +1041,127 @@ const vBarLabelPlugin={id:'vBarLabel',afterDatasetsDraw(chart){const ctx=chart.c
 
 function buildAllSku(){
   const data = DB.skuPivot;
-  if(!data || !data.length){
-    fill('allSkuBody','<tr><td colspan="10" class="empty-state">Tidak ada data.</td></tr>');
+  if(!data||!data.length){
+    fill('allSkuBody','<tr><td colspan="10" class="empty-state">Tidak ada data SKU Pivot.</td></tr>');
     return;
   }
 
-  const fCh  = document.getElementById('allSkuCh')?.value || '';
-  const fQ   = (document.getElementById('allSkuSearch')?.value||'').trim().toLowerCase();
-  const fSort= document.getElementById('allSkuSort')?.value || 'order';
+  const fCh   = document.getElementById('allSkuCh')?.value||'';
+  const fQ    = (document.getElementById('allSkuSearch')?.value||'').trim().toLowerCase();
+  const fSort = document.getElementById('allSkuSort')?.value||'order';
 
-  // Filter
-  let rows = data.filter(d => {
-    const ch = (d['Channel Breakdown']||'').toUpperCase();
+  let rows = data.filter(d=>{
+    const ch=(d['Channel']||'').toUpperCase();
     if(fCh && !ch.includes(fCh)) return false;
-    if(fQ && !(d['Product Name']||'').toLowerCase().includes(fQ)) return false;
+    if(fQ  && !(d['Product Name']||'').toLowerCase().includes(fQ)) return false;
     return true;
   });
 
-  // Deteksi kolom week dari header
-  const allCols = Object.keys(data[0]||{});
-  const weeks = [...new Set(
-    allCols
-    .filter(c => c.match(/^W\d+_Order$/))
-    .map(c => c.replace('_Order',''))
-  )].sort((a,b) => parseInt(a.slice(1)) - parseInt(b.slice(1)));
+  const allCols  = Object.keys(data[0]||{});
+  const weeks    = [...new Set(
+    allCols.filter(c=>c.match(/^W\d+_Order$/)).map(c=>c.replace('_Order',''))
+  )].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1)));
 
-  // Hitung total order & loss per row (semua week)
-  rows = rows.map(r => {
-    const totOrd  = weeks.reduce((s,w) => s + (num(r[w+'_Order'])||0), 0);
-    const totLoss = weeks.reduce((s,w) => s + (num(r[w+'_Loss'])||0), 0);
-    const totDel  = weeks.reduce((s,w) => s + (num(r[w+'_Delivery'])||0), 0);
-    return {...r, _totOrd:totOrd, _totLoss:totLoss, _totDel:totDel};
+  rows = rows.map(r=>{
+    const totOrd = weeks.reduce((s,w)=>s+num(r[w+'_Order']||0),0);
+    const totDel = weeks.reduce((s,w)=>s+num(r[w+'_Delivery']||0),0);
+    const totLoss= weeks.reduce((s,w)=>s+num(r[w+'_Loss']||0),0);
+    return{...r,_totOrd:totOrd,_totDel:totDel,_totLoss:totLoss};
   });
 
-  // Sort
-  if(fSort==='order') rows.sort((a,b) => b._totOrd - a._totOrd);
-  else if(fSort==='loss') rows.sort((a,b) => a._totLoss - b._totLoss);
-  else rows.sort((a,b) => (a['Product Name']||'').localeCompare(b['Product Name']||''));
+  if(fSort==='order') rows.sort((a,b)=>b._totOrd-a._totOrd);
+  else if(fSort==='loss') rows.sort((a,b)=>a._totLoss-b._totLoss);
+  else rows.sort((a,b)=>(a['Product Name']||'').localeCompare(b['Product Name']||''));
 
-  // KPI
-  const totOrdAll  = rows.reduce((s,r) => s+r._totOrd, 0);
-  const totLossAll = rows.reduce((s,r) => s+r._totLoss, 0);
-  const totDelAll  = rows.reduce((s,r) => s+r._totDel, 0);
+  const totOrdAll  = rows.reduce((s,r)=>s+r._totOrd,0);
+  const totDelAll  = rows.reduce((s,r)=>s+r._totDel,0);
+  const totLossAll = rows.reduce((s,r)=>s+r._totLoss,0);
+
   fill('allSkuKpi',`
-    <div class="kpi-detail-item" style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 18px;">
-      <div class="kdi-label">Total SKU</div>
-      <div class="kdi-val" style="color:#7C79E0;font-size:26px;">${rows.length}</div>
+    <div class="kpi-mini" style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;">
+      <div class="kpi-mini-lbl">Total SKU Unik</div>
+      <div class="kpi-mini-val" style="color:#534AB7;">${rows.length}</div>
     </div>
-    <div class="kpi-detail-item" style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 18px;">
-      <div class="kdi-label">Total Order (all week)</div>
-      <div class="kdi-val" style="color:#3B82F6;font-size:26px;">${fmt(totOrdAll)}</div>
+    <div class="kpi-mini" style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;">
+      <div class="kpi-mini-lbl">Total Order</div>
+      <div class="kpi-mini-val" style="color:#3B82F6;">${totOrdAll>=1000?(totOrdAll/1000).toFixed(1)+'K':fmt(totOrdAll)}</div>
     </div>
-    <div class="kpi-detail-item" style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 18px;">
-      <div class="kdi-label">Total Loss (all week)</div>
-      <div class="kdi-val" style="color:#EF4444;font-size:26px;">${fmt(totLossAll)}</div>
+    <div class="kpi-mini" style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;">
+      <div class="kpi-mini-lbl">Total Delivery</div>
+      <div class="kpi-mini-val" style="color:#16A34A;">${totDelAll>=1000?(totDelAll/1000).toFixed(1)+'K':fmt(totDelAll)}</div>
+    </div>
+    <div class="kpi-mini" style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;">
+      <div class="kpi-mini-lbl">Total Loss</div>
+      <div class="kpi-mini-val" style="color:#DC2626;">${totLossAll<0?(Math.abs(totLossAll)>=1000?'-'+(Math.abs(totLossAll)/1000).toFixed(1)+'K':fmt(totLossAll)):'0'}</div>
     </div>
   `);
 
-  fill('allSkuSub', `${rows.length} SKU · ${weeks.length} week · ${fCh||'All Channel'}`);
+  fill('allSkuSub',`${rows.length} SKU · ${weeks.length} week · ${fCh||'All Channel'}`);
 
-  // Header: Channel | SKU | W09 Order | W09 Del | W09 Loss | W10 ...
-  const weekHeaders = weeks.map(w =>
-    `<th colspan="3" style="text-align:center;background:rgba(124,121,224,.08);">${w}</th>`
+  const wkHeaders = weeks.map(w=>
+    `<th colspan="3" style="text-align:center;background:rgba(59,130,246,.08);color:#2563EB;font-size:10px;font-weight:700;padding:7px 6px;border-left:1px solid #E2E8F0;">${w}</th>`
   ).join('');
-  const weekSubHeaders = weeks.map(w =>
-    `<th style="text-align:right;font-size:9px;">Order</th>
-     <th style="text-align:right;font-size:9px;">Delivery</th>
-     <th style="text-align:right;font-size:9px;color:#DC2626;">Loss</th>`
+  const wkSubs = weeks.map(()=>
+    `<th style="text-align:right;font-size:9px;font-weight:600;color:#94A3B8;padding:5px 8px;border-left:1px solid #F1F5F9;">Order</th>
+     <th style="text-align:right;font-size:9px;font-weight:600;color:#16A34A;padding:5px 8px;">Del</th>
+     <th style="text-align:right;font-size:9px;font-weight:600;color:#DC2626;padding:5px 8px;">Loss</th>`
   ).join('');
 
   fill('allSkuHead',`
-    <tr>
-      <th rowspan="2" style="position:sticky;left:0;background:#FAFBFD;z-index:2;min-width:140px;">Channel</th>
-      <th rowspan="2" style="position:sticky;left:140px;background:#FAFBFD;z-index:2;min-width:200px;">Product Name</th>
-      <th rowspan="2" style="text-align:right;">Total Order</th>
-      <th rowspan="2" style="text-align:right;color:#DC2626;">Total Loss</th>
-      ${weekHeaders}
+    <tr style="background:#FAFBFD;">
+      <th rowspan="2" style="text-align:left;padding:8px 12px;font-size:9.5px;font-weight:700;color:#94A3B8;letter-spacing:.8px;text-transform:uppercase;border-bottom:1.5px solid #E2E8F0;position:sticky;left:0;background:#FAFBFD;z-index:3;min-width:50px;">Ch</th>
+      <th rowspan="2" style="text-align:left;padding:8px 12px;font-size:9.5px;font-weight:700;color:#94A3B8;letter-spacing:.8px;text-transform:uppercase;border-bottom:1.5px solid #E2E8F0;position:sticky;left:50px;background:#FAFBFD;z-index:3;min-width:200px;">Product Name</th>
+      <th rowspan="2" style="text-align:right;padding:8px 10px;font-size:9.5px;font-weight:700;color:#94A3B8;letter-spacing:.8px;text-transform:uppercase;border-bottom:1.5px solid #E2E8F0;min-width:80px;">Total Order</th>
+      <th rowspan="2" style="text-align:right;padding:8px 10px;font-size:9.5px;font-weight:700;color:#16A34A;letter-spacing:.8px;text-transform:uppercase;border-bottom:1.5px solid #E2E8F0;min-width:75px;">Total Del</th>
+      <th rowspan="2" style="text-align:right;padding:8px 10px;font-size:9.5px;font-weight:700;color:#DC2626;letter-spacing:.8px;text-transform:uppercase;border-bottom:1.5px solid #E2E8F0;min-width:70px;">Total Loss</th>
+      ${wkHeaders}
     </tr>
-    <tr>${weekSubHeaders}</tr>
+    <tr style="background:#FAFBFD;">${wkSubs}</tr>
   `);
 
-  // Body
-  const bodyRows = rows.map((r,i) => {
-    const ch = r['Channel Breakdown']||'';
-    const isMT = ch.toUpperCase().includes('MT');
-    const weekCells = weeks.map(w => {
-      const o = num(r[w+'_Order'])||0;
-      const d = num(r[w+'_Delivery'])||0;
-      const l = num(r[w+'_Loss'])||0;
-      return `<td style="text-align:right;">${o?fmt(o):'-'}</td>
-              <td style="text-align:right;color:#16A34A;">${d?fmt(d):'-'}</td>
-              <td style="text-align:right;color:${l<0?'#DC2626':'var(--muted)'};">${l?fmt(l):'-'}</td>`;
-    }).join('');
+  const totalWkCells = weeks.map(w=>{
+    const o=rows.reduce((s,r)=>s+num(r[w+'_Order']||0),0);
+    const d=rows.reduce((s,r)=>s+num(r[w+'_Delivery']||0),0);
+    const l=rows.reduce((s,r)=>s+num(r[w+'_Loss']||0),0);
+    return`<td style="text-align:right;font-weight:700;font-size:11px;padding:9px 8px;border-left:1px solid #E2E8F0;">${o?fmt(o):'-'}</td>
+           <td style="text-align:right;font-weight:700;font-size:11px;color:#16A34A;padding:9px 8px;">${d?fmt(d):'-'}</td>
+           <td style="text-align:right;font-weight:700;font-size:11px;color:${l<0?'#DC2626':'var(--muted)'};padding:9px 8px;">${l?fmt(l):'-'}</td>`;
+  }).join('');
 
-    return `<tr>
-      <td style="position:sticky;left:0;background:#fff;z-index:1;">
+  const bodyRows = rows.map(r=>{
+    const ch=(r['Channel']||'').toUpperCase();
+    const isMT=ch.includes('MT');
+    const wkCells=weeks.map(w=>{
+      const o=num(r[w+'_Order']||0);
+      const d=num(r[w+'_Delivery']||0);
+      const l=num(r[w+'_Loss']||0);
+      return`<td style="text-align:right;font-size:11px;padding:9px 8px;border-left:1px solid #F1F5F9;">${o?fmt(o):'-'}</td>
+             <td style="text-align:right;font-size:11px;color:#16A34A;padding:9px 8px;">${d?fmt(d):'-'}</td>
+             <td style="text-align:right;font-size:11px;color:${l<0?'#DC2626':'var(--muted)'};padding:9px 8px;">${l?fmt(l):'-'}</td>`;
+    }).join('');
+    return`<tr style="border-bottom:1px solid #F1F5F9;">
+      <td style="padding:9px 12px;position:sticky;left:0;background:#fff;z-index:1;border-right:1px solid #F1F5F9;">
         <span class="pill ${isMT?'pill-mt':'pill-gt'}">${isMT?'MT':'GT'}</span>
-        <span style="font-size:10px;color:var(--muted);margin-left:4px;">${ch.replace(/^\[.+?\]\s*/,'').substring(0,18)}</span>
       </td>
-      <td style="position:sticky;left:140px;background:#fff;z-index:1;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;" title="${r['Product Name']||''}">${(r['Product Name']||'').substring(0,30)}</td>
-      <td style="text-align:right;font-weight:700;color:#534AB7;">${fmt(r._totOrd)}</td>
-      <td style="text-align:right;font-weight:700;color:${r._totLoss<0?'#DC2626':'var(--muted)'};">${r._totLoss?fmt(r._totLoss):'-'}</td>
-      ${weekCells}
+      <td style="padding:9px 12px;font-weight:600;font-size:12px;position:sticky;left:50px;background:#fff;z-index:1;border-right:1px solid #F1F5F9;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${r['Product Name']||''}">${(r['Product Name']||'').substring(0,35)}</td>
+      <td style="text-align:right;font-weight:700;font-size:12px;color:#534AB7;padding:9px 10px;">${fmt(r._totOrd)}</td>
+      <td style="text-align:right;font-weight:700;font-size:12px;color:#16A34A;padding:9px 10px;">${fmt(r._totDel)}</td>
+      <td style="text-align:right;font-weight:700;font-size:12px;color:${r._totLoss<0?'#DC2626':'var(--muted)'};padding:9px 10px;">${r._totLoss?fmt(r._totLoss):'-'}</td>
+      ${wkCells}
     </tr>`;
   }).join('');
 
-  fill('allSkuBody', bodyRows || '<tr><td colspan="20" class="empty-state">Tidak ada data.</td></tr>');
+  const totalRow=`<tr style="background:#F3F0FF;border-top:2px solid #7C79E0;font-weight:700;">
+    <td style="padding:10px 12px;position:sticky;left:0;background:#F3F0FF;z-index:1;" colspan="2">
+      <span style="font-size:12px;font-weight:700;color:#534AB7;">TOTAL</span>
+    </td>
+    <td style="text-align:right;font-size:12px;font-weight:700;color:#534AB7;padding:10px;">${fmt(totOrdAll)}</td>
+    <td style="text-align:right;font-size:12px;font-weight:700;color:#16A34A;padding:10px;">${fmt(totDelAll)}</td>
+    <td style="text-align:right;font-size:12px;font-weight:700;color:#DC2626;padding:10px;">${totLossAll?fmt(totLossAll):'-'}</td>
+    ${totalWkCells}
+  </tr>`;
+
+  fill('allSkuBody', bodyRows+totalRow||'<tr><td colspan="20" class="empty-state">Tidak ada data.</td></tr>');
 }
 
 /* ══ INIT ══ */
