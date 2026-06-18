@@ -912,36 +912,27 @@ tr:hover td{background:#F7F9FE;}
     </div>
 
     <div class="page" id="allSkuPage">
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:4px;">
-        <div class="filter-item" style="min-width:120px;">
-          <label>Channel</label>
-          <select id="allSkuCh" onchange="buildAllSku()">
-            <option value="">All</option>
-            <option value="MT">MT</option>
-            <option value="GT">GT</option>
-          </select>
+      <!-- Filter bar -->
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:#fff;border-radius:12px;border:1px solid var(--border);margin-bottom:10px;">
+        <span style="font-size:10px;font-weight:700;color:#94A3B8;letter-spacing:.6px;margin-right:2px;">CHANNEL</span>
+        <div id="allSkuChBtns" style="display:flex;gap:4px;margin-right:10px;">
+          <button onclick="setSkuCh('',this)" style="padding:5px 13px;border-radius:20px;border:1.5px solid #7C79E0;background:#7C79E0;color:#fff;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;">All</button>
+          <button onclick="setSkuCh('MT',this)" style="padding:5px 13px;border-radius:20px;border:1.5px solid #E2E8F0;background:#fff;color:#64748B;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;">MT</button>
+          <button onclick="setSkuCh('GT',this)" style="padding:5px 13px;border-radius:20px;border:1.5px solid #E2E8F0;background:#fff;color:#64748B;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;">GT</button>
         </div>
-        <div class="filter-item" style="flex:1;min-width:200px;">
-          <label>Cari SKU</label>
-          <input id="allSkuSearch" type="search" placeholder="Nama produk..." oninput="buildAllSku()"/>
+        <span style="font-size:10px;font-weight:700;color:#94A3B8;letter-spacing:.6px;margin-right:2px;">SORT</span>
+        <div id="allSkuSortBtns" style="display:flex;gap:4px;margin-right:10px;">
+          <button onclick="setSkuSort('order',this)" style="padding:5px 13px;border-radius:20px;border:1.5px solid #3B82F6;background:#3B82F6;color:#fff;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;">Order ↓</button>
+          <button onclick="setSkuSort('loss',this)" style="padding:5px 13px;border-radius:20px;border:1.5px solid #E2E8F0;background:#fff;color:#64748B;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;">Loss ↓</button>
+          <button onclick="setSkuSort('name',this)" style="padding:5px 13px;border-radius:20px;border:1.5px solid #E2E8F0;background:#fff;color:#64748B;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;">A–Z</button>
         </div>
-        <div class="filter-item" style="min-width:140px;">
-          <label>Sort by</label>
-          <select id="allSkuSort" onchange="buildAllSku()">
-            <option value="order">Total Order Terbesar</option>
-            <option value="loss">Total Loss Terbesar</option>
-            <option value="name">Nama SKU A-Z</option>
-          </select>
-        </div>
+        <input id="allSkuSearch" type="search" placeholder="🔍 Cari nama SKU..." oninput="buildAllSku()" style="padding:6px 14px;border-radius:20px;border:1.5px solid #E2E8F0;font-size:12px;outline:none;width:200px;"/>
+        <span id="allSkuSub" style="margin-left:auto;font-size:11px;color:#94A3B8;white-space:nowrap;">—</span>
       </div>
+
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;" id="allSkuKpi"></div>
+
       <div class="card">
-        <div class="card-head">
-          <div>
-            <div class="card-title">All SKU Order — Trend per Week</div>
-            <div class="card-sub" id="allSkuSub">—</div>
-          </div>
-        </div>
         <div class="table-wrap" style="overflow-x:auto;">
           <table id="allSkuTable" style="min-width:900px;border-collapse:collapse;">
             <thead id="allSkuHead"></thead>
@@ -972,6 +963,7 @@ let _topSortedData=[],_topAllW=[],_topCurrentPage=1;
 let chDrillWeek='all',rgDrillWeek='all',activeRegionCh='';
 let selectedChannel=null,selectedRegion=null;
 let chFilter='',rgChFilter='';
+let _allSkuCh='',_allSkuSort='order';
 
 const COLORS=['#7C79E0','#E879A0','#22C55E','#F59E0B','#3B82F6','#EF4444','#8B5CF6','#06B6D4','#10B981','#F97316'];
 const L1_COLORS={'3.0 Supply Issue':{bar:'#534AB7',pill:'pill-supply',hex:'#534AB7'},'6.0 Rejection Issue':{bar:'#EF4444',pill:'pill-reject',hex:'#EF4444'},'5.0 Transport Issue':{bar:'#F59E0B',pill:'pill-transport',hex:'#F59E0B'}};
@@ -1039,6 +1031,23 @@ function showPage(page,btn){
 const hBarLabelPlugin={id:'hBarLabel',afterDatasetsDraw(chart){const ctx=chart.ctx;ctx.save();ctx.textBaseline='middle';ctx.textAlign='left';chart.data.datasets.forEach((ds,di)=>{const meta=chart.getDatasetMeta(di);if(meta.hidden)return;const extra=ds.extra||[];const extra2=ds.extra2||[];meta.data.forEach((bar,i)=>{const val=ds.data[i];if(val==null||val===0)return;const x=bar.x+8,y=bar.y;const pc=val>=95?'#22C55E':val>=85?'#F59E0B':'#EF4444';if(extra2[i]!=null){ctx.font='500 9px Inter,sans-serif';ctx.fillStyle='#9CA3AF';ctx.fillText('Ord:'+extra2[i].toLocaleString('id-ID'),x,y-8);ctx.font='500 9px Inter,sans-serif';ctx.fillStyle='#6B7280';ctx.fillText('Del:'+extra[i].toLocaleString('id-ID'),x,y+1);ctx.font='bold 11px Inter,sans-serif';ctx.fillStyle=pc;ctx.fillText(val.toFixed(1)+'%',x,y+11);}else if(extra[i]!=null){ctx.font='500 10px Inter,sans-serif';ctx.fillStyle='#6B7280';ctx.fillText(extra[i].toLocaleString('id-ID'),x,y-7);ctx.font='bold 11px Inter,sans-serif';ctx.fillStyle=pc;ctx.fillText(val.toFixed(1)+'%',x,y+6);}else{ctx.font='bold 11px Inter,sans-serif';ctx.fillStyle=pc;ctx.fillText(val.toFixed(1)+'%',x,y);}});});ctx.restore();}};
 const vBarLabelPlugin={id:'vBarLabel',afterDatasetsDraw(chart){const ctx=chart.ctx;ctx.save();ctx.font='bold 12px Inter,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';chart.data.datasets.forEach((ds,di)=>{const meta=chart.getDatasetMeta(di);if(meta.hidden)return;meta.data.forEach((bar,i)=>{const val=ds.data[i];if(val==null||val===0)return;ctx.fillStyle=val>=95?'#22C55E':val>=85?'#F59E0B':'#EF4444';ctx.fillText(val.toFixed(1)+'%',bar.x,bar.y-4);});});ctx.restore();}};
 
+function setSkuCh(v,btn){
+  _allSkuCh=v;
+  document.querySelectorAll('#allSkuChBtns button').forEach(b=>{
+    b.style.background='#fff';b.style.color='#64748B';b.style.borderColor='#E2E8F0';
+  });
+  btn.style.background='#7C79E0';btn.style.color='#fff';btn.style.borderColor='#7C79E0';
+  buildAllSku();
+}
+function setSkuSort(v,btn){
+  _allSkuSort=v;
+  document.querySelectorAll('#allSkuSortBtns button').forEach(b=>{
+    b.style.background='#fff';b.style.color='#64748B';b.style.borderColor='#E2E8F0';
+  });
+  btn.style.background='#3B82F6';btn.style.color='#fff';btn.style.borderColor='#3B82F6';
+  buildAllSku();
+}
+
 function buildAllSku(){
   const data = DB.skuPivot;
   if(!data||!data.length){
@@ -1046,9 +1055,9 @@ function buildAllSku(){
     return;
   }
 
-  const fCh   = document.getElementById('allSkuCh')?.value||'';
+  const fCh   = _allSkuCh;
   const fQ    = (document.getElementById('allSkuSearch')?.value||'').trim().toLowerCase();
-  const fSort = document.getElementById('allSkuSort')?.value||'order';
+  const fSort = _allSkuSort;
 
   let rows = data.filter(d=>{
     const ch=(d['Channel']||'').toUpperCase();
