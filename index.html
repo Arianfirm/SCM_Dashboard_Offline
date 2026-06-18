@@ -914,6 +914,12 @@ tr:hover td{background:#F7F9FE;}
     <div class="page" id="allSkuPage">
       <!-- Filter bar -->
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:#fff;border-radius:12px;border:1px solid var(--border);margin-bottom:10px;">
+        <div class="filter-item" style="min-width:130px;">
+          <label>Week</label>
+          <select id="allSkuWeek" onchange="buildAllSku()">
+            <option value="">All Week</option>
+          </select>
+        </div>
         <span style="font-size:10px;font-weight:700;color:#94A3B8;letter-spacing:.6px;margin-right:2px;">CHANNEL</span>
         <div id="allSkuChBtns" style="display:flex;gap:4px;margin-right:10px;">
           <button onclick="setSkuCh('',this)" style="padding:5px 13px;border-radius:20px;border:1.5px solid #7C79E0;background:#7C79E0;color:#fff;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;">All</button>
@@ -1020,7 +1026,7 @@ function showPage(page,btn){
   if(page==='regionMap')buildRegionMap();
   if(page==='allSku')buildAllSku();
   const topbarRight = document.querySelector('.topbar-right');
-  if(page === 'regionDrill' || page === 'channelDrill' || page === 'lossTree' || page === 'lossTreeL2' || page === 'top' || page === 'regionMap'){
+  if(page === 'regionDrill' || page === 'channelDrill' || page === 'lossTree' || page === 'lossTreeL2' || page === 'top' || page === 'regionMap' || page === 'allSku'){
     topbarRight.style.display = 'none';
   }else{
     topbarRight.style.display = 'flex';
@@ -1071,10 +1077,21 @@ function buildAllSku(){
     allCols.filter(c=>c.match(/^W\d+_Order$/)).map(c=>c.replace('_Order',''))
   )].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1)));
 
+  const selWk = document.getElementById('allSkuWeek');
+  if(selWk && selWk.options.length <= 1){
+    weeks.forEach(w => {
+      const o = document.createElement('option');
+      o.value = w; o.textContent = w;
+      selWk.appendChild(o);
+    });
+  }
+  const fWk = selWk?.value || '';
+  const visWeeks = fWk ? [fWk] : weeks;
+
   rows = rows.map(r=>{
-    const totOrd = weeks.reduce((s,w)=>s+num(r[w+'_Order']||0),0);
-    const totDel = weeks.reduce((s,w)=>s+num(r[w+'_Delivery']||0),0);
-    const totLoss= weeks.reduce((s,w)=>s+num(r[w+'_Loss']||0),0);
+    const totOrd = visWeeks.reduce((s,w)=>s+num(r[w+'_Order']||0),0);
+    const totDel = visWeeks.reduce((s,w)=>s+num(r[w+'_Delivery']||0),0);
+    const totLoss= visWeeks.reduce((s,w)=>s+num(r[w+'_Loss']||0),0);
     return{...r,_totOrd:totOrd,_totDel:totDel,_totLoss:totLoss};
   });
 
@@ -1105,12 +1122,12 @@ function buildAllSku(){
     </div>
   `);
 
-  fill('allSkuSub',`${rows.length} SKU · ${weeks.length} week · ${fCh||'All Channel'}`);
+  fill('allSkuSub',`${rows.length} SKU · ${visWeeks.length} week · ${fCh||'All Channel'}`);
 
-  const wkHeaders = weeks.map(w=>
+  const wkHeaders = visWeeks.map(w=>
     `<th colspan="3" style="text-align:center;background:rgba(59,130,246,.08);color:#2563EB;font-size:10px;font-weight:700;padding:7px 6px;border-left:1px solid #E2E8F0;">${w}</th>`
   ).join('');
-  const wkSubs = weeks.map(()=>
+  const wkSubs = visWeeks.map(()=>
     `<th style="text-align:right;font-size:9px;font-weight:600;color:#94A3B8;padding:5px 8px;border-left:1px solid #F1F5F9;">Order</th>
      <th style="text-align:right;font-size:9px;font-weight:600;color:#16A34A;padding:5px 8px;">Del</th>
      <th style="text-align:right;font-size:9px;font-weight:600;color:#DC2626;padding:5px 8px;">Loss</th>`
@@ -1119,7 +1136,7 @@ function buildAllSku(){
   fill('allSkuHead',`
     <tr style="background:#FAFBFD;">
       <th rowspan="2" style="text-align:left;padding:8px 12px;font-size:9.5px;font-weight:700;color:#94A3B8;letter-spacing:.8px;text-transform:uppercase;border-bottom:1.5px solid #E2E8F0;position:sticky;left:0;background:#FAFBFD;z-index:3;min-width:50px;">Ch</th>
-      <th rowspan="2" style="text-align:left;padding:8px 12px;font-size:9.5px;font-weight:700;color:#94A3B8;letter-spacing:.8px;text-transform:uppercase;border-bottom:1.5px solid #E2E8F0;position:sticky;left:50px;background:#FAFBFD;z-index:3;min-width:200px;">Product Name</th>
+      <th rowspan="2" style="text-align:left;padding:8px 12px;font-size:9.5px;font-weight:700;color:#94A3B8;letter-spacing:.8px;text-transform:uppercase;border-bottom:1.5px solid #E2E8F0;position:sticky;left:50px;background:#FAFBFD;z-index:3;min-width:280px;">Product Name</th>
       <th rowspan="2" style="text-align:right;padding:8px 10px;font-size:9.5px;font-weight:700;color:#94A3B8;letter-spacing:.8px;text-transform:uppercase;border-bottom:1.5px solid #E2E8F0;min-width:80px;">Total Order</th>
       <th rowspan="2" style="text-align:right;padding:8px 10px;font-size:9.5px;font-weight:700;color:#16A34A;letter-spacing:.8px;text-transform:uppercase;border-bottom:1.5px solid #E2E8F0;min-width:75px;">Total Del</th>
       <th rowspan="2" style="text-align:right;padding:8px 10px;font-size:9.5px;font-weight:700;color:#DC2626;letter-spacing:.8px;text-transform:uppercase;border-bottom:1.5px solid #E2E8F0;min-width:70px;">Total Loss</th>
@@ -1128,7 +1145,7 @@ function buildAllSku(){
     <tr style="background:#FAFBFD;">${wkSubs}</tr>
   `);
 
-  const totalWkCells = weeks.map(w=>{
+  const totalWkCells = visWeeks.map(w=>{
     const o=rows.reduce((s,r)=>s+num(r[w+'_Order']||0),0);
     const d=rows.reduce((s,r)=>s+num(r[w+'_Delivery']||0),0);
     const l=rows.reduce((s,r)=>s+num(r[w+'_Loss']||0),0);
@@ -1140,7 +1157,7 @@ function buildAllSku(){
   const bodyRows = rows.map(r=>{
     const ch=(r['Channel']||'').toUpperCase();
     const isMT=ch.includes('MT');
-    const wkCells=weeks.map(w=>{
+    const wkCells=visWeeks.map(w=>{
       const o=num(r[w+'_Order']||0);
       const d=num(r[w+'_Delivery']||0);
       const l=num(r[w+'_Loss']||0);
@@ -1152,7 +1169,7 @@ function buildAllSku(){
       <td style="padding:9px 12px;position:sticky;left:0;background:#fff;z-index:1;border-right:1px solid #F1F5F9;">
         <span class="pill ${isMT?'pill-mt':'pill-gt'}">${isMT?'MT':'GT'}</span>
       </td>
-      <td style="padding:9px 12px;font-weight:600;font-size:12px;position:sticky;left:50px;background:#fff;z-index:1;border-right:1px solid #F1F5F9;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${r['Product Name']||''}">${(r['Product Name']||'').substring(0,35)}</td>
+      <td style="padding:9px 12px;font-weight:600;font-size:12px;position:sticky;left:50px;background:#fff;z-index:1;border-right:1px solid #F1F5F9;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${r['Product Name']||''}">${(r['Product Name']||'').substring(0,40)}</td>
       <td style="text-align:right;font-weight:700;font-size:12px;color:#534AB7;padding:9px 10px;">${fmt(r._totOrd)}</td>
       <td style="text-align:right;font-weight:700;font-size:12px;color:#16A34A;padding:9px 10px;">${fmt(r._totDel)}</td>
       <td style="text-align:right;font-weight:700;font-size:12px;color:${r._totLoss<0?'#DC2626':'var(--muted)'};padding:9px 10px;">${r._totLoss?fmt(r._totLoss):'-'}</td>
