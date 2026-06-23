@@ -307,6 +307,10 @@ tr:hover td{background:#F7F9FE;}
   <div class="nav">
     <button class="nav-item" onclick="showPage('regionMap',this)"><span class="nav-icon">🗺️</span> Region Performance Map</button>
   </div>
+  <div class="sidebar-section">Analysis</div>
+  <div class="nav">
+    <button class="nav-item" onclick="showPage('weeklyAnalysis',this)"><span class="nav-icon">📊</span> Weekly Analysis</button>
+  </div>
   <!-- HIDDEN: Region by Channel
   <div class="sidebar-section">Region by Channel</div>
   <div class="nav nav-sub">
@@ -911,6 +915,66 @@ tr:hover td{background:#F7F9FE;}
 
     </div>
 
+    <!-- ══ WEEKLY ANALYSIS ══ -->
+    <div class="page" id="weeklyAnalysisPage">
+
+      <!-- Week chips -->
+      <div class="card" style="padding:14px 20px;">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          <span style="font-size:10px;font-weight:700;color:#94A3B8;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap;">Filter Week</span>
+          <div class="wk-chips" id="waWeekChips"></div>
+        </div>
+      </div>
+
+      <!-- Section 1: Executive Summary -->
+      <div class="kpi-row-4" id="waKpiRow"></div>
+
+      <!-- Section 2+3: Sub Channel MT & GT -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card">
+          <div class="card-head"><div>
+            <div class="card-title">🟣 MT Sub Channel Analysis</div>
+            <div class="card-sub" id="waMtSubSub">—</div>
+          </div></div>
+          <div class="table-wrap">
+            <table><thead id="waSubHeadMt"></thead><tbody id="waMtSubBody"></tbody></table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div>
+            <div class="card-title">🔵 GT Sub Channel Analysis</div>
+            <div class="card-sub" id="waGtSubSub">—</div>
+          </div></div>
+          <div class="table-wrap">
+            <table><thead id="waSubHeadGt"></thead><tbody id="waGtSubBody"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4+5: Region MT & GT -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card">
+          <div class="card-head"><div>
+            <div class="card-title">🟣 MT Region Analysis</div>
+            <div class="card-sub" id="waMtRgSub">—</div>
+          </div></div>
+          <div class="table-wrap">
+            <table><thead id="waRgHeadMt"></thead><tbody id="waMtRgBody"></tbody></table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div>
+            <div class="card-title">🔵 GT Region Analysis</div>
+            <div class="card-sub" id="waGtRgSub">—</div>
+          </div></div>
+          <div class="table-wrap">
+            <table><thead id="waRgHeadGt"></thead><tbody id="waGtRgBody"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
     <div class="page" id="allSkuPage">
       <!-- Filter bar -->
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:#fff;border-radius:12px;border:1px solid var(--border);margin-bottom:10px;">
@@ -970,6 +1034,7 @@ let chDrillWeek='all',rgDrillWeek='all',activeRegionCh='';
 let selectedChannel=null,selectedRegion=null;
 let chFilter='',rgChFilter='';
 let _allSkuCh='',_allSkuSort='order';
+let _waWeek='';
 
 const COLORS=['#7C79E0','#E879A0','#22C55E','#F59E0B','#3B82F6','#EF4444','#8B5CF6','#06B6D4','#10B981','#F97316'];
 const L1_COLORS={'3.0 Supply Issue':{bar:'#534AB7',pill:'pill-supply',hex:'#534AB7'},'6.0 Rejection Issue':{bar:'#EF4444',pill:'pill-reject',hex:'#EF4444'},'5.0 Transport Issue':{bar:'#F59E0B',pill:'pill-transport',hex:'#F59E0B'}};
@@ -1008,6 +1073,7 @@ const PAGE_META={
   subChTrendGT:{icon:'📊',title:'Sub Channel Trend — GT',sub:'Trend per sub-channel GT'},
   regionMap:{icon:'🗺️',title:'Region Performance Map',sub:'Peta CF% · Ranking · Trend & Loss summary per region'},
   allSku:{icon:'📋',title:'All SKU Order',sub:'Semua SKU unik · breakdown MT & GT · trend per week'},
+  weeklyAnalysis:{icon:'📊',title:'Weekly Analysis',sub:'Ringkasan performa MT & GT berdasarkan Sub Channel dan Region'},
 };
 
 function showPage(page,btn){
@@ -1025,8 +1091,9 @@ function showPage(page,btn){
   if(page==='regionDrill')buildRegionDrillPage();
   if(page==='regionMap')buildRegionMap();
   if(page==='allSku')buildAllSku();
+  if(page==='weeklyAnalysis')buildWeeklyAnalysis();
   const topbarRight = document.querySelector('.topbar-right');
-  if(page === 'regionDrill' || page === 'channelDrill' || page === 'lossTree' || page === 'lossTreeL2' || page === 'top' || page === 'regionMap' || page === 'allSku'){
+  if(page === 'regionDrill' || page === 'channelDrill' || page === 'lossTree' || page === 'lossTreeL2' || page === 'top' || page === 'regionMap' || page === 'allSku' || page === 'weeklyAnalysis'){
     topbarRight.style.display = 'none';
   }else{
     topbarRight.style.display = 'flex';
@@ -1188,6 +1255,169 @@ function buildAllSku(){
   </tr>`;
 
   fill('allSkuBody', bodyRows+totalRow||'<tr><td colspan="20" class="empty-state">Tidak ada data.</td></tr>');
+}
+
+/* ══ WEEKLY ANALYSIS ══ */
+function buildWeeklyAnalysis(){
+  const allWeeks = sortW(DB.ch.map(d=>d.Week));
+  if(!_waWeek || !allWeeks.includes(_waWeek)) _waWeek = allWeeks[allWeeks.length-1]||'';
+
+  // Week chips
+  const chipsEl = document.getElementById('waWeekChips');
+  if(chipsEl){
+    if(chipsEl.children.length===0){
+      allWeeks.forEach(w=>{
+        const b=document.createElement('button');
+        b.className='wk-chip'+(w===_waWeek?' active':'');
+        b.textContent=w;
+        b.onclick=()=>{_waWeek=w;buildWeeklyAnalysis();};
+        chipsEl.appendChild(b);
+      });
+    } else {
+      chipsEl.querySelectorAll('.wk-chip').forEach(b=>{
+        b.classList.toggle('active',b.textContent===_waWeek);
+      });
+    }
+  }
+
+  // ── Section 1: Executive Summary ──
+  const chData = DB.ch.filter(d=>d.Week===_waWeek);
+  const mt = chData.find(d=>getCh(d).includes('MT'));
+  const gt = chData.find(d=>getCh(d).includes('GT'));
+  const mtCf = mt?num(mt['Case Fill']):0;
+  const gtCf = gt?num(gt['Case Fill']):0;
+  const mtLoss = mt?num(mt['GAP']):0;
+  const gtLoss = gt?num(gt['GAP']):0;
+  const mtOrd = mt?num(mt['Order Quantity']):0;
+  const gtOrd = gt?num(gt['Order Quantity']):0;
+
+  const cfBadge = cf => cf>=98
+    ? `<span style="display:inline-block;background:#F0FDF4;color:#166534;font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:6px;">✓ On Target</span>`
+    : `<span style="display:inline-block;background:#FEF2F2;color:#991B1B;font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:6px;">↓ Below 98%</span>`;
+
+  fill('waKpiRow',`
+    <div class="kpi-mini">
+      <div class="kpi-mini-accent" style="background:linear-gradient(90deg,#7C79E0,#534AB7);"></div>
+      <div class="kpi-mini-lbl">MT Case Fill</div>
+      <div class="kpi-mini-val" style="color:${mtCf>=98?'#16A34A':'#DC2626'};font-size:34px;letter-spacing:-1px;">${mtCf.toFixed(1)}%</div>
+      ${cfBadge(mtCf)}
+    </div>
+    <div class="kpi-mini">
+      <div class="kpi-mini-accent" style="background:linear-gradient(90deg,#3B82F6,#2563EB);"></div>
+      <div class="kpi-mini-lbl">GT Case Fill</div>
+      <div class="kpi-mini-val" style="color:${gtCf>=98?'#16A34A':'#DC2626'};font-size:34px;letter-spacing:-1px;">${gtCf.toFixed(1)}%</div>
+      ${cfBadge(gtCf)}
+    </div>
+    <div class="kpi-mini">
+      <div class="kpi-mini-accent" style="background:linear-gradient(90deg,#EF4444,#DC2626);"></div>
+      <div class="kpi-mini-lbl">MT Total Loss</div>
+      <div class="kpi-mini-val" style="color:#DC2626;font-size:28px;letter-spacing:-1px;">${fmt(mtLoss)}</div>
+      <div class="kpi-mini-sub" style="color:#94A3B8;margin-top:5px;">dari ${fmt(mtOrd)} order</div>
+    </div>
+    <div class="kpi-mini">
+      <div class="kpi-mini-accent" style="background:linear-gradient(90deg,#F59E0B,#D97706);"></div>
+      <div class="kpi-mini-lbl">GT Total Loss</div>
+      <div class="kpi-mini-val" style="color:#DC2626;font-size:28px;letter-spacing:-1px;">${fmt(gtLoss)}</div>
+      <div class="kpi-mini-sub" style="color:#94A3B8;margin-top:5px;">dari ${fmt(gtOrd)} order</div>
+    </div>
+  `);
+
+  // ── Shared table head ──
+  const tHead = label => `<tr>
+    <th>${label}</th>
+    <th style="text-align:right">CF%</th>
+    <th style="text-align:right">Order</th>
+    <th style="text-align:right">Loss</th>
+    <th style="text-align:right">Ord Cont%</th>
+    <th style="text-align:right">Loss Cont%</th>
+  </tr>`;
+
+  // ── Section 2+3: Sub Channel from DB.bd ──
+  const bdData = DB.bd.filter(d=>d.Week===_waWeek);
+
+  function buildSubTable(chType, bodyId, subId, headId){
+    const rows = bdData.filter(d=>getCh(d).toUpperCase().includes(chType));
+    const agg = {};
+    rows.forEach(d=>{
+      const ch=(d['Channel Breakdown']||'').trim();
+      if(!agg[ch]) agg[ch]={order:0,del:0,loss:0};
+      agg[ch].order+=num(d['Order Quantity']);
+      agg[ch].del+=num(d['Delivery Quantity']);
+      agg[ch].loss+=num(d['GAP']);
+    });
+    const totalOrd = Object.values(agg).reduce((s,r)=>s+r.order,0);
+    const totalLoss = Object.values(agg).reduce((s,r)=>s+r.loss,0);
+    const sorted = Object.entries(agg).sort((a,b)=>a[1].loss-b[1].loss);
+    const minLoss = sorted.length?sorted[0][1].loss:0;
+    fill(headId, tHead('Sub Channel'));
+    fill(subId, `${sorted.length} sub channel · ${_waWeek}`);
+    fill(bodyId, sorted.map(([ch,d])=>{
+      const cf = d.order>0?d.del/d.order*100:0;
+      const cfColor = cf>=98?'#16A34A':'#DC2626';
+      const cfBg = cf>=98?'#F0FDF4':'#FEF2F2';
+      const ordPct = totalOrd>0?d.order/totalOrd*100:0;
+      const lossPct = totalLoss!==0?d.loss/totalLoss*100:0;
+      const tag = ch.match(/^\[.+?\]/)?.[0]||'';
+      const name = ch.replace(/^\[.+?\]\s*/,'');
+      const rowBg = d.loss===minLoss&&minLoss<0?'background:#FFF5F5;':'';
+      return`<tr style="${rowBg}">
+        <td class="td-name"><div style="font-size:9px;color:#94A3B8;margin-bottom:1px;">${tag}</div>${name}</td>
+        <td style="text-align:right;">
+          <span style="background:${cfBg};color:${cfColor};font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;">${cf.toFixed(1)}%</span>
+        </td>
+        <td style="text-align:right;">${fmt(d.order)}</td>
+        <td style="text-align:right;color:#DC2626;font-weight:600;">${fmt(d.loss)}</td>
+        <td style="text-align:right;color:#64748B;">${ordPct.toFixed(1)}%</td>
+        <td style="text-align:right;font-weight:600;color:${Math.abs(lossPct)>20?'#DC2626':'#64748B'};">${lossPct.toFixed(1)}%</td>
+      </tr>`;
+    }).join('')||'<tr><td colspan="6" class="empty-state">Tidak ada data.</td></tr>');
+  }
+
+  buildSubTable('MT','waMtSubBody','waMtSubSub','waSubHeadMt');
+  buildSubTable('GT','waGtSubBody','waGtSubSub','waSubHeadGt');
+
+  // ── Section 4+5: Region from DB.rgBd ──
+  const rgData = DB.rgBd.filter(d=>d.Week===_waWeek);
+
+  function buildRgTable(chType, bodyId, subId, headId){
+    const rows = rgData.filter(d=>getCh(d).toUpperCase().includes(chType));
+    const agg = {};
+    rows.forEach(d=>{
+      const rg=(d.Region||'').trim();
+      if(!rg) return;
+      if(!agg[rg]) agg[rg]={order:0,del:0,loss:0};
+      agg[rg].order+=num(d['Order Quantity']);
+      agg[rg].del+=num(d['Delivery Quantity']);
+      agg[rg].loss+=num(d['GAP']);
+    });
+    const totalOrd = Object.values(agg).reduce((s,r)=>s+r.order,0);
+    const totalLoss = Object.values(agg).reduce((s,r)=>s+r.loss,0);
+    const sorted = Object.entries(agg).sort((a,b)=>a[1].loss-b[1].loss);
+    const minLoss = sorted.length?sorted[0][1].loss:0;
+    fill(headId, tHead('Region'));
+    fill(subId, `${sorted.length} region · ${_waWeek} · ${chType}`);
+    fill(bodyId, sorted.map(([rg,d])=>{
+      const cf = d.order>0?d.del/d.order*100:0;
+      const cfColor = cf>=98?'#16A34A':'#DC2626';
+      const cfBg = cf>=98?'#F0FDF4':'#FEF2F2';
+      const ordPct = totalOrd>0?d.order/totalOrd*100:0;
+      const lossPct = totalLoss!==0?d.loss/totalLoss*100:0;
+      const rowBg = d.loss===minLoss&&minLoss<0?'background:#FFF5F5;':'';
+      return`<tr style="${rowBg}">
+        <td class="td-name">${rg}</td>
+        <td style="text-align:right;">
+          <span style="background:${cfBg};color:${cfColor};font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;">${cf.toFixed(1)}%</span>
+        </td>
+        <td style="text-align:right;">${fmt(d.order)}</td>
+        <td style="text-align:right;color:#DC2626;font-weight:600;">${fmt(d.loss)}</td>
+        <td style="text-align:right;color:#64748B;">${ordPct.toFixed(1)}%</td>
+        <td style="text-align:right;font-weight:600;color:${Math.abs(lossPct)>20?'#DC2626':'#64748B'};">${lossPct.toFixed(1)}%</td>
+      </tr>`;
+    }).join('')||'<tr><td colspan="6" class="empty-state">Tidak ada data.</td></tr>');
+  }
+
+  buildRgTable('MT','waMtRgBody','waMtRgSub','waRgHeadMt');
+  buildRgTable('GT','waGtRgBody','waGtRgSub','waRgHeadGt');
 }
 
 /* ══ INIT ══ */
