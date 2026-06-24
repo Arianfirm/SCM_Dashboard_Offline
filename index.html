@@ -1280,27 +1280,26 @@ function buildAllSku(){
 }
 
 /* ══ WEEKLY ANALYSIS ══ */
+function setWaWeek(w){ _waWeek=w; buildWeeklyAnalysis(); }
+
 function buildWeeklyAnalysis(){
   const allWeeks = sortW(DB.ch.map(d=>d.Week));
   if(!_waWeek || !allWeeks.includes(_waWeek)) _waWeek = allWeeks[allWeeks.length-1]||'';
 
-  // Week chips
-  const chipsEl = document.getElementById('waWeekChips');
-  if(chipsEl){
-    if(chipsEl.children.length===0){
+  // Week dropdown
+  const selEl = document.getElementById('waWeekSelect');
+  if(selEl){
+    if(selEl.options.length===0){
       allWeeks.forEach(w=>{
-        const b=document.createElement('button');
-        b.className='wk-chip'+(w===_waWeek?' active':'');
-        b.textContent=w;
-        b.onclick=()=>{_waWeek=w;buildWeeklyAnalysis();};
-        chipsEl.appendChild(b);
-      });
-    } else {
-      chipsEl.querySelectorAll('.wk-chip').forEach(b=>{
-        b.classList.toggle('active',b.textContent===_waWeek);
+        const o=document.createElement('option');
+        o.value=w; o.textContent=w;
+        selEl.appendChild(o);
       });
     }
+    selEl.value=_waWeek;
   }
+  const labelEl=document.getElementById('waSelLabel');
+  if(labelEl) labelEl.textContent=`${allWeeks.length} week tersedia · ${_waWeek}`;
 
   // ── Section 1: Executive Summary ──
   const chData = DB.ch.filter(d=>d.Week===_waWeek);
@@ -1456,6 +1455,7 @@ async function init(){
   curWeek=weeks[weeks.length-1]||'';
   sel.value=curWeek;
   render(curWeek);
+  buildWeeklyAnalysis();
   sel.addEventListener('change',()=>{curWeek=sel.value;render(sel.value);});
   const now=new Date();
   fill('syncInfo',`Last sync: ${now.getDate()} ${now.toLocaleString('id',{month:'short'})} ${String(now.getHours()).padStart(2,'0')}.${String(now.getMinutes()).padStart(2,'0')}`);
