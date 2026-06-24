@@ -995,6 +995,18 @@ tr:hover td{background:#F7F9FE;}
         </div>
       </div>
 
+      <!-- Insight Panel -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:14px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+          <span style="font-size:13px;">🔍</span>
+          <span style="font-size:12px;font-weight:700;color:var(--text);">Weekly Insight</span>
+          <span style="font-size:10px;color:#94A3B8;margin-left:4px;">— Klik baris untuk detail</span>
+        </div>
+        <div id="waInsightPanel" style="padding:20px;font-size:12px;color:#94A3B8;text-align:center;min-height:80px;display:flex;align-items:center;justify-content:center;">
+          Klik Sub Channel atau Region untuk melihat detail SKU penyebab loss.
+        </div>
+      </div>
+
     </div>
 
     <div class="page" id="allSkuPage">
@@ -1279,6 +1291,101 @@ function buildAllSku(){
   fill('allSkuBody', bodyRows+totalRow||'<tr><td colspan="20" class="empty-state">Tidak ada data.</td></tr>');
 }
 
+/* ══ WEEKLY ANALYSIS HELPERS ══ */
+function attachWaListener(bodyId){
+  const el=document.getElementById(bodyId);
+  if(!el||el._waL) return;
+  el._waL=true;
+  el.addEventListener('click',e=>{
+    const tr=e.target.closest('tr[data-wa-type]');
+    if(!tr) return;
+    ['waMtSubBody','waGtSubBody','waMtRgBody','waGtRgBody'].forEach(id=>{
+      const b=document.getElementById(id);
+      if(b) b.querySelectorAll('tr[data-wa-type]').forEach(r=>r.style.background='');
+    });
+    tr.style.background='rgba(124,121,224,0.08)';
+    waShowInsight(tr.dataset);
+  });
+}
+
+function waShowInsight(ds){
+  const chType=(ds.chType||'').toUpperCase();
+  const name=ds.name||'—';
+  const order=+ds.order||0;
+  const del=+ds.del||0;
+  const loss=+ds.loss||0;
+  const totalOrd=+ds.totalOrd||0;
+  const totalLoss=+ds.totalLoss||0;
+  const cf=order>0?del/order*100:0;
+  const ordPct=totalOrd>0?order/totalOrd*100:0;
+  const lossPct=totalLoss!==0?loss/totalLoss*100:0;
+  const cfColor=cf>=95?'#166534':cf>=90?'#16A34A':cf>=75?'#854D0E':'#991B1B';
+  const cfBg=cf>=95?'#DCFCE7':cf>=90?'#F0FDF4':cf>=75?'#FEF9C3':'#FEF2F2';
+  const chColor=chType==='MT'?'#534AB7':'#2563EB';
+  const chBg=chType==='MT'?'#F0EFFF':'#EFF6FF';
+
+  const wkKey=_waWeek.replace(/^\d{4}-/,'');
+  const skuAvail=!!(DB.skuPivot&&DB.skuPivot.length&&wkKey&&DB.skuPivot[0][wkKey+'_Loss']!==undefined);
+  let top10=[];
+  if(skuAvail){
+    top10=DB.skuPivot
+      .filter(d=>(d['Channel']||'').toUpperCase().includes(chType))
+      .map(d=>({name:(d['Product Name']||'').trim(),loss:num(d[wkKey+'_Loss']||0)}))
+      .filter(d=>d.loss<0)
+      .sort((a,b)=>a.loss-b.loss)
+      .slice(0,10);
+  }
+
+  const skuSection=!skuAvail
+    ?`<div style="font-size:11px;color:#94A3B8;padding:10px 0;">SKU detail tidak tersedia pada dataset aktif.</div>`
+    :top10.length===0
+      ?`<div style="font-size:11px;color:#94A3B8;padding:10px 0;">Tidak ada SKU loss untuk ${chType} · ${_waWeek}.</div>`
+      :`<table style="width:100%;border-collapse:collapse;">
+          <thead><tr style="background:#F8FAFC;">
+            <th style="padding:6px 8px;font-size:9px;color:#94A3B8;text-transform:uppercase;letter-spacing:.5px;font-weight:700;border-bottom:1px solid #E2E8F0;text-align:center;width:28px;">#</th>
+            <th style="padding:6px 8px;font-size:9px;color:#94A3B8;text-transform:uppercase;letter-spacing:.5px;font-weight:700;border-bottom:1px solid #E2E8F0;">Product Name</th>
+            <th style="padding:6px 8px;font-size:9px;color:#DC2626;text-transform:uppercase;letter-spacing:.5px;font-weight:700;border-bottom:1px solid #E2E8F0;text-align:right;">Loss</th>
+          </tr></thead>
+          <tbody>${top10.map((r,i)=>`<tr style="border-bottom:1px solid #F1F5F9;">
+            <td style="padding:7px 8px;text-align:center;font-size:11px;color:#94A3B8;font-weight:700;">${i+1}</td>
+            <td style="padding:7px 8px;font-size:11px;color:var(--text);">${r.name}</td>
+            <td style="padding:7px 8px;text-align:right;font-size:11px;font-weight:700;color:#DC2626;">${fmt(r.loss)}</td>
+          </tr>`).join('')}</tbody>
+        </table>`;
+
+  const panel=document.getElementById('waInsightPanel');
+  if(!panel) return;
+  panel.style.cssText='padding:20px;text-align:left;display:block;';
+  panel.innerHTML=`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+      <span style="font-size:11px;font-weight:700;background:${chBg};color:${chColor};padding:3px 10px;border-radius:20px;">${chType}</span>
+      <span style="font-size:13px;font-weight:700;color:var(--text);flex:1;">${name}</span>
+      <span style="background:${cfBg};color:${cfColor};font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;">${cf.toFixed(1)}% CF</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;">
+      <div style="background:#F8FAFC;border-radius:8px;padding:10px 12px;">
+        <div style="font-size:9px;color:#94A3B8;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;">Order</div>
+        <div style="font-size:16px;font-weight:700;color:#534AB7;">${fmt(order)}</div>
+      </div>
+      <div style="background:#FFF5F5;border-radius:8px;padding:10px 12px;">
+        <div style="font-size:9px;color:#94A3B8;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;">Loss</div>
+        <div style="font-size:16px;font-weight:700;color:#DC2626;">${fmt(loss)}</div>
+      </div>
+      <div style="background:#F8FAFC;border-radius:8px;padding:10px 12px;">
+        <div style="font-size:9px;color:#94A3B8;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;">Ord Cont%</div>
+        <div style="font-size:16px;font-weight:700;color:#475569;">${ordPct.toFixed(1)}%</div>
+      </div>
+      <div style="background:#F8FAFC;border-radius:8px;padding:10px 12px;">
+        <div style="font-size:9px;color:#94A3B8;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;">Loss Cont%</div>
+        <div style="font-size:16px;font-weight:700;color:${Math.abs(lossPct)>30?'#DC2626':'#475569'};">${lossPct.toFixed(1)}%</div>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:10px;padding-top:14px;border-top:1px solid var(--border);">
+      Top 10 SKU Loss Terbesar <span style="font-size:10px;color:#94A3B8;font-weight:400;">· ${chType} · ${_waWeek}</span>
+    </div>
+    ${skuSection}`;
+}
+
 /* ══ WEEKLY ANALYSIS ══ */
 function setWaWeek(w){ _waWeek=w; buildWeeklyAnalysis(); }
 
@@ -1384,7 +1491,7 @@ function buildWeeklyAnalysis(){
       const tag = ch.match(/^\[.+?\]/)?.[0]||'';
       const name = ch.replace(/^\[.+?\]\s*/,'');
       const rowBg = d.loss===minLoss&&minLoss<0?'background:#FFF5F5;':'';
-      return`<tr style="${rowBg}">
+      return`<tr style="${rowBg}cursor:pointer;" data-wa-type="subch" data-ch-type="${chType}" data-name="${name.replace(/"/g,'&quot;')}" data-order="${d.order}" data-del="${d.del}" data-loss="${d.loss}" data-total-ord="${totalOrd}" data-total-loss="${totalLoss}">
         <td class="td-name"><div style="font-size:9px;color:#94A3B8;margin-bottom:1px;">${tag}</div>${name}</td>
         <td style="text-align:right;">
           <span style="background:${cfBg};color:${cfColor};font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;">${cf.toFixed(1)}%</span>
@@ -1399,6 +1506,8 @@ function buildWeeklyAnalysis(){
 
   buildSubTable('MT','waMtSubBody','waMtSubSub','waSubHeadMt');
   buildSubTable('GT','waGtSubBody','waGtSubSub','waSubHeadGt');
+  attachWaListener('waMtSubBody');
+  attachWaListener('waGtSubBody');
 
   // ── Section 4+5: Region from DB.rgBd ──
   const rgData = DB.rgBd.filter(d=>d.Week===_waWeek);
@@ -1426,7 +1535,7 @@ function buildWeeklyAnalysis(){
       const ordPct = totalOrd>0?d.order/totalOrd*100:0;
       const lossPct = totalLoss!==0?d.loss/totalLoss*100:0;
       const rowBg = d.loss===minLoss&&minLoss<0?'background:#FFF5F5;':'';
-      return`<tr style="${rowBg}">
+      return`<tr style="${rowBg}cursor:pointer;" data-wa-type="region" data-ch-type="${chType}" data-name="${rg.replace(/"/g,'&quot;')}" data-order="${d.order}" data-del="${d.del}" data-loss="${d.loss}" data-total-ord="${totalOrd}" data-total-loss="${totalLoss}">
         <td class="td-name">${rg}</td>
         <td style="text-align:right;">
           <span style="background:${cfBg};color:${cfColor};font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;">${cf.toFixed(1)}%</span>
@@ -1441,6 +1550,8 @@ function buildWeeklyAnalysis(){
 
   buildRgTable('MT','waMtRgBody','waMtRgSub','waRgHeadMt');
   buildRgTable('GT','waGtRgBody','waGtRgSub','waRgHeadGt');
+  attachWaListener('waMtRgBody');
+  attachWaListener('waGtRgBody');
 }
 
 /* ══ INIT ══ */
