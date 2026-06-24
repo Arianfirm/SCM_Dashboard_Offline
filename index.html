@@ -1324,17 +1324,28 @@ function waShowInsight(ds){
   const chColor=chType==='MT'?'#534AB7':'#2563EB';
   const chBg=chType==='MT'?'#F0EFFF':'#EFF6FF';
 
-  const wkKey=_waWeek.replace(/^\d{4}-/,'');
-  const skuAvail=!!(DB.skuPivot&&DB.skuPivot.length&&wkKey&&DB.skuPivot[0][wkKey+'_Loss']!==undefined);
+  const waType=ds.waType||'';
+  const chFull=ds.chFull||'';
+  const skuAvail=!!(DB.l2&&DB.l2.length);
   let top10=[];
   if(skuAvail){
-    top10=DB.skuPivot
-      .filter(d=>(d['Channel']||'').toUpperCase().includes(chType))
-      .map(d=>({name:(d['Product Name']||'').trim(),loss:num(d[wkKey+'_Loss']||0)}))
-      .filter(d=>d.loss<0)
-      .sort((a,b)=>a.loss-b.loss)
-      .slice(0,10);
+    let l2rows=DB.l2.filter(d=>d.Week===_waWeek&&getCh(d).toUpperCase().includes(chType));
+    if(waType==='subch'&&chFull) l2rows=l2rows.filter(d=>(d['Channel Breakdown']||'').trim()===chFull);
+    else if(waType==='region') l2rows=l2rows.filter(d=>(d.Region||'').trim()===name);
+    const skuAgg={};
+    l2rows.forEach(d=>{const p=(d['Product Name']||'').trim();if(!p)return;if(!skuAgg[p])skuAgg[p]=0;skuAgg[p]+=num(d['GAP']);});
+    top10=Object.entries(skuAgg).map(([n,l])=>({name:n,loss:l})).filter(d=>d.loss<0).sort((a,b)=>a.loss-b.loss).slice(0,10);
   }
+  const totalSkuLoss=top10.reduce((s,r)=>s+r.loss,0);
+  console.group('[waShowInsight] Filter Debug');
+  console.log('Week      :', _waWeek);
+  console.log('Channel   :', chType);
+  console.log('Row Type  :', waType);
+  console.log('Selected  :', name);
+  console.log('Card Loss :', loss);
+  console.log('SKU Count :', top10.length);
+  console.log('SKU Loss  :', totalSkuLoss);
+  console.groupEnd();
 
   const skuSection=!skuAvail
     ?`<div style="font-size:11px;color:#94A3B8;padding:10px 0;">SKU detail tidak tersedia pada dataset aktif.</div>`
@@ -1491,7 +1502,7 @@ function buildWeeklyAnalysis(){
       const tag = ch.match(/^\[.+?\]/)?.[0]||'';
       const name = ch.replace(/^\[.+?\]\s*/,'');
       const rowBg = d.loss===minLoss&&minLoss<0?'background:#FFF5F5;':'';
-      return`<tr style="${rowBg}cursor:pointer;" data-wa-type="subch" data-ch-type="${chType}" data-name="${name.replace(/"/g,'&quot;')}" data-order="${d.order}" data-del="${d.del}" data-loss="${d.loss}" data-total-ord="${totalOrd}" data-total-loss="${totalLoss}">
+      return`<tr style="${rowBg}cursor:pointer;" data-wa-type="subch" data-ch-type="${chType}" data-name="${name.replace(/"/g,'&quot;')}" data-ch-full="${ch.replace(/"/g,'&quot;')}" data-order="${d.order}" data-del="${d.del}" data-loss="${d.loss}" data-total-ord="${totalOrd}" data-total-loss="${totalLoss}">
         <td class="td-name"><div style="font-size:9px;color:#94A3B8;margin-bottom:1px;">${tag}</div>${name}</td>
         <td style="text-align:right;">
           <span style="background:${cfBg};color:${cfColor};font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;">${cf.toFixed(1)}%</span>
