@@ -2031,9 +2031,11 @@ function renderLossTreeOverview(filterWeek){
   if(chipsEl){chipsEl.innerHTML=`<option value="all">All Weeks</option>`+weeks.map(w=>`<option value="${w}">${w}</option>`).join('');chipsEl.value=activeLtWeek;}
   let l1data=activeLtWeek==='all'?DB.l1:DB.l1.filter(d=>d.Week===activeLtWeek);
   let l2data=activeLtWeek==='all'?DB.l2:DB.l2.filter(d=>d.Week===activeLtWeek);
-  if(activeLtChannel!=='all'){l1data=l1data.filter(d=>getCh(d).includes(activeLtChannel));l2data=l2data.filter(d=>getCh(d).includes(activeLtChannel));}
+  if(activeLtChannel!=='all'){l2data=l2data.filter(d=>getCh(d).includes(activeLtChannel));}
   const weekLabel=activeLtWeek==='all'?'Semua week':activeLtWeek;
-  const l1Agg={};l1data.forEach(d=>{const cat=d['Loss Level 1']||'?';if(!l1Agg[cat])l1Agg[cat]={order:0,delivery:0,gap:0};l1Agg[cat].order+=num(d['Order Quantity']);l1Agg[cat].delivery+=num(d['Delivery Quantity']);l1Agg[cat].gap+=num(d['GAP']);});
+  // DB.l1 has no Channel field — when channel filter active, derive L1 totals from filtered l2data
+  const aggSrc=activeLtChannel!=='all'?l2data:l1data;
+  const l1Agg={};aggSrc.forEach(d=>{const cat=d['Loss Level 1']||'?';if(!l1Agg[cat])l1Agg[cat]={order:0,delivery:0,gap:0};l1Agg[cat].order+=num(d['Order Quantity']);l1Agg[cat].delivery+=num(d['Delivery Quantity']);l1Agg[cat].gap+=num(d['GAP']);});
   const totalLoss=Object.values(l1Agg).reduce((s,r)=>s+r.gap,0);
   const l1Sorted=Object.entries(l1Agg).sort((a,b)=>a[1].gap-b[1].gap);
   const catClass=cat=>cat.includes('Supply')?'supply':cat.includes('Rejection')?'reject':'transport';
