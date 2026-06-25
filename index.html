@@ -1192,7 +1192,7 @@ function buildAllSku(){
   rows = rows.map(r=>{
     const totOrd = visWeeks.reduce((s,w)=>s+num(r[w+'_Order']||0),0);
     const totDel = visWeeks.reduce((s,w)=>s+num(r[w+'_Delivery']||0),0);
-    const totLoss= visWeeks.reduce((s,w)=>s+num(r[w+'_Loss']||0),0);
+    const totLoss= totDel-totOrd;
     return{...r,_totOrd:totOrd,_totDel:totDel,_totLoss:totLoss};
   });
 
@@ -1249,7 +1249,7 @@ function buildAllSku(){
   const totalWkCells = visWeeks.map(w=>{
     const o=rows.reduce((s,r)=>s+num(r[w+'_Order']||0),0);
     const d=rows.reduce((s,r)=>s+num(r[w+'_Delivery']||0),0);
-    const l=rows.reduce((s,r)=>s+num(r[w+'_Loss']||0),0);
+    const l=d-o;
     return`<td style="text-align:right;font-weight:700;font-size:11px;padding:9px 8px;border-left:1px solid #E2E8F0;">${o?fmt(o):'-'}</td>
            <td style="text-align:right;font-weight:700;font-size:11px;color:#16A34A;padding:9px 8px;">${d?fmt(d):'-'}</td>
            <td style="text-align:right;font-weight:700;font-size:11px;color:${l<0?'#DC2626':'var(--muted)'};padding:9px 8px;">${l?fmt(l):'-'}</td>`;
@@ -1261,7 +1261,7 @@ function buildAllSku(){
     const wkCells=visWeeks.map(w=>{
       const o=num(r[w+'_Order']||0);
       const d=num(r[w+'_Delivery']||0);
-      const l=num(r[w+'_Loss']||0);
+      const l=d-o;
       return`<td style="text-align:right;font-size:11px;padding:9px 8px;border-left:1px solid #F1F5F9;">${o?fmt(o):'-'}</td>
              <td style="text-align:right;font-size:11px;color:#16A34A;padding:9px 8px;">${d?fmt(d):'-'}</td>
              <td style="text-align:right;font-size:11px;color:${l<0?'#DC2626':'var(--muted)'};padding:9px 8px;">${l?fmt(l):'-'}</td>`;
