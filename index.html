@@ -85,6 +85,9 @@ th{padding:11px 14px;text-align:left;font-size:9.5px;font-weight:700;color:#94A3
 td{padding:12px 14px;font-size:12px;border-bottom:1px solid #F1F5F9;color:var(--text);white-space:nowrap;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:#F7F9FE;}
+.sticky-col th:first-child,.sticky-col td:first-child{position:sticky;left:0;z-index:2;border-right:1px solid var(--border);}
+.sticky-col td:first-child{background:var(--white);}
+.sticky-col th:first-child{z-index:3;}
 .td-name{font-weight:600;}
 .td-loss{color:#DC2626;font-weight:600;}
 .td-win{color:#16A34A;font-weight:600;}
@@ -490,8 +493,8 @@ tr:hover td{background:#F7F9FE;}
       <div class="page-header"><div><div class="page-title">📈 Loss Tree — Level 1 Trend</div></div></div>
       <div class="card"><div class="legend-row" id="ltL1LineLegend"></div><div style="position:relative;height:280px;"><canvas id="ltL1LineChart"></canvas></div></div>
       <div class="card"><div class="card-head"><div><div class="card-title">% Kontribusi Level 1 per Week</div></div></div><div class="legend-row" id="ltL1StackLegend"></div><div style="position:relative;height:220px;"><canvas id="ltL1StackChart"></canvas></div></div>
-      <div class="card"><div class="table-wrap"><table><thead id="ltL1TableHead"></thead><tbody id="ltL1TableBody"></tbody></table></div></div>
-      <div class="card"><div class="card-head"><div><div class="card-title">Level 1 Trend (% of Total Order)</div></div></div><div class="table-wrap"><table><thead id="ltL1PctTableHead"></thead><tbody id="ltL1PctTableBody"></tbody></table></div></div>
+      <div class="card"><div class="table-wrap sticky-col"><table><thead id="ltL1TableHead"></thead><tbody id="ltL1TableBody"></tbody></table></div></div>
+      <div class="card"><div class="card-head"><div><div class="card-title">Level 1 Trend (% of Total Order)</div></div></div><div class="table-wrap sticky-col"><table><thead id="ltL1PctTableHead"></thead><tbody id="ltL1PctTableBody"></tbody></table></div></div>
     </div>
 
     <!-- ══ LOSS TREE L2 ══ -->
